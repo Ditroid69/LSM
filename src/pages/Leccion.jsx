@@ -7,7 +7,7 @@ const contenidoLecciones = {
   abecedario: {
     titulo: 'Abecedario en LSM',
     descripcion: 'Haz la seña de cada letra frente a la cámara.',
-    letras: ['A', 'B', 'C'] // Luego pondremos todas
+    letras: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] 
   },
   dias: {
     titulo: 'Días de la semana',

@@ -49,7 +49,7 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
         });
 
         hands.setOptions({
-          maxNumHands: 1,
+          maxNumHands: 2,
           modelComplexity: 1,
           minDetectionConfidence: 0.7,
           minTrackingConfidence: 0.5
@@ -91,6 +91,29 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
                   setAcierto(true);
                   if (onAcierto) onAcierto(letraObjetivo);
                 } else if (!esB && aciertoRef.current) {
+                  aciertoRef.current = false;
+                  setAcierto(false);
+                }
+              }
+              // Detectar letra C
+               if (letraRef.current === 'C') {
+                const esC = detectarC(landmarks);
+                if (esC && !aciertoRef.current) {
+                  aciertoRef.current = true;
+                  setAcierto(true);
+                  if (onAcierto) onAcierto(letraRef.current);
+                } else if (!esC && aciertoRef.current) {
+                  aciertoRef.current = false;
+                  setAcierto(false);
+                }
+              }
+               if (letraRef.current === 'D') {
+                const esD = detectarD(landmarks);
+                if (esD && !aciertoRef.current) {
+                  aciertoRef.current = true;
+                  setAcierto(true);
+                  if (onAcierto) onAcierto(letraRef.current);
+                } else if (!esD && aciertoRef.current) {
                   aciertoRef.current = false;
                   setAcierto(false);
                 }
@@ -191,28 +214,39 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
   );
 };
 function detectarA(landmarks) {
-  const puntaIndice = landmarks[8].y;
-  const baseIndice = landmarks[5].y;
-  const puntaMedio = landmarks[12].y;
-  const baseMedio = landmarks[9].y;
-  const puntaAnular = landmarks[16].y;
-  const baseAnular = landmarks[13].y;
-  const puntaMenique = landmarks[20].y;
-  const baseMenique = landmarks[17].y;
-  const puntaPulgar = landmarks[4];
-  const basePulgar = landmarks[1];
+  // Puntos clave
+  const INDEX_TIP = 8;
+  const INDEX_MCP = 5;
+  const MIDDLE_TIP = 12;
+  const MIDDLE_MCP = 9;
+  const RING_TIP = 16;
+  const RING_MCP = 13;
+  const PINKY_TIP = 20;
+  const PINKY_MCP = 17;
+  const THUMB_TIP = 4;
+  const WRIST = 0;   // muñeca
 
-  // Dedos flexionados: punta más abajo que su base (coordenada y mayor)
-  const indiceFlexionado = puntaIndice > baseIndice;
-  const medioFlexionado = puntaMedio > baseMedio;
-  const anularFlexionado = puntaAnular > baseAnular;
-  const meniqueFlexionado = puntaMenique > baseMenique;
+  // Dedos flexionados: punta más cerca de la muñeca que la base (coordenada y mayor)
+  const indiceDoblado = landmarks[INDEX_TIP].y > landmarks[INDEX_MCP].y;
+  const medioDoblado = landmarks[MIDDLE_TIP].y > landmarks[MIDDLE_MCP].y;
+  const anularDoblado = landmarks[RING_TIP].y > landmarks[RING_MCP].y;
+  const meniqueDoblado = landmarks[PINKY_TIP].y > landmarks[PINKY_MCP].y;
 
-  // Pulgar extendido hacia la izquierda (mano derecha, imagen espejo) y arriba
-  const pulgarExtendido = puntaPulgar.x < basePulgar.x;
-  const pulgarArriba = puntaPulgar.y < basePulgar.y;
+  // Pulgar extendido: su punta debe estar alejada del centro de la mano (índice base)
+  // y apuntando hacia afuera. Medimos distancia pulgar–base índice y pulgar–muñeca
+  const distPulgarBaseIndice = Math.hypot(
+    landmarks[THUMB_TIP].x - landmarks[INDEX_MCP].x,
+    landmarks[THUMB_TIP].y - landmarks[INDEX_MCP].y
+  );
+  const distPulgarMuneca = Math.hypot(
+    landmarks[THUMB_TIP].x - landmarks[WRIST].x,
+    landmarks[THUMB_TIP].y - landmarks[WRIST].y
+  );
 
-  return indiceFlexionado && medioFlexionado && anularFlexionado && meniqueFlexionado && pulgarExtendido && pulgarArriba;
+  // El pulgar extendido suele estar más lejos de la muñeca que la base del índice
+  const pulgarExtendido = distPulgarMuneca > distPulgarBaseIndice * 1.2;
+
+  return indiceDoblado && medioDoblado && anularDoblado && meniqueDoblado && pulgarExtendido;
 }
 function detectarB(landmarks) {
   const INDEX_TIP = 8;
@@ -225,24 +259,81 @@ function detectarB(landmarks) {
   const PINKY_MCP = 17;
   const THUMB_TIP = 4;
 
-  // Dedos largos extendidos (puntas arriba)
+  // Dedos largos extendidos (puntas más arriba que sus bases)
   const indiceExt = landmarks[INDEX_TIP].y < landmarks[INDEX_MCP].y;
   const medioExt = landmarks[MIDDLE_TIP].y < landmarks[MIDDLE_MCP].y;
   const anularExt = landmarks[RING_TIP].y < landmarks[RING_MCP].y;
   const meniqueExt = landmarks[PINKY_TIP].y < landmarks[PINKY_MCP].y;
 
-  // Pulgar cruzando la palma
+  // Pulgar en la palma: distancia pequeña entre punta del pulgar y nudillo del índice
   const distPulgarIndice = Math.hypot(
     landmarks[THUMB_TIP].x - landmarks[INDEX_MCP].x,
     landmarks[THUMB_TIP].y - landmarks[INDEX_MCP].y
   );
-  const pulgarEnPalma = distPulgarIndice < 0.2;  // antes 0.3, pero tú estás en 0.108, así que 0.2 basta
+  const pulgarEnPalma = distPulgarIndice < 0.2;
 
-  // La punta del pulgar debe estar a la derecha del nudillo índice (mano espejo)
-  const pulgarDerecha = landmarks[THUMB_TIP].x > landmarks[INDEX_MCP].x;
+  // Determinar si la mano se ve como derecha en la imagen (índice a la izquierda del meñique)
+  const esManoDerecha = landmarks[INDEX_MCP].x < landmarks[PINKY_MCP].x;
+  // El pulgar debe estar cruzado hacia el centro de la palma
+  const pulgarCruzado = esManoDerecha
+    ? landmarks[THUMB_TIP].x > landmarks[INDEX_MCP].x  // mano derecha: pulgar a la derecha del nudillo índice
+    : landmarks[THUMB_TIP].x < landmarks[INDEX_MCP].x; // mano izquierda: pulgar a la izquierda del nudillo índice
 
-  console.log('B debug:', { indiceExt, medioExt, anularExt, meniqueExt, distPulgarIndice, pulgarEnPalma, pulgarDerecha });
+  console.log('B debug:', { indiceExt, medioExt, anularExt, meniqueExt, distPulgarIndice, pulgarEnPalma, esManoDerecha, pulgarCruzado });
 
-  return indiceExt && medioExt && anularExt && meniqueExt && pulgarEnPalma && pulgarDerecha;
+  return indiceExt && medioExt && anularExt && meniqueExt && pulgarEnPalma && pulgarCruzado;
+}
+
+function detectarC(landmarks) {
+  // Distancia entre punta y base de cada dedo largo (debe ser pequeña, pero no flexionada del todo)
+  const distIndice = Math.hypot(landmarks[8].x - landmarks[5].x, landmarks[8].y - landmarks[5].y);
+  const distMedio = Math.hypot(landmarks[12].x - landmarks[9].x, landmarks[12].y - landmarks[9].y);
+  const distAnular = Math.hypot(landmarks[16].x - landmarks[13].x, landmarks[16].y - landmarks[13].y);
+  const distMenique = Math.hypot(landmarks[20].x - landmarks[17].x, landmarks[20].y - landmarks[17].y);
+
+  // Distancia entre pulgar e índice (debe ser intermedia: no pegados ni demasiado lejos)
+  const distPulgarIndice = Math.hypot(landmarks[4].x - landmarks[8].x, landmarks[4].y - landmarks[8].y);
+
+  // Umbrales ajustados a tus valores reales
+  const dedosCurvados = distIndice < 0.3 && distMedio < 0.3 && distAnular < 0.3 && distMenique < 0.3;
+  const pulgarSeparado = distPulgarIndice > 0.2 && distPulgarIndice < 0.5;
+
+  console.log('C debug:', { distIndice, distMedio, distAnular, distMenique, distPulgarIndice, dedosCurvados, pulgarSeparado });
+
+  return dedosCurvados && pulgarSeparado;
+}
+function detectarD(landmarks) {
+  const INDEX_TIP = 8;
+  const INDEX_MCP = 5;
+  const MIDDLE_TIP = 12;
+  const MIDDLE_MCP = 9;
+  const RING_TIP = 16;
+  const RING_MCP = 13;
+  const PINKY_TIP = 20;
+  const PINKY_MCP = 17;
+  const THUMB_TIP = 4;
+  const WRIST = 0;
+
+  // Distancias punta‑base de cada dedo
+  const distIndice = Math.hypot(landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x, landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y);
+  const distMedio = Math.hypot(landmarks[MIDDLE_TIP].x - landmarks[MIDDLE_MCP].x, landmarks[MIDDLE_TIP].y - landmarks[MIDDLE_MCP].y);
+  const distAnular = Math.hypot(landmarks[RING_TIP].x - landmarks[RING_MCP].x, landmarks[RING_TIP].y - landmarks[RING_MCP].y);
+  const distMenique = Math.hypot(landmarks[PINKY_TIP].x - landmarks[PINKY_MCP].x, landmarks[PINKY_TIP].y - landmarks[PINKY_MCP].y);
+
+  // Distancia entre pulgar y punta del dedo medio (debe ser muy pequeña)
+  const distPulgarMedio = Math.hypot(landmarks[THUMB_TIP].x - landmarks[MIDDLE_TIP].x, landmarks[THUMB_TIP].y - landmarks[MIDDLE_TIP].y);
+
+  // El índice debe estar claramente extendido (distancia > 0.2) y apuntando hacia arriba
+  const indiceExtendido = distIndice > 0.2 && landmarks[INDEX_TIP].y < landmarks[INDEX_MCP].y;
+
+  // Los otros tres dedos deben estar flexionados (distancia pequeña)
+  const otrosFlexionados = distMedio < 0.15 && distAnular < 0.15 && distMenique < 0.15;
+
+  // El pulgar debe tocar el medio (distancia < 0.1)
+  const pulgarTocandoMedio = distPulgarMedio < 0.1;
+
+  console.log('D debug:', { distIndice, distMedio, distAnular, distMenique, distPulgarMedio, indiceExtendido, otrosFlexionados, pulgarTocandoMedio });
+
+  return indiceExtendido && otrosFlexionados && pulgarTocandoMedio;
 }
 export default HandTracker;
