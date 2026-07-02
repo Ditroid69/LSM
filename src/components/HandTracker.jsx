@@ -107,6 +107,7 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
                   setAcierto(false);
                 }
               }
+              //Detectar letra D
                if (letraRef.current === 'D') {
                 const esD = detectarD(landmarks);
                 if (esD && !aciertoRef.current) {
@@ -114,6 +115,42 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
                   setAcierto(true);
                   if (onAcierto) onAcierto(letraRef.current);
                 } else if (!esD && aciertoRef.current) {
+                  aciertoRef.current = false;
+                  setAcierto(false);
+                }
+              }
+              // Detectar letra E
+              if (letraRef.current === 'E') {
+                const esE = detectarE(landmarks);
+                if (esE && !aciertoRef.current) {
+                  aciertoRef.current = true;
+                  setAcierto(true);
+                  if (onAcierto) onAcierto(letraRef.current);
+                } else if (!esE && aciertoRef.current) {
+                  aciertoRef.current = false;
+                  setAcierto(false);
+                }
+              }
+              // Detectar letra S
+              if (letraRef.current === 'S') {
+                const esS = detectarS(landmarks);
+                if (esS && !aciertoRef.current) {
+                  aciertoRef.current = true;
+                  setAcierto(true);
+                  if (onAcierto) onAcierto(letraRef.current);
+                } else if (!esS && aciertoRef.current) {
+                  aciertoRef.current = false;
+                  setAcierto(false);
+                }
+              }
+              // Detectar letra T
+              if (letraRef.current === 'T') {
+                const esT = detectarT(landmarks);
+                if (esT && !aciertoRef.current) {
+                  aciertoRef.current = true;
+                  setAcierto(true);
+                  if (onAcierto) onAcierto(letraRef.current);
+                } else if (!esT && aciertoRef.current) {
                   aciertoRef.current = false;
                   setAcierto(false);
                 }
@@ -335,5 +372,101 @@ function detectarD(landmarks) {
   console.log('D debug:', { distIndice, distMedio, distAnular, distMenique, distPulgarMedio, indiceExtendido, otrosFlexionados, pulgarTocandoMedio });
 
   return indiceExtendido && otrosFlexionados && pulgarTocandoMedio;
+}
+function detectarE(landmarks) {
+  const INDEX_TIP = 8;
+  const INDEX_MCP = 5;
+  const MIDDLE_TIP = 12;
+  const MIDDLE_MCP = 9;
+  const RING_TIP = 16;
+  const RING_MCP = 13;
+  const PINKY_TIP = 20;
+  const PINKY_MCP = 17;
+  const THUMB_TIP = 4;
+
+  // Distancias punta‑base de los dedos largos (deben ser pequeñas: flexionados)
+  const distIndice = Math.hypot(landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x, landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y);
+  const distMedio = Math.hypot(landmarks[MIDDLE_TIP].x - landmarks[MIDDLE_MCP].x, landmarks[MIDDLE_TIP].y - landmarks[MIDDLE_MCP].y);
+  const distAnular = Math.hypot(landmarks[RING_TIP].x - landmarks[RING_MCP].x, landmarks[RING_TIP].y - landmarks[RING_MCP].y);
+  const distMenique = Math.hypot(landmarks[PINKY_TIP].x - landmarks[PINKY_MCP].x, landmarks[PINKY_TIP].y - landmarks[PINKY_MCP].y);
+
+  // Distancia entre pulgar e índice (debe ser pequeña, están cerca)
+  const distPulgarIndice = Math.hypot(landmarks[THUMB_TIP].x - landmarks[INDEX_TIP].x, landmarks[THUMB_TIP].y - landmarks[INDEX_TIP].y);
+
+  // Todos los dedos flexionados (distancia < 0.15, tú estás en ~0.05‑0.10)
+  const dedosFlexionados = distIndice < 0.15 && distMedio < 0.15 && distAnular < 0.15 && distMenique < 0.15;
+
+  // Pulgar tocando o cerca del índice (distancia < 0.25, tú estás en 0.146)
+  const pulgarCerca = distPulgarIndice < 0.25;
+
+  console.log('E debug:', { distIndice, distMedio, distAnular, distMenique, distPulgarIndice, dedosFlexionados, pulgarCerca });
+
+  return dedosFlexionados && pulgarCerca;
+}
+function detectarS(landmarks) {
+  const INDEX_TIP = 8;
+  const INDEX_MCP = 5;
+  const MIDDLE_TIP = 12;
+  const MIDDLE_MCP = 9;
+  const RING_TIP = 16;
+  const RING_MCP = 13;
+  const PINKY_TIP = 20;
+  const PINKY_MCP = 17;
+  const THUMB_TIP = 4;
+  const THUMB_CMC = 1;
+
+  const distIndice = Math.hypot(landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x, landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y);
+  const distMedio = Math.hypot(landmarks[MIDDLE_TIP].x - landmarks[MIDDLE_MCP].x, landmarks[MIDDLE_TIP].y - landmarks[MIDDLE_MCP].y);
+  const distAnular = Math.hypot(landmarks[RING_TIP].x - landmarks[RING_MCP].x, landmarks[RING_TIP].y - landmarks[RING_MCP].y);
+  const distMenique = Math.hypot(landmarks[PINKY_TIP].x - landmarks[PINKY_MCP].x, landmarks[PINKY_TIP].y - landmarks[PINKY_MCP].y);
+
+  const distPulgarBase = Math.hypot(landmarks[THUMB_TIP].x - landmarks[THUMB_CMC].x, landmarks[THUMB_TIP].y - landmarks[THUMB_CMC].y);
+  const distPulgarIndice = Math.hypot(landmarks[THUMB_TIP].x - landmarks[INDEX_TIP].x, landmarks[THUMB_TIP].y - landmarks[INDEX_TIP].y);
+
+  const dedosFlexionados = distIndice < 0.15 && distMedio < 0.15 && distAnular < 0.15 && distMenique < 0.15;
+  const pulgarFlexionado = distPulgarBase < 0.25;
+
+  // NUEVA CONDICIÓN: la punta del pulgar debe estar en la palma, cerca del nudillo del índice o del meñique
+  const distPulgarNudilloIndice = Math.hypot(landmarks[THUMB_TIP].x - landmarks[INDEX_MCP].x, landmarks[THUMB_TIP].y - landmarks[INDEX_MCP].y);
+  const distPulgarNudilloMenique = Math.hypot(landmarks[THUMB_TIP].x - landmarks[PINKY_MCP].x, landmarks[THUMB_TIP].y - landmarks[PINKY_MCP].y);
+  const pulgarEnPalma = distPulgarNudilloIndice < 0.15 || distPulgarNudilloMenique < 0.15;
+
+  const pulgarSobreIndice = distPulgarIndice < 0.2;
+
+  return dedosFlexionados && pulgarFlexionado && pulgarSobreIndice && pulgarEnPalma;
+}
+function detectarT(landmarks) {
+  const INDEX_TIP = 8;
+  const INDEX_MCP = 5;
+  const MIDDLE_TIP = 12;
+  const MIDDLE_MCP = 9;
+  const RING_TIP = 16;
+  const RING_MCP = 13;
+  const PINKY_TIP = 20;
+  const PINKY_MCP = 17;
+  const THUMB_TIP = 4;
+  const THUMB_CMC = 1;
+
+  // Distancias punta‑base de los dedos largos (deben ser pequeñas)
+  const distIndice = Math.hypot(landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x, landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y);
+  const distMedio = Math.hypot(landmarks[MIDDLE_TIP].x - landmarks[MIDDLE_MCP].x, landmarks[MIDDLE_TIP].y - landmarks[MIDDLE_MCP].y);
+  const distAnular = Math.hypot(landmarks[RING_TIP].x - landmarks[RING_MCP].x, landmarks[RING_TIP].y - landmarks[RING_MCP].y);
+  const distMenique = Math.hypot(landmarks[PINKY_TIP].x - landmarks[PINKY_MCP].x, landmarks[PINKY_TIP].y - landmarks[PINKY_MCP].y);
+
+  // Distancia punta‑base del pulgar (debe ser grande: pulgar extendido)
+  const distPulgarBase = Math.hypot(landmarks[THUMB_TIP].x - landmarks[THUMB_CMC].x, landmarks[THUMB_TIP].y - landmarks[THUMB_CMC].y);
+
+  // Distancias del pulgar a las puntas del índice y el medio (deben ser pequeñas)
+  const distPulgarIndice = Math.hypot(landmarks[THUMB_TIP].x - landmarks[INDEX_TIP].x, landmarks[THUMB_TIP].y - landmarks[INDEX_TIP].y);
+  const distPulgarMedio = Math.hypot(landmarks[THUMB_TIP].x - landmarks[MIDDLE_TIP].x, landmarks[THUMB_TIP].y - landmarks[MIDDLE_TIP].y);
+
+  // Condiciones basadas en tus valores reales
+  const dedosFlexionados = distIndice < 0.3 && distMedio < 0.3 && distAnular < 0.3 && distMenique < 0.3;
+  const pulgarExtendido = distPulgarBase > 0.35;        // en tu T fue 0.42
+  const pulgarEntreDedos = distPulgarIndice < 0.25 && distPulgarMedio < 0.35; // valores 0.189 y 0.290
+
+  console.log('T debug:', { distIndice, distMedio, distAnular, distMenique, distPulgarBase, distPulgarIndice, distPulgarMedio, dedosFlexionados, pulgarExtendido, pulgarEntreDedos });
+
+  return dedosFlexionados && pulgarExtendido && pulgarEntreDedos;
 }
 export default HandTracker;

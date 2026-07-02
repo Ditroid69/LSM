@@ -3,64 +3,70 @@ import { useState, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import HandTracker from '../components/HandTracker';
 
+// Definimos los bloques del abecedario (igual que en AbecedarioMenu)
+const bloquesAbecedario = {
+  1: ['A', 'E', 'S', 'T', 'O'],
+  2: ['B', 'C', 'D', 'F', 'U'],
+  3: ['I', 'K', 'P', 'V', 'W'],
+  4: ['L', 'M', 'Ñ', 'R'],
+  5: ['G', 'H', 'X', 'Y', 'Z']
+};
+
 const contenidoLecciones = {
-  abecedario: {
-    titulo: 'Abecedario en LSM',
-    descripcion: 'Haz la seña de cada letra frente a la cámara.',
-    letras: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] 
-  },
-  dias: {
-    titulo: 'Días de la semana',
-    descripcion: 'Próximamente...'
-  },
-  meses: {
-    titulo: 'Meses del año',
-    descripcion: 'Próximamente...'
-  },
-  numeros: {
-    titulo: 'Números',
-    descripcion: 'Próximamente...'
-  }
+  abecedario: { titulo: 'Abecedario en LSM', descripcion: 'Haz la seña de cada letra frente a la cámara.' },
+  dias: { titulo: 'Días de la semana', descripcion: 'Próximamente...' },
+  meses: { titulo: 'Meses del año', descripcion: 'Próximamente...' },
+  numeros: { titulo: 'Números', descripcion: 'Próximamente...' }
 };
 
 const Leccion = () => {
-  const { id } = useParams();           // 'abecedario', 'dias', etc.
+  const { id, bloque } = useParams();   // id: 'abecedario', bloque: '1', etc.
   const navigate = useNavigate();
-  const leccion = contenidoLecciones[id];
+
+  // Determinar las letras a enseñar
+  let letras = [];
+  let esAbecedario = false;
+  if (id === 'abecedario' && bloque && bloquesAbecedario[bloque]) {
+    esAbecedario = true;
+    letras = bloquesAbecedario[bloque];
+  } else if (contenidoLecciones[id]?.letras) {
+    letras = contenidoLecciones[id].letras;
+  }
+
+  const leccion = contenidoLecciones[id] || { titulo: 'Lección', descripcion: '' };
 
   const [indiceLetra, setIndiceLetra] = useState(0);
   const [aciertoLocal, setAciertoLocal] = useState(false);
   const [completado, setCompletado] = useState(false);
 
-  // Reiniciar al cambiar de lección
   useEffect(() => {
     setIndiceLetra(0);
     setAciertoLocal(false);
     setCompletado(false);
-  }, [id]);
+  }, [id, bloque]);
 
-  if (!leccion) {
+  if (!letras.length) {
     return (
       <div style={{ textAlign: 'center', padding: 20 }}>
-        <p>Lección no encontrada</p>
+        <h1>{leccion.titulo}</h1>
+        <p>{leccion.descripcion}</p>
+        <p>Contenido no disponible aún.</p>
         <button onClick={() => navigate('/menu')}>Volver al menú</button>
       </div>
     );
   }
 
-  const letras = leccion.letras || [];
-  const letraActual = letras.length > 0 ? letras[indiceLetra] : null;
+  const letraActual = letras[indiceLetra];
 
-  // Cuando el HandTracker avisa de un acierto
   const manejarAcierto = async (letra) => {
     if (!aciertoLocal) {
       setAciertoLocal(true);
-      // Guardar progreso
-      const { value } = await Preferences.get({ key: `progreso_${id}` });
+      const key = esAbecedario ? `progreso_abecedario_${bloque}` : `progreso_${id}`;
+      const { value } = await Preferences.get({ key });
       const progreso = value ? JSON.parse(value) : [];
       if (!progreso.includes(letra)) {
         progreso.push(letra);
-        await Preferences.set({ key: `progreso_${id}`, value: JSON.stringify(progreso) });
+        await Preferences.set({ key, value: JSON.stringify(progreso) });
       }
     }
   };
@@ -74,34 +80,21 @@ const Leccion = () => {
     }
   };
 
-  // Si la lección no tiene letras todavía (dias, meses...)
-  if (!letras.length) {
-    return (
-      <div style={{ textAlign: 'center', padding: 20 }}>
-        <h1>{leccion.titulo}</h1>
-        <p>{leccion.descripcion}</p>
-        <p>Contenido no disponible aún.</p>
-        <button onClick={() => navigate('/menu')}>Volver al menú</button>
-      </div>
-    );
-  }
-
-  // Lección completada
   if (completado) {
     return (
       <div style={{ textAlign: 'center', padding: 20 }}>
         <h1>{leccion.titulo}</h1>
         <h2>🎉 ¡Lección completada!</h2>
-        <button onClick={() => navigate('/menu')} style={{ padding: 10, fontSize: 16 }}>Volver al menú</button>
+        <button onClick={() => navigate('/menu')}>Volver al menú</button>
       </div>
     );
   }
 
-  // Lección en curso
   return (
     <div style={{ textAlign: 'center', padding: 20 }}>
       <h1>{leccion.titulo}</h1>
       <p>{leccion.descripcion}</p>
+      {esAbecedario && <p>Bloque {bloque}</p>}
 
       <h2>Letra: {letraActual}</h2>
       {aciertoLocal && (

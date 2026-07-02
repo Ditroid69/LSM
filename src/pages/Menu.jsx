@@ -2,66 +2,59 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Preferences } from '@capacitor/preferences';
 
+const modulos = [
+  { nombre: 'Abecedario', color: '#FF7043', icono: '🔤', ruta: '/abecedario' },
+  { nombre: 'Números', color: '#42A5F5', icono: '🔢', ruta: '/leccion/numeros' },
+  { nombre: 'Saludos y cortesía', color: '#66BB6A', icono: '👋', ruta: '/leccion/saludos' },
+  { nombre: 'Comunicación básica', color: '#AB47BC', icono: '💬', ruta: '/leccion/comunicacion' },
+];
+
 const Menu = () => {
   const [nombre, setNombre] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const cargarNombre = async () => {
+    const cargar = async () => {
       const { value } = await Preferences.get({ key: 'nombre' });
       if (value) setNombre(value);
     };
-    cargarNombre();
+    cargar();
   }, []);
 
-  const lecciones = [
-    { nombre: 'Abecedario', ruta: '/leccion/abecedario' },
-    { nombre: 'Días de la semana', ruta: '/leccion/dias' },
-    { nombre: 'Meses del año', ruta: '/leccion/meses' },
-    { nombre: 'Números', ruta: '/leccion/numeros' },
-  ];
-
   return (
-    <div style={{ textAlign: 'center', padding: 20 }}>
-      <h1>¡Hola, {nombre || 'Aprendiz'}!</h1>
-      <p>Selecciona una lección:</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
-        {lecciones.map((leccion) => (
-          <button
-            key={leccion.ruta}
-            onClick={() => navigate(leccion.ruta)}
+    <div style={{ padding: 20 }}>
+      <h1 style={{ textAlign: 'center' }}>¡Hola, {nombre || 'Aprendiz'}!</h1>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 20,
+        marginTop: 30
+      }}>
+        {modulos.map((mod, index) => (
+          <div
+            key={index}
+            onClick={() => navigate(mod.ruta)}
             style={{
-              width: '80%',
-              maxWidth: 300,
-              padding: 12,
-              fontSize: 16,
-              backgroundColor: '#2196F3',
+              backgroundColor: mod.color,
+              borderRadius: 16,
+              aspectRatio: '1 / 1',  // cuadrado
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+              cursor: 'pointer',
+              padding: 15,
+              textAlign: 'center',
               color: 'white',
-              border: 'none',
-              borderRadius: 8,
-              cursor: 'pointer'
+              fontWeight: 'bold',
+              fontSize: 20
             }}
           >
-            {leccion.nombre}
-          </button>
+            <span style={{ fontSize: 40 }}>{mod.icono}</span>
+            <span style={{ marginTop: 10 }}>{mod.nombre}</span>
+          </div>
         ))}
-        <button
-          onClick={() => navigate('/practica')}
-          style={{
-            width: '80%',
-            maxWidth: 300,
-            padding: 12,
-            fontSize: 16,
-            backgroundColor: '#FF9800',
-            color: 'white',
-            border: 'none',
-            borderRadius: 8,
-            cursor: 'pointer',
-            marginTop: 10
-          }}
-        >
-          Práctica libre (cámara)
-        </button>
       </div>
     </div>
   );
