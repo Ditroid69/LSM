@@ -24,7 +24,7 @@ const AbecedarioMenu = () => {
         {bloques.map((bloque) => (
           <div
             key={bloque.id}
-            onClick={() => navigate(`/leccion/abecedario/${bloque.id}`)}
+            onClick={() => navigate(`/bloque/${bloque.id}`)}
             style={{
               backgroundColor: '#FF7043',
               color: 'white',

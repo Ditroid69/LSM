@@ -1,10 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Preferences } from '@capacitor/preferences';
 
 const Inicio = () => {
   const [nombre, setNombre] = useState('');
   const navigate = useNavigate();
+
+  // Verificar si ya hay nombre guardado
+  useEffect(() => {
+    const verificarNombre = async () => {
+      const { value } = await Preferences.get({ key: 'nombre' });
+      if (value) {
+        navigate('/menu', { replace: true });
+      }
+    };
+    verificarNombre();
+  }, [navigate]);
 
   const guardarNombre = async () => {
     if (nombre.trim() === '') return;

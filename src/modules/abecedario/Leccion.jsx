@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
-import HandTracker from '../components/HandTracker';
+import HandTracker from "../../components/HandTracker";
 
 // Definimos los bloques del abecedario (igual que en AbecedarioMenu)
 const bloquesAbecedario = {
@@ -19,8 +19,10 @@ const contenidoLecciones = {
   numeros: { titulo: 'Números', descripcion: 'Próximamente...' }
 };
 
-const Leccion = () => {
-  const { id, bloque } = useParams();   // id: 'abecedario', bloque: '1', etc.
+const Leccion = ({ id: idProp, bloque: bloqueProp } = {}) => {
+  const params = useParams();
+const id = idProp || params.id;
+const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', etc.
   const navigate = useNavigate();
 
   // Determinar las letras a enseñar

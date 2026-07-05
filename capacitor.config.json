@@ -1,0 +1,6 @@
+{
+  "appId": "com.tuempresa.appmanos",
+  "appName": "AppManos",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
