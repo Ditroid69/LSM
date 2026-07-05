@@ -6,21 +6,40 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
   const streamRef = useRef(null);
   const cameraRef = useRef(null);
   const handsRef = useRef(null);
+
   const [status, setStatus] = useState('cargando'); // 'cargando' | 'error' | 'listo'
   const [mensajeError, setMensajeError] = useState('');
-  const [acierto, setAcierto] = useState(false);
-  const aciertoRef = useRef(false); // para evitar parpadeos
+  const [progress, setProgress] = useState(0);       // para la barra circular
+  const [validando, setValidando] = useState(false); // true mientras se llena la barra
+  const [falloVisible, setFalloVisible] = useState(false); // muestra error si falla antes de 3s
+  const intervaloRef = useRef(null);    
+  const validandoRef = useRef(false);
+  const progressRef = useRef(0);            // para el temporizador
   const letraRef = useRef(letraObjetivo);
+  const onAciertoRef = useRef(onAcierto);
+  const [handDetected, setHandDetected] = useState(false);   // ¿hay mano en cámara?
+    const [validacionCompleta, setValidacionCompleta] = useState(false);
+
   // Mantener letraRef sincronizado con la prop
+  // Reiniciar todo solo al cambiar de letra
   useEffect(() => {
     letraRef.current = letraObjetivo;
+    setProgress(0);
+    setValidando(false);
+    setFalloVisible(false);
+    setHandDetected(false);
+    if (intervaloRef.current) clearInterval(intervaloRef.current);
+    validandoRef.current = false;
+    progressRef.current = 0;
+    setValidacionCompleta(false);
   }, [letraObjetivo]);
 
-    useEffect(() => {
-    setAcierto(false);
-    aciertoRef.current = false;
-  }, [letraObjetivo]);
+  // Actualizar callback sin reiniciar nada
+  useEffect(() => {
+    onAciertoRef.current = onAcierto;
+  }, [onAcierto]);
 
+  
   useEffect(() => {
     let cancelado = false;
 
@@ -57,138 +76,80 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
 
         hands.onResults((results) => {
           if (cancelado) return;
+          
           const canvas = canvasRef.current;
           if (!canvas) return;
           const ctx = canvas.getContext('2d');
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+          // Actualizar si hay mano presente
+          if (results.multiHandLandmarks?.length) {
+            setHandDetected(true);
+          } else {
+            setHandDetected(false);
+            // Si estábamos validando y la mano desaparece, es un fallo
+            if (validando || progress > 0) {
+              clearInterval(intervaloRef.current);
+              setValidando(false);
+              setProgress(0);
+              setFalloVisible(true);
+            }
+          }
           if (results.multiHandLandmarks?.length) {
             for (const landmarks of results.multiHandLandmarks) {
+               if (validacionCompleta) return;
               drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
                 color: '#00FF00',
                 lineWidth: 2
               });
               drawLandmarks(ctx, landmarks, { color: '#FF0000', lineWidth: 1 });
-              console.log('For ejecutándose. letraObjetivo:', letraRef.current, 'landmarks:', landmarks.length);
-              // Detectar solo si el objetivo es 'A'
-                if (letraRef.current === 'A') {
-                const esA = detectarA(landmarks);
-                if (esA && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esA && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-             // Detectar letra B
-              if (letraRef.current === 'B') {
-                const esB = detectarB(landmarks);
-                if (esB && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esB && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-              // Detectar letra C
-               if (letraRef.current === 'C') {
-                const esC = detectarC(landmarks);
-                if (esC && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esC && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-              //Detectar letra D
-               if (letraRef.current === 'D') {
-                const esD = detectarD(landmarks);
-                if (esD && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esD && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-              // Detectar letra E
-              if (letraRef.current === 'E') {
-                const esE = detectarE(landmarks);
-                if (esE && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esE && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-              // Detectar letra S
-              if (letraRef.current === 'S') {
-                const esS = detectarS(landmarks);
-                if (esS && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esS && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-              // Detectar letra T
-              if (letraRef.current === 'T') {
-                const esT = detectarT(landmarks);
-                if (esT && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esT && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-                            // Detectar letra F
-              if (letraRef.current === 'F') {
-                const esF = detectarF(landmarks);
-                if (esF && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esF && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-              // Detectar letra U
-              if (letraRef.current === 'U') {
-                const esU = detectarU(landmarks);
-                if (esU && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esU && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
-                }
-              }
-              // Detectar letra O
-              if (letraRef.current === 'O') {
-                const esO = detectarO(landmarks);
-                if (esO && !aciertoRef.current) {
-                  aciertoRef.current = true;
-                  setAcierto(true);
-                  if (onAcierto) onAcierto(letraRef.current);
-                } else if (!esO && aciertoRef.current) {
-                  aciertoRef.current = false;
-                  setAcierto(false);
+              // Solo evaluar si no se ha completado aún
+              if (!validacionCompleta) {
+                const letra = letraRef.current;
+                let esCorrecta = false;
+                if (letra === 'A') esCorrecta = detectarA(landmarks);
+                else if (letra === 'B') esCorrecta = detectarB(landmarks);
+                else if (letra === 'C') esCorrecta = detectarC(landmarks);
+                else if (letra === 'D') esCorrecta = detectarD(landmarks);
+                else if (letra === 'E') esCorrecta = detectarE(landmarks);
+                else if (letra === 'F') esCorrecta = detectarF(landmarks);
+                else if (letra === 'S') esCorrecta = detectarS(landmarks);
+                else if (letra === 'T') esCorrecta = detectarT(landmarks);
+                else if (letra === 'O') esCorrecta = detectarO(landmarks);
+                else if (letra === 'U') esCorrecta = detectarU(landmarks);
+
+                // ===== LÓGICA DE TEMPORIZADOR =====
+                if (esCorrecta) {
+                  if (falloVisible) setFalloVisible(false);
+                  if (!validandoRef.current) {
+                    validandoRef.current = true;
+                    setValidando(true);
+                    progressRef.current = 0;
+                    setProgress(0);
+                    if (intervaloRef.current) clearInterval(intervaloRef.current);
+                    intervaloRef.current = setInterval(() => {
+                      progressRef.current += 100 / 15;
+                      if (progressRef.current >= 100) {
+                        clearInterval(intervaloRef.current);
+                        setProgress(100);
+                        setValidando(false);
+                        validandoRef.current = false;
+                        setValidacionCompleta(true);
+                        if (onAciertoRef.current) onAciertoRef.current(letra);
+                      } else {
+                        setProgress(progressRef.current);
+                      }
+                    }, 100);
+                  }
+                } else {
+                  if (validandoRef.current) {
+                    clearInterval(intervaloRef.current);
+                    validandoRef.current = false;
+                    setValidando(false);
+                    progressRef.current = 0;
+                    setProgress(0);
+                    setFalloVisible(true);
+                  }
                 }
               }
             }
@@ -233,6 +194,7 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
 
     return () => {
       cancelado = true;
+      clearInterval(intervaloRef.current);   // <-- añade esto
       if (cameraRef.current) cameraRef.current.stop();
       if (handsRef.current) handsRef.current.close();
       if (streamRef.current) {
@@ -240,7 +202,12 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
       }
     };
   }, []);
-
+  const reintentar = () => {
+    setFalloVisible(false);
+    setProgress(0);
+    setValidando(false);
+    if (intervaloRef.current) clearInterval(intervaloRef.current);
+  };
   return (
     <div style={{ position: 'relative', width: '100%', maxWidth: 640, margin: '0 auto' }}>
       <video ref={videoRef} style={{ display: 'none' }} playsInline />
@@ -256,32 +223,101 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
         </div>
       )}
 
-      {status === 'listo' && (
-        <>
-          <canvas
-            ref={canvasRef}
-            width={640}
-            height={480}
-            style={{
-              width: '100%',
-              height: 'auto',
-              border: '2px solid #333',
-              transform: 'scaleX(-1)'
-            }}
+            {status === 'listo' && (
+<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+  {/* Contenedor relativo para cámara + anillo */}
+  <div style={{ position: 'relative', width: 280, height: 280 }}>
+    {/* Cámara circular */}
+    <div style={{
+      width: 280,
+      height: 280,
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: '3px solid #ccc',
+      boxShadow: '0 0 15px rgba(0,0,0,0.3)'
+    }}>
+      <video ref={videoRef} style={{ display: 'none' }} playsInline />
+      <canvas
+        ref={canvasRef}
+        width={640}
+        height={480}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          transform: 'scaleX(-1)'
+        }}
+      />
+    </div>
+
+        {/* Anillo de progreso SVG (siempre visible cuando hay mano, se rellena de verde al acertar) */}
+    {(handDetected  || validacionCompleta) && (
+      <svg
+        viewBox="0 0 280 280"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none'
+        }}
+      >
+        {/* Círculo de fondo: gris mientras no se ha completado, verde cuando sí */}
+        <circle
+          stroke={validacionCompleta ? "#4CAF50" : "#e0e0e0"}
+          fill="none"
+          strokeWidth="8"
+          r={136}
+          cx={140}
+          cy={140}
+        />
+        {/* Arco verde: se llena durante la validación y se queda fijo tras completar */}
+        {(validandoRef.current || validacionCompleta) && !falloVisible && (
+          <circle
+            stroke="#4CAF50"
+            fill="none"
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * 136}
+            strokeDashoffset={2 * Math.PI * 136 * (1 - (validacionCompleta ? 100 : progress) / 100)}
+            r={136}
+            cx={140}
+            cy={140}
+            style={{ transition: 'stroke-dashoffset 0.1s linear' }}
           />
-          {letraObjetivo && (
-            <p style={{ textAlign: 'center', marginTop: 8, fontWeight: 'bold' }}>
-              🎯 Seña objetivo: {letraObjetivo}
-            </p>
-            
-            
-          )}
-           {acierto && (
-            <p style={{ textAlign: 'center', marginTop: 4, color: 'green', fontWeight: 'bold', fontSize: 20 }}>
-              ✅ ¡Correcto!
-            </p>
-          )}
-        </>
+        )}
+      </svg>
+    )}
+  </div>
+
+  {/* Letra objetivo */}
+  {letraObjetivo && (
+    <p style={{ textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>
+      🎯 Seña objetivo: {letraObjetivo}
+    </p>
+  )}
+
+  {/* Fallo y botón reintentar */}
+{falloVisible && !validacionCompleta && (
+    <div style={{ marginTop: 20, textAlign: 'center' }}>
+      <p style={{ color: 'red', fontWeight: 'bold' }}>❌ La seña no es correcta. Intenta de nuevo.</p>
+      <button onClick={reintentar} style={{
+        marginTop: 10,
+        padding: '10px 20px',
+        backgroundColor: '#f44336',
+        color: 'white',
+        border: 'none',
+        borderRadius: 8,
+        cursor: 'pointer',
+        fontSize: 16
+      }}>
+        Reintentar
+      </button>
+    </div>
+  )}
+
+</div>
       )}
     </div>
   );
@@ -520,7 +556,6 @@ function detectarF(landmarks) {
   const pulgarTocandoIndice = distPulgarIndice < 0.1;
   return indiceFlexionado && otrosExtendidos && pulgarExtendido && pulgarTocandoIndice;
 }
-
 function detectarU(landmarks) {
   const INDEX_TIP = 8, INDEX_MCP = 5, MIDDLE_TIP = 12, MIDDLE_MCP = 9,
         RING_TIP = 16, RING_MCP = 13, PINKY_TIP = 20, PINKY_MCP = 17, THUMB_TIP = 4;
@@ -538,7 +573,6 @@ function detectarU(landmarks) {
   const pulgarTocandoAnular = distPulgarAnular < 0.12;
   return indiceExtendido && medioExtendido && anularFlexionado && meniqueFlexionado && indicesJuntos && pulgarTocandoAnular;
 }
-
 function detectarO(landmarks) {
   const INDEX_TIP = 8, MIDDLE_TIP = 12, RING_TIP = 16, PINKY_TIP = 20, THUMB_TIP = 4;
   const distIndiceMedio = Math.hypot(landmarks[INDEX_TIP].x - landmarks[MIDDLE_TIP].x, landmarks[INDEX_TIP].y - landmarks[MIDDLE_TIP].y);
