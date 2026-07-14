@@ -14,7 +14,7 @@ const AbecedarioMenu = () => {
   return (
     <div style={{ padding: 20 }}>
       <h2 style={{ textAlign: 'center' }}>Abecedario</h2>
-      <p style={{ textAlign: 'center' }}>Elige un bloque de letras</p>
+      <p style={{ textAlign: 'center' }}>Elige las letras a practcar</p>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -27,7 +27,7 @@ const AbecedarioMenu = () => {
             onClick={() => navigate(`/bloque/${bloque.id}`)}
             style={{
               backgroundColor: '#FF7043',
-              color: 'white',
+              color: 'black',
               padding: 15,
               borderRadius: 12,
               cursor: 'pointer',
@@ -39,7 +39,7 @@ const AbecedarioMenu = () => {
               alignItems: 'center'
             }}
           >
-            <span>Bloque {bloque.id}</span>
+            <span>Módulo {bloque.id}</span>
             <span>{bloque.letras.join(' · ')}</span>
           </div>
         ))}

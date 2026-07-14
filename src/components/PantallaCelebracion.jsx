@@ -47,7 +47,7 @@ const PantallaCelebracion = ({ mensaje, onVolver }) => {
           padding: '15px 30px',
           fontSize: 18,
           backgroundColor: '#FF9800',
-          color: 'white',
+          color: 'black',
           border: 'none',
           borderRadius: 12,
           cursor: 'pointer',

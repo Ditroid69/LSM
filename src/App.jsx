@@ -8,9 +8,12 @@ import CaminoNiveles from './modules/abecedario/CaminoNiveles';
 import Nivel1Carrusel from './modules/abecedario/Nivel1Carrusel';
 import Nivel2Ejercicios from './modules/abecedario/Nivel2Ejercicios';
 import Nivel3Camara from './modules/abecedario/Nivel3Camara';
+import { ThemeProvider } from './context/ThemeContext';
+
 
 function App() {
   return (
+     <ThemeProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Inicio />} />
@@ -26,6 +29,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

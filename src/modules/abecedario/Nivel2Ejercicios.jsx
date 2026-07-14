@@ -55,6 +55,204 @@ const bancoPreguntas = {
       ],
       correcta: 1
     }
+  ],
+  2: [
+    {
+      letra: 'B',
+      opciones: [
+        'Mano abierta, dedos juntos, pulgar doblado sobre la palma',
+        'Puño cerrado, pulgar extendido hacia arriba',
+        'Dedos doblados, pulgar tocando el índice',
+        'Índice extendido, pulgar tocando el medio'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'C',
+      opciones: [
+        'Mano curvada en forma de C, dedos juntos',
+        'Puño cerrado, pulgar entre índice y medio',
+        'Mano abierta, dedos separados',
+        'Índice y medio juntos, pulgar sobre la palma'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'D',
+      opciones: [
+        'Índice extendido hacia arriba, demás dedos doblados, pulgar tocando el medio',
+        'Puño cerrado, pulgar sobre los dedos',
+        'Dedos doblados hacia abajo, pulgar tocando el índice',
+        'Puntas de los dedos juntas formando un círculo'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'F',
+      opciones: [
+        'Índice flexionado tocando el pulgar, demás dedos extendidos',
+        'Puño cerrado, pulgar metido entre índice y medio',
+        'Mano abierta, pulgar doblado sobre la palma',
+        'Índice y medio extendidos en V, pulgar entre ellos'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'U',
+      opciones: [
+        'Índice y medio juntos extendidos, anular y meñique doblados, pulgar tocando el anular',
+        'Puño cerrado, pulgar extendido hacia un lado',
+        'Mano curvada en forma de C',
+        'Meñique extendido, demás flexionados'
+      ],
+      correcta: 0
+    }
+  ],
+  3: [
+    {
+      letra: 'I',
+      opciones: [
+        'Meñique extendido hacia arriba, demás dedos flexionados, pulgar sobre la palma',
+        'Índice extendido, pulgar extendido formando L',
+        'Puño cerrado, pulgar entre índice y medio',
+        'Mano abierta, dedos juntos'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'K',
+      opciones: [
+        'Índice y medio extendidos en V, pulgar entre ellos (con movimiento)',
+        'Índice y medio juntos, pulgar sobre la palma',
+        'Dedos doblados, pulgar tocando el índice',
+        'Puño cerrado, pulgar extendido hacia arriba'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'P',
+      opciones: [
+        'Índice y medio extendidos en V, pulgar entre ellos (sin movimiento)',
+        'Índice y medio juntos, pulgar tocando la base del índice',
+        'Mano curvada en forma de C',
+        'Puño cerrado, pulgar sobre los dedos'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'V',
+      opciones: [
+        'Índice y medio extendidos y juntos, pulgar sobre la palma',
+        'Índice y medio separados, pulgar entre ellos',
+        'Mano abierta, dedos separados',
+        'Puño cerrado, pulgar extendido hacia un lado'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'W',
+      opciones: [
+        'Índice, medio y anular extendidos y separados, meñique doblado',
+        'Índice y medio juntos, pulgar sobre la palma',
+        'Mano abierta, dedos juntos',
+        'Dedos doblados hacia abajo, pulgar tocando el índice'
+      ],
+      correcta: 0
+    }
+  ],
+  4: [
+    {
+      letra: 'L',
+      opciones: [
+        'Índice extendido, pulgar extendido formando una L',
+        'Puño cerrado, pulgar entre índice y medio',
+        'Mano abierta, pulgar doblado sobre la palma',
+        'Dedos juntos formando un círculo'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'M',
+      opciones: [
+        'Índice, medio y anular extendidos y juntos, meñique doblado, pulgar sobre la palma',
+        'Índice y medio extendidos en V',
+        'Puño cerrado, pulgar extendido hacia arriba',
+        'Mano curvada en forma de C'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'Ñ',
+      opciones: [
+        'Índice y medio juntos, pulgar entre los dedos',
+        'Puño cerrado, pulgar sobre los dedos',
+        'Mano abierta, dedos separados',
+        'Índice extendido, demás flexionados'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'R',
+      opciones: [
+        'Índice y medio juntos, pulgar tocando la base del índice',
+        'Puño cerrado, pulgar metido entre índice y medio',
+        'Mano abierta, pulgar doblado sobre la palma',
+        'Dedos doblados hacia abajo, pulgar tocando el índice'
+      ],
+      correcta: 0
+    }
+  ],
+  5: [
+    {
+      letra: 'G',
+      opciones: [
+        'Índice extendido, demás flexionados, pulgar doblado sobre la palma',
+        'Puño cerrado, pulgar extendido hacia un lado',
+        'Mano abierta, dedos juntos',
+        'Índice y medio juntos, pulgar entre los dedos'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'H',
+      opciones: [
+        'Índice y medio juntos extendidos, pulgar sobre la palma',
+        'Puño cerrado, pulgar sobre los dedos',
+        'Mano curvada en forma de C',
+        'Dedos doblados, pulgar tocando el índice'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'X',
+      opciones: [
+        '(Descripción pendiente)',
+        'Puño cerrado, pulgar entre índice y medio',
+        'Mano abierta, dedos separados',
+        'Índice extendido, demás flexionados'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'Y',
+      opciones: [
+        '(Descripción pendiente)',
+        'Puño cerrado, pulgar extendido hacia arriba',
+        'Mano curvada en forma de C',
+        'Dedos juntos formando un círculo'
+      ],
+      correcta: 0
+    },
+    {
+      letra: 'Z',
+      opciones: [
+        '(Descripción pendiente)',
+        'Puño cerrado, pulgar sobre los dedos',
+        'Mano abierta, pulgar doblado sobre la palma',
+        'Índice y medio extendidos en V'
+      ],
+      correcta: 0
+    }
   ]
 };
 
@@ -192,7 +390,7 @@ const Nivel2Ejercicios = () => {
         borderRadius: '50%',
         backgroundColor: '#FF9800',
         boxShadow: '0 6px 12px rgba(0,0,0,0.2)',
-        color: 'white',
+        color: 'black',
         fontSize: 96,
         fontWeight: 'bold',
         fontFamily: 'Arial, sans-serif',
@@ -228,7 +426,8 @@ const Nivel2Ejercicios = () => {
                   : '#f9f9f9',
                 cursor: showResult ? 'default' : 'pointer',
                 transition: '0.2s',
-                textAlign: 'left'
+                textAlign: 'left',
+                color: 'black'
               }}
               disabled={showResult}
             >
@@ -258,7 +457,7 @@ const Nivel2Ejercicios = () => {
             padding: '12px 24px',
             fontSize: 16,
             backgroundColor: '#FF9800',
-            color: 'white',
+            color: 'black',
             border: 'none',
             borderRadius: 8,
             cursor: 'pointer'

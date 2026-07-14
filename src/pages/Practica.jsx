@@ -15,7 +15,7 @@ const Practica = () => {
           padding: '10px 20px',
           fontSize: 16,
           backgroundColor: '#FF9800',
-          color: 'white',
+          color: 'black',
           border: 'none',
           borderRadius: 8,
           cursor: 'pointer'

@@ -12,10 +12,31 @@ const contenidoBloque = {
   ],
   2: [
     { letra: 'B', descripcion: 'Mano abierta, dedos juntos, pulgar doblado sobre la palma.' },
-    { letra: 'C', descripcion: 'Mano curvada en forma de C.' },
-    // ... completaremos cuando lleguemos a ese bloque
+    { letra: 'C', descripcion: 'Mano curvada en forma de C, dedos juntos.' },
+    { letra: 'D', descripcion: 'Índice extendido hacia arriba, demás dedos doblados, pulgar tocando el medio.' },
+    { letra: 'F', descripcion: 'Índice flexionado tocando el pulgar, demás dedos extendidos.' },
+    { letra: 'U', descripcion: 'Índice y medio juntos extendidos, anular y meñique doblados, pulgar tocando el anular.' },
   ],
-  // Los demás bloques se llenarán después
+  3: [
+    { letra: 'I', descripcion: 'Meñique extendido hacia arriba, demás dedos flexionados, pulgar sobre la palma.' },
+    { letra: 'K', descripcion: 'Índice y medio extendidos en V, pulgar entre ellos (con movimiento).' },
+    { letra: 'P', descripcion: 'Índice y medio extendidos en V, pulgar entre ellos (sin movimiento).' },
+    { letra: 'V', descripcion: 'Índice y medio extendidos y juntos, pulgar sobre la palma.' },
+    { letra: 'W', descripcion: 'Índice, medio y anular extendidos y separados, meñique doblado.' },
+  ],
+  4: [
+    { letra: 'L', descripcion: 'Índice extendido, pulgar extendido formando una L.' },
+    { letra: 'M', descripcion: 'Índice, medio y anular extendidos y juntos, meñique doblado, pulgar sobre la palma.' },
+    { letra: 'Ñ', descripcion: 'Índice y medio juntos, pulgar entre los dedos (similar a H).' },
+    { letra: 'R', descripcion: 'Índice y medio juntos, pulgar tocando la base del índice.' },
+  ],
+  5: [
+    { letra: 'G', descripcion: 'Índice extendido, demás flexionados, pulgar doblado sobre la palma.' },
+    { letra: 'H', descripcion: 'Índice y medio juntos extendidos, pulgar sobre la palma.' },
+    { letra: 'X', descripcion: '(Descripción pendiente)' },
+    { letra: 'Y', descripcion: '(Descripción pendiente)' },
+    { letra: 'Z', descripcion: '(Descripción pendiente)' },
+  ]
 };
 
 const Nivel1Carrusel = () => {
@@ -77,7 +98,7 @@ const Nivel1Carrusel = () => {
         </button>
         <span>{indice + 1} / {bloque.length}</span>
         <button onClick={siguiente}
-          style={{ padding: '10px 20px', fontSize: 16, backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: 8 }}>
+          style={{ padding: '10px 20px', fontSize: 16, backgroundColor: '#4CAF50', color: 'black', border: 'none', borderRadius: 8 }}>
           {esUltimo ? 'Finalizar' : 'Siguiente →'}
         </button>
       </div>

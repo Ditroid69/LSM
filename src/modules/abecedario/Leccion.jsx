@@ -113,7 +113,7 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
           padding: '10px 20px',
           fontSize: 16,
           backgroundColor: aciertoLocal ? '#4CAF50' : '#ccc',
-          color: 'white',
+          color: 'black',
           border: 'none',
           borderRadius: 8,
           cursor: aciertoLocal ? 'pointer' : 'not-allowed'

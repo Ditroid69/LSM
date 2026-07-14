@@ -23,7 +23,6 @@ const Menu = () => {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1 style={{ textAlign: 'center' }}>¡Hola, {nombre || 'Aprendiz'}!</h1>
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
@@ -46,7 +45,7 @@ const Menu = () => {
               cursor: 'pointer',
               padding: 15,
               textAlign: 'center',
-              color: 'white',
+              color: 'black',
               fontWeight: 'bold',
               fontSize: 20
             }}
