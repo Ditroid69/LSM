@@ -45,9 +45,9 @@ const CaminoNiveles = () => {
   };
 
   const burbujas = [
-    { nivel: 1, label: 'Aprender', icono: '📖' },
-    { nivel: 2, label: 'Practicar', icono: '🎮' },
-    { nivel: 3, label: 'Evaluación', icono: '📷' }
+    { nivel: 1, label: 'Demostracion', icono: '📖' },
+    { nivel: 2, label: 'Ejercicio', icono: '🎮' },
+    { nivel: 3, label: 'Práctica', icono: '📷' }
   ];
 
   return (
