@@ -2,27 +2,40 @@ import { createContext, useContext, useState, useMemo } from 'react';
 
 // Paleta de colores según modo
 const lightPalette = {
-  fondo: '#F5F7FA',
-  texto: '#1e3a8a',         // Azul profundo para textos y encabezados
-  boton: '#fed301',         // Amarillo brillante
-  seleccion: '#aa36d9',     // Violeta
-  correcto: '#10b981',      // Verde
-  incorrecto: '#f97316',    // Naranja
-  barra: '#41D6C3',         // Turquesa principal (puede mantenerse)
+  fondo: '#E6EBFF',           // Fondo principal claro
+  barra: '#4AA7F7',           // Barra superior
+  texto: '#1E3A8A',           // Texto principal (azul profundo)
+  texto2: '#4B5563',          // Texto secundario (gris)
+  boton1: '#FED301',          // Botón primario (amarillo)
+  boton2: '#41D6C3',          // Botón secundario (turquesa)
+  tarjeta: '#FFFFFF',         // Fondo de tarjetas/contenedores
+  correcto: '#10B981',        // Verde para aciertos
+  incorrecto: '#F97316',      // Naranja para errores
+  borde: '#CBD5E1',           // Bordes suaves
   blanco: '#FFFFFF',
-  gris: '#e0e0e0',
+  gris: '#E2E8F0',
+    icono: '#1e3a8a', // azul oscuro para iconos en modo claro
+    tarjeta: '#FFFFFF',
+tarjetaTexto: '#1E3A8A',
 };
 
 const darkPalette = {
-  fondo: '#121212',
-  texto: '#e0e0e0',        // Texto claro sobre fondo oscuro
-  boton: '#fed301',         // El amarillo puede mantenerse
-  seleccion: '#bb86fc',     // Violeta más claro para modo oscuro
-  correcto: '#03dac6',      // Verde azulado
-  incorrecto: '#cf6679',    // Rojo suave
-  barra: '#1f1f1f',         // Barra oscura
-  blanco: '#1e1e1e',
-  gris: '#333333',
+  fondo: '#00061A',           // Fondo principal oscuro
+  barra: '#1A1A2E',           // Barra superior oscura
+  texto: '#FFFFFF',           // Texto principal blanco
+  texto2: '#9CA3AF',          // Texto secundario gris claro
+  boton1: '#FED301',          // El amarillo se mantiene
+  boton2: '#41D6C3',          // Turquesa
+  tarjeta: '#16213E',         // Fondo de tarjetas oscuro
+  correcto: '#10B981',        // Verde
+  incorrecto: '#F97316',      // Naranja
+  borde: '#334155',           // Bordes oscuros
+  blanco: '#1E1E1E',
+  gris: '#334155',
+    icono: '#ffffff', // blanco para iconos en modo oscuro
+    tarjeta: '#16213E',
+tarjetaTexto: '#FFFFFF',
+
 };
 
 const ThemeContext = createContext();

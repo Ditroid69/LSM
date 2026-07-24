@@ -1,261 +1,18 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { Preferences } from '@capacitor/preferences';
-import PantallaCelebracion from '../../components/PantallaCelebracion';
+import PantallaCelebracion from '../../components/PantallaCelebracion'; // si no lo tienes, crea un componente simple o elimina esta línea
 
-const bancoPreguntas = {
-  1: [
-    {
-      letra: 'A',
-      opciones: [
-        'Puño cerrado, pulgar extendido hacia arriba',
-        'Mano abierta con dedos juntos',
-        'Dedos doblados, pulgar sobre el índice',
-        'Puntas de los dedos juntas'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'E',
-      opciones: [
-        'Puño cerrado, pulgar entre índice y medio',
-        'Dedos doblados hacia abajo, pulgar tocando el índice',
-        'Mano curvada en forma de C',
-        'Índice extendido, demás doblados'
-      ],
-      correcta: 1
-    },
-    {
-      letra: 'S',
-      opciones: [
-        'Puño cerrado, pulgar sobre los dedos',
-        'Pulgar extendido, demás doblados',
-        'Mano abierta, pulgar doblado sobre la palma',
-        'Dedos juntos formando un círculo'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'T',
-      opciones: [
-        'Puño cerrado, pulgar extendido hacia un lado',
-        'Puño cerrado, pulgar metido entre índice y medio',
-        'Dedos doblados, pulgar tocando el índice',
-        'Mano curvada en forma de C'
-      ],
-      correcta: 1
-    },
-    {
-      letra: 'O',
-      opciones: [
-        'Puño cerrado, pulgar doblado sobre los dedos',
-        'Dedos juntos formando un círculo',
-        'Índice extendido, pulgar tocando el medio',
-        'Mano abierta con dedos separados'
-      ],
-      correcta: 1
-    }
-  ],
-  2: [
-    {
-      letra: 'B',
-      opciones: [
-        'Mano abierta, dedos juntos, pulgar doblado sobre la palma',
-        'Puño cerrado, pulgar extendido hacia arriba',
-        'Dedos doblados, pulgar tocando el índice',
-        'Índice extendido, pulgar tocando el medio'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'C',
-      opciones: [
-        'Mano curvada en forma de C, dedos juntos',
-        'Puño cerrado, pulgar entre índice y medio',
-        'Mano abierta, dedos separados',
-        'Índice y medio juntos, pulgar sobre la palma'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'D',
-      opciones: [
-        'Índice extendido hacia arriba, demás dedos doblados, pulgar tocando el medio',
-        'Puño cerrado, pulgar sobre los dedos',
-        'Dedos doblados hacia abajo, pulgar tocando el índice',
-        'Puntas de los dedos juntas formando un círculo'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'F',
-      opciones: [
-        'Índice flexionado tocando el pulgar, demás dedos extendidos',
-        'Puño cerrado, pulgar metido entre índice y medio',
-        'Mano abierta, pulgar doblado sobre la palma',
-        'Índice y medio extendidos en V, pulgar entre ellos'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'U',
-      opciones: [
-        'Índice y medio juntos extendidos, anular y meñique doblados, pulgar tocando el anular',
-        'Puño cerrado, pulgar extendido hacia un lado',
-        'Mano curvada en forma de C',
-        'Meñique extendido, demás flexionados'
-      ],
-      correcta: 0
-    }
-  ],
-  3: [
-    {
-      letra: 'I',
-      opciones: [
-        'Meñique extendido hacia arriba, demás dedos flexionados, pulgar sobre la palma',
-        'Índice extendido, pulgar extendido formando L',
-        'Puño cerrado, pulgar entre índice y medio',
-        'Mano abierta, dedos juntos'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'K',
-      opciones: [
-        'Índice y medio extendidos en V, pulgar entre ellos (con movimiento)',
-        'Índice y medio juntos, pulgar sobre la palma',
-        'Dedos doblados, pulgar tocando el índice',
-        'Puño cerrado, pulgar extendido hacia arriba'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'P',
-      opciones: [
-        'Índice y medio extendidos en V, pulgar entre ellos (sin movimiento)',
-        'Índice y medio juntos, pulgar tocando la base del índice',
-        'Mano curvada en forma de C',
-        'Puño cerrado, pulgar sobre los dedos'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'V',
-      opciones: [
-        'Índice y medio extendidos y juntos, pulgar sobre la palma',
-        'Índice y medio separados, pulgar entre ellos',
-        'Mano abierta, dedos separados',
-        'Puño cerrado, pulgar extendido hacia un lado'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'W',
-      opciones: [
-        'Índice, medio y anular extendidos y separados, meñique doblado',
-        'Índice y medio juntos, pulgar sobre la palma',
-        'Mano abierta, dedos juntos',
-        'Dedos doblados hacia abajo, pulgar tocando el índice'
-      ],
-      correcta: 0
-    }
-  ],
-  4: [
-    {
-      letra: 'L',
-      opciones: [
-        'Índice extendido, pulgar extendido formando una L',
-        'Puño cerrado, pulgar entre índice y medio',
-        'Mano abierta, pulgar doblado sobre la palma',
-        'Dedos juntos formando un círculo'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'M',
-      opciones: [
-        'Índice, medio y anular extendidos y juntos, meñique doblado, pulgar sobre la palma',
-        'Índice y medio extendidos en V',
-        'Puño cerrado, pulgar extendido hacia arriba',
-        'Mano curvada en forma de C'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'Ñ',
-      opciones: [
-        'Índice y medio juntos, pulgar entre los dedos',
-        'Puño cerrado, pulgar sobre los dedos',
-        'Mano abierta, dedos separados',
-        'Índice extendido, demás flexionados'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'R',
-      opciones: [
-        'Índice y medio juntos, pulgar tocando la base del índice',
-        'Puño cerrado, pulgar metido entre índice y medio',
-        'Mano abierta, pulgar doblado sobre la palma',
-        'Dedos doblados hacia abajo, pulgar tocando el índice'
-      ],
-      correcta: 0
-    }
-  ],
-  5: [
-    {
-      letra: 'G',
-      opciones: [
-        'Índice extendido, demás flexionados, pulgar doblado sobre la palma',
-        'Puño cerrado, pulgar extendido hacia un lado',
-        'Mano abierta, dedos juntos',
-        'Índice y medio juntos, pulgar entre los dedos'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'H',
-      opciones: [
-        'Índice y medio juntos extendidos, pulgar sobre la palma',
-        'Puño cerrado, pulgar sobre los dedos',
-        'Mano curvada en forma de C',
-        'Dedos doblados, pulgar tocando el índice'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'X',
-      opciones: [
-        '(Descripción pendiente)',
-        'Puño cerrado, pulgar entre índice y medio',
-        'Mano abierta, dedos separados',
-        'Índice extendido, demás flexionados'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'Y',
-      opciones: [
-        '(Descripción pendiente)',
-        'Puño cerrado, pulgar extendido hacia arriba',
-        'Mano curvada en forma de C',
-        'Dedos juntos formando un círculo'
-      ],
-      correcta: 0
-    },
-    {
-      letra: 'Z',
-      opciones: [
-        '(Descripción pendiente)',
-        'Puño cerrado, pulgar sobre los dedos',
-        'Mano abierta, pulgar doblado sobre la palma',
-        'Índice y medio extendidos en V'
-      ],
-      correcta: 0
-    }
-  ]
+// Bloques del abecedario (igual que en Leccion.jsx)
+const bloquesAbecedario = {
+  1: ['A', 'E', 'S', 'T', 'O'],
+  2: ['B', 'C', 'D', 'F', 'U'],
+  3: ['I', 'K', 'P', 'V', 'W'],
+  4: ['L', 'M', 'Ñ', 'R'],
+  5: ['G', 'H', 'X', 'Y', 'Z']
 };
 
+// Función para desordenar array
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -269,16 +26,19 @@ const Nivel2Ejercicios = () => {
   const { idBloque } = useParams();
   const navigate = useNavigate();
 
-  const todasLasPreguntas = bancoPreguntas[idBloque] || [];
-  const totalPreguntas = todasLasPreguntas.length;
+  // Letras del bloque actual
+  const letrasBloque = bloquesAbecedario[idBloque] || [];
+  const totalPreguntas = letrasBloque.length;
 
+  // Estado: seguimiento de aciertos por letra (true = acertada)
   const [correctFlags, setCorrectFlags] = useState(new Array(totalPreguntas).fill(false));
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(null);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(null); // letra seleccionada
   const [showResult, setShowResult] = useState(false);
   const [lessonComplete, setLessonComplete] = useState(false);
-  const [shuffledOptions, setShuffledOptions] = useState([]);
+  const [shuffledOptions, setShuffledOptions] = useState([]); // letras (texto) desordenadas
 
+  // Elegir siguiente pregunta entre las no superadas
   const pickNextQuestion = useCallback(() => {
     const incorrectIndices = correctFlags.reduce((acc, flag, idx) => {
       if (!flag) acc.push(idx);
@@ -295,9 +55,14 @@ const Nivel2Ejercicios = () => {
     setCurrentQuestionIdx(randomIdx);
     setSelectedAnswer(null);
     setShowResult(false);
-    const pregunta = todasLasPreguntas[randomIdx];
-    setShuffledOptions(shuffleArray(pregunta.opciones.map((text, idx) => ({ text, originalIndex: idx }))));
-  }, [correctFlags, idBloque, todasLasPreguntas]);
+
+    const letraCorrecta = letrasBloque[randomIdx];
+    // Generar opciones: 3 letras incorrectas + la correcta
+    const otrasLetras = letrasBloque.filter((_, idx) => idx !== randomIdx);
+    const opcionesIncorrectas = shuffleArray(otrasLetras).slice(0, 3); // máximo 3 incorrectas
+    const todasOpciones = [...opcionesIncorrectas, letraCorrecta];
+    setShuffledOptions(shuffleArray(todasOpciones));
+  }, [correctFlags, idBloque, letrasBloque]);
 
   // Reiniciar al cambiar de bloque
   useEffect(() => {
@@ -308,20 +73,20 @@ const Nivel2Ejercicios = () => {
     setShowResult(false);
   }, [idBloque, totalPreguntas]);
 
-  // Elegir la primera pregunta al cargar (solo si no hay pregunta actual)
+  // Elegir la primera pregunta al cargar
   useEffect(() => {
     if (totalPreguntas > 0 && currentQuestionIdx === null && !lessonComplete) {
       pickNextQuestion();
     }
   }, [totalPreguntas, currentQuestionIdx, lessonComplete, pickNextQuestion]);
 
-  const handleSelectAnswer = (opcionIndex) => {
+  const handleSelectAnswer = (letraSeleccionada) => {
     if (showResult) return;
-    setSelectedAnswer(opcionIndex);
+    setSelectedAnswer(letraSeleccionada);
     setShowResult(true);
 
-    const pregunta = todasLasPreguntas[currentQuestionIdx];
-    if (opcionIndex === pregunta.correcta) {
+    const letraCorrecta = letrasBloque[currentQuestionIdx];
+    if (letraSeleccionada === letraCorrecta) {
       setCorrectFlags(prev => {
         const updated = [...prev];
         updated[currentQuestionIdx] = true;
@@ -347,7 +112,7 @@ const Nivel2Ejercicios = () => {
     );
   }
 
-   if (lessonComplete) {
+  if (lessonComplete) {
     return (
       <PantallaCelebracion
         mensaje="¡Has completado todos los ejercicios!"
@@ -360,13 +125,15 @@ const Nivel2Ejercicios = () => {
     return <p style={{ textAlign: 'center', padding: 40 }}>⏳ Preparando ejercicios...</p>;
   }
 
-  const pregunta = todasLasPreguntas[currentQuestionIdx];
+  const letraCorrecta = letrasBloque[currentQuestionIdx];
+  const imagenSrc = `/assets/abecedario/imagen_${letraCorrecta.toLowerCase()}.jpg`;
 
   return (
     <div style={{ padding: 20, textAlign: 'center' }}>
       <h2>Bloque {idBloque} – Practicar</h2>
-      <p>Elige la descripción correcta para la seña</p>
+      <p>¿Qué letra representa esta seña?</p>
 
+      {/* Barra de progreso */}
       <div style={{ width: '100%', backgroundColor: '#ddd', borderRadius: 10, margin: '20px 0', height: 12 }}>
         <div
           style={{
@@ -380,91 +147,88 @@ const Nivel2Ejercicios = () => {
       </div>
       <span style={{ fontSize: 14 }}>{superadas} / {totalPreguntas} superadas</span>
 
+      {/* Imagen de la seña (la pregunta) */}
       <div style={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        margin: '30px auto',
-        width: 150,
-        height: 150,
-        borderRadius: '50%',
-        backgroundColor: '#FF9800',
-        boxShadow: '0 6px 12px rgba(0,0,0,0.2)',
-        color: 'black',
-        fontSize: 96,
-        fontWeight: 'bold',
-        fontFamily: 'Arial, sans-serif',
-        textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+        margin: '20px 0'
       }}>
-        {pregunta.letra}
+        <img
+          src={imagenSrc}
+          alt={`Seña de ${letraCorrecta}`}
+          style={{ width: 150, height: 150, objectFit: 'contain', border: '3px solid #ccc', borderRadius: 16 }}
+          onError={(e) => { e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150"%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="80"%3E' + letraCorrecta + '%3C/text%3E%3C/svg%3E'; }}
+        />
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
-        {shuffledOptions.map((opcion, idx) => {
-          const esCorrecta = opcion.originalIndex === pregunta.correcta;
-          const esSeleccionada = selectedAnswer === opcion.originalIndex;
+      {/* Opciones (letras) */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginTop: 20 }}>
+        {shuffledOptions.map((letra, idx) => {
+          const esCorrecta = letra === letraCorrecta;
+          const esSeleccionada = selectedAnswer === letra;
           let borderStyle = '2px solid #ddd';
+          let bgColor = '#000000';
           if (showResult) {
-            if (esCorrecta) borderStyle = '2px solid #4CAF50';
-            else if (esSeleccionada && !esCorrecta) borderStyle = '2px solid #f44336';
+            if (esCorrecta) {
+              borderStyle = '2px solid #4CAF50';
+              bgColor = '#c8f7c5';
+            } else if (esSeleccionada && !esCorrecta) {
+              borderStyle = '2px solid #f44336';
+              bgColor = '#f7c5c5';
+            }
           }
           return (
             <button
               key={idx}
-              onClick={() => handleSelectAnswer(opcion.originalIndex)}
+              onClick={() => handleSelectAnswer(letra)}
               style={{
-                padding: 16,
-                fontSize: 16,
-                borderRadius: 12,
+                width: 80,
+                height: 80,
+                borderRadius: 16,
                 border: borderStyle,
-                backgroundColor: showResult
-                  ? esCorrecta
-                    ? '#c8f7c5'
-                    : esSeleccionada && !esCorrecta
-                    ? '#f7c5c5'
-                    : '#f9f9f9'
-                  : '#f9f9f9',
+                backgroundColor: bgColor,
+                fontSize: 36,
+                fontWeight: 'bold',
                 cursor: showResult ? 'default' : 'pointer',
                 transition: '0.2s',
-                textAlign: 'left',
-                color: 'black'
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               disabled={showResult}
             >
-              {opcion.text}
+              {letra}
             </button>
           );
         })}
       </div>
 
+      {/* Retroalimentación y botón siguiente */}
       {showResult && (
         <div style={{ marginTop: 20 }}>
           <p style={{
             fontWeight: 'bold',
             fontSize: 20,
-            color: selectedAnswer === pregunta.correcta ? 'green' : 'red'
+            color: selectedAnswer === letraCorrecta ? 'green' : 'red'
           }}>
-            {selectedAnswer === pregunta.correcta ? '✅ ¡Correcto!' : '❌ Incorrecto'}
+            {selectedAnswer === letraCorrecta ? '✅ ¡Correcto!' : '❌ Incorrecto'}
           </p>
+          <button
+            onClick={handleNext}
+            style={{
+              marginTop: 10,
+              padding: '12px 24px',
+              fontSize: 16,
+              backgroundColor: '#FF9800',
+              color: 'black',
+              border: 'none',
+              borderRadius: 8,
+              cursor: 'pointer'
+            }}
+          >
+            Siguiente →
+          </button>
         </div>
-      )}
-
-      {showResult && (
-        <button
-          onClick={handleNext}
-          style={{
-            marginTop: 10,
-            padding: '12px 24px',
-            fontSize: 16,
-            backgroundColor: '#FF9800',
-            color: 'black',
-            border: 'none',
-            borderRadius: 8,
-            cursor: 'pointer'
-          }}
-        >
-          Siguiente →
-        </button>
       )}
     </div>
   );

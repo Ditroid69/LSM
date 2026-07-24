@@ -109,3 +109,13 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-ExtraBold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+}
