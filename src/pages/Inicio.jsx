@@ -1,134 +1,134 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Preferences } from '@capacitor/preferences';
-import logo from '../assets/logo.png'; // ajusta la extensión si es .svg o .jpg
+import { useTheme } from '../context/ThemeContext';
+import logo from '../assets/logo.png';
+import styles from './Inicio.module.css';
 
-const Inicio = () => {
+const Inicio = ({ onCompletar }) => {
   const [nombre, setNombre] = useState('');
-  const [modo, setModo] = useState('inicial'); // 'inicial' | 'input' | 'loading'
+  const [modo, setModo] = useState('inicial');
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const timerRef = useRef(null);
 
-  // Verificar nombre guardado al montar
   useEffect(() => {
     const verificar = async () => {
       const { value } = await Preferences.get({ key: 'nombre' });
       if (value) {
-        // Nombre existente → splash de carga y luego menú
         setModo('loading');
         timerRef.current = setTimeout(() => {
+          onCompletar();
           navigate('/menu', { replace: true });
         }, 1500);
       } else {
-        // Sin nombre → formulario de entrada
         setModo('input');
       }
     };
     verificar();
 
-    // Limpiar temporizador al desmontar
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [navigate]);
+  }, [navigate, onCompletar]);
 
-  // Manejar envío del nombre
   const manejarEntrar = async () => {
     if (nombre.trim() === '') return;
     setModo('loading');
     await Preferences.set({ key: 'nombre', value: nombre.trim() });
 
     timerRef.current = setTimeout(() => {
-      navigate('/menu');
+      onCompletar();
+      navigate('/menu', { replace: true });
     }, 1500);
   };
 
-  // Pantalla de carga (compartida para splash inicial y tras envío)
-  if (modo === 'loading') {
+  const cssVars = {
+    '--welcome-background': theme.fondo,
+    '--welcome-card': theme.tarjeta,
+    '--welcome-text': theme.tarjetaTexto || theme.texto,
+    '--welcome-muted': theme.texto2,
+    '--welcome-border': theme.borde,
+    '--welcome-primary': theme.boton2,
+    '--welcome-primary-shadow': '#24a997',
+    '--welcome-accent': theme.boton1,
+    '--welcome-soft': theme.gris,
+  };
+
+  if (modo === 'inicial') {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#F5F7FA',
-        padding: 20,
-        textAlign: 'center'
-      }}>
-        <img src={logo} alt="Logo" style={{ width: 180, height: 'auto', marginBottom: 30 }} />
-        <p style={{ fontSize: 18, fontWeight: 'bold', color: '#2F7EEA', marginBottom: 15 }}>
-          Cargando...
-        </p>
-        <div style={{ width: 200, height: 6, backgroundColor: '#e0e0e0', borderRadius: 3, overflow: 'hidden' }}>
-          <div style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: '#41D6C3',
-            animation: 'carga 1.5s linear forwards'
-          }}></div>
+      <main className={styles.page} style={cssVars}>
+        <div className={styles.splash}>
+          <span className={styles.logoHalo} aria-hidden="true" />
+          <img src={logo} alt="Kinesseña" />
         </div>
-        <style>{`
-          @keyframes carga {
-            from { width: 0%; }
-            to { width: 100%; }
-          }
-        `}</style>
-      </div>
+      </main>
     );
   }
 
-  // Pantalla de ingreso del nombre (solo si no hay nombre guardado)
+  if (modo === 'loading') {
+    return (
+      <main className={styles.page} style={cssVars}>
+        <section className={styles.card} aria-live="polite">
+          <div className={styles.brand}>
+            <span className={styles.logoHalo} aria-hidden="true" />
+            <img src={logo} alt="Kinesseña" />
+          </div>
+          <span className={styles.eyebrow}>Preparando tu aprendizaje</span>
+          <h1>¡Todo listo!</h1>
+          <p>Estamos preparando tus módulos de Lengua de Señas Mexicana.</p>
+          <div className={styles.loadingTrack} aria-hidden="true"><span /></div>
+          <div className={styles.loadingStatus}>
+            <span><i /><i /><i /></span>
+            Cargando
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#F5F7FA',
-      padding: 20
-    }}>
-      <img src={logo} alt="Logo" style={{ width: 180, height: 'auto', marginBottom: 30 }} />
-      <div style={{ width: '100%', maxWidth: 300 }}>
-        <label style={{ fontWeight: 'bold', marginBottom: 5, display: 'block', color: '#333' }}>
-          Nombre
-        </label>
-        <input
-          type="text"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          placeholder="Tu nombre"
-          style={{
-            width: '100%',
-            padding: 12,
-            fontSize: 16,
-            borderRadius: 8,
-            border: '2px solid #41D6C3',
-            outline: 'none',
-            boxSizing: 'border-box'
-          }}
-        />
-      </div>
-      <button
-        onClick={manejarEntrar}
-        disabled={nombre.trim() === ''}
-        style={{
-          marginTop: 25,
-          padding: '12px 30px',
-          fontSize: 18,
-          backgroundColor: nombre.trim() === '' ? '#ccc' : '#4AA7F7',
-          color: 'white',
-          border: 'none',
-          borderRadius: 8,
-          cursor: nombre.trim() === '' ? 'not-allowed' : 'pointer',
-          fontWeight: 'bold',
-          transition: 'background-color 0.2s'
-        }}
-      >
-        Entrar
-      </button>
-    </div>
+    <main className={styles.page} style={cssVars}>
+      <section className={styles.card}>
+        <div className={styles.brand}>
+          <span className={styles.logoHalo} aria-hidden="true" />
+          <img src={logo} alt="Kinesseña" />
+        </div>
+
+        <span className={styles.eyebrow}>Bienvenido a Kinesseña</span>
+        <h1>Comencemos a aprender</h1>
+        <p>Dinos cómo te llamas para personalizar tu experiencia.</p>
+
+        <div className={styles.field}>
+          <label htmlFor="nombre-usuario">Tu nombre</label>
+          <div className={styles.inputWrapper}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21a8 8 0 0 1 16 0" />
+            </svg>
+            <input
+              id="nombre-usuario"
+              type="text"
+              value={nombre}
+              onChange={(event) => setNombre(event.target.value)}
+              placeholder="Escribe tu nombre"
+              autoComplete="name"
+              maxLength={40}
+              autoFocus
+            />
+          </div>
+        </div>
+
+        <button type="button" onClick={manejarEntrar} disabled={nombre.trim() === ''}>
+          Comenzar
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </button>
+
+        <small>Tu nombre se guarda únicamente en este dispositivo.</small>
+      </section>
+    </main>
   );
 };
 

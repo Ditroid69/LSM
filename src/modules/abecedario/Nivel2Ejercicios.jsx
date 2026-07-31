@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Preferences } from '@capacitor/preferences';
-import PantallaCelebracion from '../../components/PantallaCelebracion'; // si no lo tienes, crea un componente simple o elimina esta línea
+import { useTheme } from '../../context/ThemeContext';
+import styles from './Nivel2Ejercicios.module.css';
 
 // Bloques del abecedario (igual que en Leccion.jsx)
 const bloquesAbecedario = {
@@ -11,6 +12,7 @@ const bloquesAbecedario = {
   4: ['L', 'M', 'Ñ', 'R'],
   5: ['G', 'H', 'X', 'Y', 'Z']
 };
+const bloqueVacio = [];
 
 // Función para desordenar array
 function shuffleArray(array) {
@@ -22,21 +24,39 @@ function shuffleArray(array) {
   return arr;
 }
 
-const Nivel2Ejercicios = () => {
-  const { idBloque } = useParams();
+function crearPreguntaInicial(letras) {
+  if (letras.length === 0) {
+    return { indice: null, opciones: [] };
+  }
+
+  const indice = Math.floor(Math.random() * letras.length);
+  const letraCorrecta = letras[indice];
+  const opcionesIncorrectas = shuffleArray(
+    letras.filter((_, posicion) => posicion !== indice)
+  ).slice(0, 3);
+
+  return {
+    indice,
+    opciones: shuffleArray([...opcionesIncorrectas, letraCorrecta])
+  };
+}
+
+const Nivel2EjerciciosContenido = ({ idBloque }) => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // Letras del bloque actual
-  const letrasBloque = bloquesAbecedario[idBloque] || [];
+  const letrasBloque = bloquesAbecedario[idBloque] || bloqueVacio;
   const totalPreguntas = letrasBloque.length;
+  const [preguntaInicial] = useState(() => crearPreguntaInicial(letrasBloque));
 
   // Estado: seguimiento de aciertos por letra (true = acertada)
   const [correctFlags, setCorrectFlags] = useState(new Array(totalPreguntas).fill(false));
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(null);
+  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(preguntaInicial.indice);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // letra seleccionada
   const [showResult, setShowResult] = useState(false);
   const [lessonComplete, setLessonComplete] = useState(false);
-  const [shuffledOptions, setShuffledOptions] = useState([]); // letras (texto) desordenadas
+  const [shuffledOptions, setShuffledOptions] = useState(preguntaInicial.opciones); // letras (texto) desordenadas
 
   // Elegir siguiente pregunta entre las no superadas
   const pickNextQuestion = useCallback(() => {
@@ -64,22 +84,6 @@ const Nivel2Ejercicios = () => {
     setShuffledOptions(shuffleArray(todasOpciones));
   }, [correctFlags, idBloque, letrasBloque]);
 
-  // Reiniciar al cambiar de bloque
-  useEffect(() => {
-    setCorrectFlags(new Array(totalPreguntas).fill(false));
-    setLessonComplete(false);
-    setCurrentQuestionIdx(null);
-    setSelectedAnswer(null);
-    setShowResult(false);
-  }, [idBloque, totalPreguntas]);
-
-  // Elegir la primera pregunta al cargar
-  useEffect(() => {
-    if (totalPreguntas > 0 && currentQuestionIdx === null && !lessonComplete) {
-      pickNextQuestion();
-    }
-  }, [totalPreguntas, currentQuestionIdx, lessonComplete, pickNextQuestion]);
-
   const handleSelectAnswer = (letraSeleccionada) => {
     if (showResult) return;
     setSelectedAnswer(letraSeleccionada);
@@ -102,136 +106,197 @@ const Nivel2Ejercicios = () => {
 
   const superadas = correctFlags.filter(Boolean).length;
   const progreso = totalPreguntas > 0 ? (superadas / totalPreguntas) * 100 : 0;
+  const cssVars = {
+    '--quiz-card': theme.tarjeta,
+    '--quiz-text': theme.tarjetaTexto || theme.texto,
+    '--quiz-muted': theme.texto2,
+    '--quiz-border': theme.borde,
+    '--quiz-primary': theme.boton2,
+    '--quiz-primary-shadow': '#24a997',
+    '--quiz-accent': theme.boton1,
+    '--quiz-accent-shadow': '#d5ad00',
+    '--quiz-success': theme.correcto,
+    '--quiz-success-shadow': '#087f5b',
+    '--quiz-error': theme.incorrecto,
+    '--quiz-soft': theme.gris,
+  };
 
   if (totalPreguntas === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 20 }}>
+      <div className={styles.emptyState} style={cssVars}>
         <p>No hay ejercicios para este bloque todavía.</p>
-        <button onClick={() => navigate(-1)}>Volver</button>
+        <button type="button" onClick={() => navigate(-1)}>Volver</button>
       </div>
     );
   }
 
   if (lessonComplete) {
     return (
-      <PantallaCelebracion
-        mensaje="¡Has completado todos los ejercicios!"
-        onVolver={() => navigate(`/bloque/${idBloque}`)}
-      />
+      <section className={styles.completePage} style={cssVars}>
+        <div className={styles.completeCard}>
+          <span className={styles.completeIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="m5 12 4.5 4.5L19 7" />
+            </svg>
+          </span>
+          <span className={styles.completeEyebrow}>Nivel completado</span>
+          <h1>¡Excelente trabajo!</h1>
+          <p>Reconociste correctamente todas las señas del bloque {idBloque}.</p>
+          <div className={styles.completeScore}>
+            <strong>{totalPreguntas}</strong>
+            <span>señas superadas</span>
+          </div>
+          <button type="button" onClick={() => navigate(`/bloque/${idBloque}`)}>
+            Volver al camino
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </button>
+        </div>
+      </section>
     );
   }
 
   if (currentQuestionIdx === null) {
-    return <p style={{ textAlign: 'center', padding: 40 }}>⏳ Preparando ejercicios...</p>;
+    return (
+      <div className={styles.loading} style={cssVars}>
+        <span />
+        <p>Preparando ejercicios...</p>
+      </div>
+    );
   }
 
   const letraCorrecta = letrasBloque[currentQuestionIdx];
-  const imagenSrc = `/assets/abecedario/imagen_${letraCorrecta.toLowerCase()}.jpg`;
+  const nombreImagen = letraCorrecta === 'Ñ' ? 'n' : letraCorrecta.toLowerCase();
+  const imagenSrc = `/assets/abecedario/imagen_${nombreImagen}.jpg`;
 
   return (
-    <div style={{ padding: 20, textAlign: 'center' }}>
-      <h2>Bloque {idBloque} – Practicar</h2>
-      <p>¿Qué letra representa esta seña?</p>
+    <section className={styles.page} style={cssVars}>
+      <header className={styles.quizHeader}>
+        <div>
+          <span className={styles.eyebrow}>Abecedario · Bloque {idBloque}</span>
+          <h1>Reconoce la seña</h1>
+        </div>
+        <div className={styles.score} aria-label={`${superadas} de ${totalPreguntas} superadas`}>
+          <strong>{superadas}</strong>
+          <span>/ {totalPreguntas}</span>
+        </div>
+      </header>
 
-      {/* Barra de progreso */}
-      <div style={{ width: '100%', backgroundColor: '#ddd', borderRadius: 10, margin: '20px 0', height: 12 }}>
-        <div
-          style={{
-            width: `${progreso}%`,
-            backgroundColor: '#FF9800',
-            height: '100%',
-            borderRadius: 10,
-            transition: 'width 0.3s'
-          }}
-        ></div>
-      </div>
-      <span style={{ fontSize: 14 }}>{superadas} / {totalPreguntas} superadas</span>
-
-      {/* Imagen de la seña (la pregunta) */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        margin: '20px 0'
-      }}>
-        <img
-          src={imagenSrc}
-          alt={`Seña de ${letraCorrecta}`}
-          style={{ width: 150, height: 150, objectFit: 'contain', border: '3px solid #ccc', borderRadius: 16 }}
-          onError={(e) => { e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150"%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="80"%3E' + letraCorrecta + '%3C/text%3E%3C/svg%3E'; }}
-        />
+      <div
+        className={styles.progressTrack}
+        role="progressbar"
+        aria-label="Progreso del ejercicio"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow={Math.round(progreso)}
+      >
+        <span style={{ width: `${progreso}%` }} />
       </div>
 
-      {/* Opciones (letras) */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginTop: 20 }}>
-        {shuffledOptions.map((letra, idx) => {
-          const esCorrecta = letra === letraCorrecta;
-          const esSeleccionada = selectedAnswer === letra;
-          let borderStyle = '2px solid #ddd';
-          let bgColor = '#000000';
-          if (showResult) {
-            if (esCorrecta) {
-              borderStyle = '2px solid #4CAF50';
-              bgColor = '#c8f7c5';
-            } else if (esSeleccionada && !esCorrecta) {
-              borderStyle = '2px solid #f44336';
-              bgColor = '#f7c5c5';
-            }
-          }
-          return (
-            <button
-              key={idx}
-              onClick={() => handleSelectAnswer(letra)}
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 16,
-                border: borderStyle,
-                backgroundColor: bgColor,
-                fontSize: 36,
-                fontWeight: 'bold',
-                cursor: showResult ? 'default' : 'pointer',
-                transition: '0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              disabled={showResult}
-            >
-              {letra}
-            </button>
-          );
-        })}
-      </div>
+      <div className={styles.challenge}>
+        <div className={styles.prompt}>
+          <span className={styles.promptNumber}>Pregunta</span>
+          <h2>¿Qué letra representa esta seña?</h2>
+          <p>Observa la posición de la mano y elige una respuesta.</p>
+        </div>
 
-      {/* Retroalimentación y botón siguiente */}
-      {showResult && (
-        <div style={{ marginTop: 20 }}>
-          <p style={{
-            fontWeight: 'bold',
-            fontSize: 20,
-            color: selectedAnswer === letraCorrecta ? 'green' : 'red'
-          }}>
-            {selectedAnswer === letraCorrecta ? '✅ ¡Correcto!' : '❌ Incorrecto'}
-          </p>
-          <button
-            onClick={handleNext}
-            style={{
-              marginTop: 10,
-              padding: '12px 24px',
-              fontSize: 16,
-              backgroundColor: '#FF9800',
-              color: 'black',
-              border: 'none',
-              borderRadius: 8,
-              cursor: 'pointer'
+        <div className={styles.signFrame}>
+          <span className={styles.signGlow} aria-hidden="true" />
+          <img
+            src={imagenSrc}
+            alt={`Seña de ${letraCorrecta}`}
+            onError={(event) => {
+              event.currentTarget.style.display = 'none';
             }}
+          />
+          <span className={styles.signHint}>Seña objetivo</span>
+        </div>
+
+        <div className={styles.answers} aria-label="Opciones de respuesta">
+          {shuffledOptions.map((letra) => {
+            const esCorrecta = letra === letraCorrecta;
+            const esSeleccionada = selectedAnswer === letra;
+            const claseResultado = showResult
+              ? esCorrecta
+                ? styles.answerCorrect
+                : esSeleccionada
+                  ? styles.answerWrong
+                  : styles.answerDimmed
+              : '';
+
+            return (
+              <button
+                key={letra}
+                type="button"
+                onClick={() => handleSelectAnswer(letra)}
+                className={`${styles.answerButton} ${claseResultado}`}
+                disabled={showResult}
+                aria-label={`Letra ${letra}`}
+              >
+                <span>{letra}</span>
+                {showResult && esCorrecta && (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m5 12 4.5 4.5L19 7" />
+                  </svg>
+                )}
+                {showResult && esSeleccionada && !esCorrecta && (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {showResult && (
+        <div
+          className={`${styles.feedback} ${
+            selectedAnswer === letraCorrecta ? styles.feedbackCorrect : styles.feedbackWrong
+          }`}
+          role="status"
+        >
+          <span className={styles.feedbackIcon} aria-hidden="true">
+            {selectedAnswer === letraCorrecta ? (
+              <svg viewBox="0 0 24 24">
+                <path d="m5 12 4.5 4.5L19 7" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            )}
+          </span>
+          <div>
+            <strong>
+              {selectedAnswer === letraCorrecta ? '¡Respuesta correcta!' : 'Sigue practicando'}
+            </strong>
+            <p>
+              {selectedAnswer === letraCorrecta
+                ? `Reconociste la seña de la letra ${letraCorrecta}.`
+                : `La respuesta correcta era la letra ${letraCorrecta}.`}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleNext}
           >
-            Siguiente →
+            Continuar
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
           </button>
         </div>
       )}
-    </div>
+    </section>
   );
+};
+
+const Nivel2Ejercicios = () => {
+  const { idBloque } = useParams();
+  return <Nivel2EjerciciosContenido key={idBloque} idBloque={idBloque} />;
 };
 
 export default Nivel2Ejercicios;

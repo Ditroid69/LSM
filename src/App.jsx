@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Inicio from './pages/Inicio';
 import Menu from './pages/Menu';
@@ -16,12 +17,15 @@ import Nivel2EjerciciosNumeros from './modules/numeros/Nivel2Ejercicios';
 import Nivel3CamaraNumeros from './modules/numeros/Nivel3Camara';
 import './index.css';
 function App() {
+  const [inicioCompletado, setInicioCompletado] = useState(false);
+  const completarInicio = useCallback(() => setInicioCompletado(true), []);
+
   return (
      <ThemeProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Inicio />} />
-        <Route element={<Layout />}>
+        <Route path="/" element={<Inicio onCompletar={completarInicio} />} />
+        <Route element={inicioCompletado ? <Layout /> : <Navigate to="/" replace />}>
           <Route path="/menu" element={<Menu />} />
           <Route path="/practica" element={<Practica />} />
           <Route path="/abecedario" element={<AbecedarioMenu />} />

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
+import styles from './HandTracker.module.css';
 
 const HandTracker = ({ letraObjetivo, onAcierto }) => {
   const videoRef = useRef(null);
@@ -114,13 +115,18 @@ if (Capacitor.isNativePlatform()) {
             for (const landmarks of results.multiHandLandmarks) {
                if (validacionCompleta) return;
               drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
-                color: '#00FF00',
-                lineWidth: 2
+                color: '#41D6C3',
+                lineWidth: 4
               });
-              drawLandmarks(ctx, landmarks, { color: '#FF0000', lineWidth: 1 });
+              drawLandmarks(ctx, landmarks, {
+                color: '#1E3A8A',
+                fillColor: '#FED301',
+                lineWidth: 2,
+                radius: 4
+              });
               // Solo evaluar si no se ha completado aún
               if (!validacionCompleta) {
-                                const letra = letraRef.current;
+                const letra = letraRef.current;
                 let esCorrecta = false;
                 if (letra === 'A') esCorrecta = detectarA(landmarks);
                 else if (letra === 'B') esCorrecta = detectarB(landmarks);
@@ -176,7 +182,7 @@ if (Capacitor.isNativePlatform()) {
                       } else {
                         setProgress(progressRef.current);
                       }
-                    }, 100);
+                    }, 50);
                   }
                 } else {
                   if (validandoRef.current) {
@@ -252,115 +258,105 @@ if (Capacitor.isNativePlatform()) {
     if (intervaloRef.current) clearInterval(intervaloRef.current);
   };
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: 640, margin: '0 auto' }}>
+    <div className={styles.tracker}>
       <video ref={videoRef} style={{ display: 'none' }} playsInline />
 
       {status === 'cargando' && (
-        <p style={{ textAlign: 'center' }}>⏳ Iniciando cámara y cargando IA...</p>
-      )}
-
-      {status === 'error' && (
-        <div style={{ backgroundColor: '#ffffcc', padding: 20, margin: 20, border: '1px solid red' }}>
-          <h3>❌ Error detectado:</h3>
-          <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>{mensajeError}</pre>
+        <div className={styles.loading}>
+          <span className={styles.spinner} />
+          <strong>Preparando la cámara</strong>
+          <p>Estamos cargando el reconocimiento de manos…</p>
         </div>
       )}
 
-            {status === 'listo' && (
-<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-  {/* Contenedor relativo para cámara + anillo */}
-  <div style={{ position: 'relative', width: 280, height: 280 }}>
-    {/* Cámara circular */}
-    <div style={{
-      width: 280,
-      height: 280,
-      borderRadius: '50%',
-      overflow: 'hidden',
-      border: '3px solid #ccc',
-      boxShadow: '0 0 15px rgba(0,0,0,0.3)'
-    }}>
-      <video ref={videoRef} style={{ display: 'none' }} playsInline />
-      <canvas
-        ref={canvasRef}
-        width={640}
-        height={480}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          transform: 'scaleX(-1)'
-        }}
-      />
-    </div>
+      {status === 'error' && (
+        <div className={styles.error}>
+          <span className={styles.errorIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 3 2.8 19h18.4z" />
+              <path d="M12 9v4M12 17h.01" />
+            </svg>
+          </span>
+          <div>
+            <h3>No pudimos iniciar la cámara</h3>
+            <pre>{mensajeError}</pre>
+          </div>
+        </div>
+      )}
 
-        {/* Anillo de progreso SVG (siempre visible cuando hay mano, se rellena de verde al acertar) */}
-    {(handDetected  || validacionCompleta) && (
-      <svg
-        viewBox="0 0 280 280"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none'
-        }}
-      >
-        {/* Círculo de fondo: gris mientras no se ha completado, verde cuando sí */}
-        <circle
-          stroke={validacionCompleta ? "#4CAF50" : "#e0e0e0"}
-          fill="none"
-          strokeWidth="8"
-          r={136}
-          cx={140}
-          cy={140}
-        />
-        {/* Arco verde: se llena durante la validación y se queda fijo tras completar */}
-        {(validandoRef.current || validacionCompleta) && !falloVisible && (
-          <circle
-            stroke="#4CAF50"
-            fill="none"
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 136}
-            strokeDashoffset={2 * Math.PI * 136 * (1 - (validacionCompleta ? 100 : progress) / 100)}
-            r={136}
-            cx={140}
-            cy={140}
-            style={{ transition: 'stroke-dashoffset 0.1s linear' }}
-          />
-        )}
-      </svg>
-    )}
-  </div>
+      {status === 'listo' && (
+        <div className={styles.ready}>
+          <div className={styles.cameraShell}>
+            <div className={styles.camera}>
+              <video ref={videoRef} style={{ display: 'none' }} playsInline />
+              <canvas
+                ref={canvasRef}
+                width={640}
+                height={480}
+                className={styles.canvas}
+              />
+            </div>
 
-  {/* Letra objetivo */}
-  {letraObjetivo && (
-    <p style={{ textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>
-      🎯 Seña objetivo: {letraObjetivo}
-    </p>
-  )}
+            {(handDetected || validacionCompleta) && (
+              <svg viewBox="0 0 100 100" className={styles.progressRing}>
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="49"
+                  fill="none"
+                  stroke="var(--camera-border)"
+                  strokeWidth="1.5"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="47"
+                  fill="none"
+                  stroke={validacionCompleta ? 'var(--camera-success)' : 'var(--camera-soft)'}
+                  strokeWidth="2.5"
+                />
+                {(validandoRef.current || validacionCompleta) && !falloVisible && (
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="47"
+                    fill="none"
+                    stroke="var(--camera-success)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 47}
+                    strokeDashoffset={
+                      2 * Math.PI * 47 * (1 - (validacionCompleta ? 100 : progress) / 100)
+                    }
+                    className={styles.progressArc}
+                  />
+                )}
+              </svg>
+            )}
 
-  {/* Fallo y botón reintentar */}
-{falloVisible && !validacionCompleta && (
-    <div style={{ marginTop: 20, textAlign: 'center' }}>
-      <p style={{ color: 'red', fontWeight: 'bold' }}>❌ La seña no es correcta. Intenta de nuevo.</p>
-      <button onClick={reintentar} style={{
-        marginTop: 10,
-        padding: '10px 20px',
-        backgroundColor: '#f44336',
-        color: 'black',
-        border: 'none',
-        borderRadius: 8,
-        cursor: 'pointer',
-        fontSize: 16
-      }}>
-        Reintentar
-      </button>
-    </div>
-  )}
+            <span className={`${styles.cameraStatus} ${handDetected ? styles.handVisible : ''}`}>
+              <span />
+              {handDetected ? 'Mano detectada' : 'Muestra tu mano'}
+            </span>
+          </div>
 
-</div>
+          {letraObjetivo && (
+            <div className={styles.target}>
+              <span>Objetivo</span>
+              <strong>{letraObjetivo}</strong>
+            </div>
+          )}
+
+          {falloVisible && !validacionCompleta && (
+            <div className={styles.failure}>
+              <div>
+                <strong>La seña aún no es correcta</strong>
+                <p>Ajusta la posición de tu mano e intenta nuevamente.</p>
+              </div>
+              <button type="button" onClick={reintentar}>Reintentar</button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

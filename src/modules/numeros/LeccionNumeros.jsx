@@ -2,6 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import HandTracker from '../../components/HandTracker';
+import { useTheme } from '../../context/ThemeContext';
+import styles from '../abecedario/Leccion.module.css';
 
 // Bloques de números (solo el bloque 1 por ahora)
 const bloquesNumeros = {
@@ -14,6 +16,7 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
   const id = idProp || params.id;
   const bloque = bloqueProp || params.bloque;
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   let letras = [];
   if (id === 'numeros' && bloque && bloquesNumeros[bloque]) {
@@ -40,6 +43,21 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
   }
 
   const letraActual = letras[indiceLetra];
+  const progresoVisual = ((indiceLetra + (aciertoLocal ? 1 : 0)) / letras.length) * 100;
+  const cssVars = {
+    '--camera-card': theme.tarjeta,
+    '--camera-text': theme.tarjetaTexto || theme.texto,
+    '--camera-muted': theme.texto2,
+    '--camera-border': theme.borde,
+    '--camera-primary': theme.boton2,
+    '--camera-primary-shadow': '#24a997',
+    '--camera-accent': theme.boton1,
+    '--camera-accent-shadow': '#d5ad00',
+    '--camera-success': theme.correcto,
+    '--camera-success-shadow': '#087f5b',
+    '--camera-error': theme.incorrecto,
+    '--camera-soft': theme.gris,
+  };
 
   const manejarAcierto = async (letra) => {
     if (!aciertoLocal) {
@@ -54,53 +72,87 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
     }
   };
 
-  const siguienteLetra = () => {
+  const siguienteLetra = async () => {
     if (indiceLetra < letras.length - 1) {
       setIndiceLetra(indiceLetra + 1);
       setAciertoLocal(false);
     } else {
+      await Preferences.set({
+        key: `progreso_numeros_bloque_${bloque}_nivel3`,
+        value: 'completado'
+      });
       setCompletado(true);
     }
   };
 
   if (completado) {
     return (
-      <div style={{ textAlign: 'center', padding: 20 }}>
-        <h2>🎉 ¡Lección completada!</h2>
-        <button onClick={() => navigate('/menu')}>Volver al menú</button>
-      </div>
+      <section className={styles.completePage} style={cssVars}>
+        <div className={styles.completeCard}>
+          <span className={styles.completeIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg>
+          </span>
+          <span className={styles.completeEyebrow}>Práctica completada</span>
+          <h1>¡Lo lograste!</h1>
+          <p>Completaste todas las señas numéricas del módulo {bloque}.</p>
+          <button type="button" onClick={() => navigate(`/numeros/bloque/${bloque}`)}>
+            Volver al camino
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </button>
+        </div>
+      </section>
     );
   }
 
   return (
-    <div style={{ textAlign: 'center', padding: 20 }}>
-      <h2>Números – Bloque {bloque}</h2>
-      <p>Haz la seña del número frente a la cámara</p>
+    <section className={styles.page} style={cssVars}>
+      <header className={styles.lessonHeader}>
+        <div>
+          <span className={styles.eyebrow}>Números · Módulo {bloque}</span>
+          <h1>Practica con la cámara</h1>
+        </div>
+        <div className={styles.counter} aria-label={`Número ${indiceLetra + 1} de ${letras.length}`}>
+          <strong>{indiceLetra + 1}</strong><span>/ {letras.length}</span>
+        </div>
+      </header>
 
-      <h2>Número: {letraActual}</h2>
-      {aciertoLocal && (
-        <p style={{ color: 'green', fontWeight: 'bold', fontSize: 18 }}>✅ ¡Correcto!</p>
-      )}
+      <div className={styles.progressTrack} role="progressbar" aria-valuenow={Math.round(progresoVisual)} aria-valuemin="0" aria-valuemax="100">
+        <span style={{ width: `${progresoVisual}%` }} />
+      </div>
 
-      <HandTracker letraObjetivo={letraActual} onAcierto={manejarAcierto} />
+      <div className={styles.cameraCard}>
+        <div className={styles.instructions}>
+          <span className={styles.targetLabel}>Número objetivo</span>
+          <span className={styles.targetLetter}>{letraActual}</span>
+          <div><h2>Coloca tu mano frente a la cámara</h2><p>Haz la seña del número y mantenla por un momento.</p></div>
+        </div>
+        <div className={styles.trackerArea}>
+          <HandTracker letraObjetivo={letraActual} onAcierto={manejarAcierto} />
+        </div>
+      </div>
 
-      <button
-        onClick={siguienteLetra}
-        disabled={!aciertoLocal}
-        style={{
-          marginTop: 20,
-          padding: '10px 20px',
-          fontSize: 16,
-          backgroundColor: aciertoLocal ? '#4CAF50' : '#ccc',
-          color: 'white',
-          border: 'none',
-          borderRadius: 8,
-          cursor: aciertoLocal ? 'pointer' : 'not-allowed'
-        }}
-      >
-        Siguiente número ➡️
+      <div className={styles.letterSteps} aria-label="Progreso por números">
+        {letras.map((numero, posicion) => (
+          <span
+            key={numero}
+            className={`${styles.letterStep} ${
+              posicion < indiceLetra || (posicion === indiceLetra && aciertoLocal)
+                ? styles.letterStepComplete
+                : posicion === indiceLetra
+                  ? styles.letterStepCurrent
+                  : ''
+            }`}
+          >
+            {posicion < indiceLetra || (posicion === indiceLetra && aciertoLocal) ? '✓' : numero}
+          </span>
+        ))}
+      </div>
+
+      <button type="button" onClick={siguienteLetra} disabled={!aciertoLocal} className={styles.nextButton}>
+        <span>{aciertoLocal ? 'Siguiente número' : 'Completa la seña para continuar'}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
-    </div>
+    </section>
   );
 };
 

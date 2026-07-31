@@ -1,224 +1,240 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
+import { useTheme } from '../../context/ThemeContext';
+import styles from '../abecedario/Nivel2Ejercicios.module.css';
 
-// Bloque 1 de números (estáticos del 1 al 8)
-const numerosBloque1 = ['1', '2', '3', '4', '5', '6', '7', '8'];
+const numerosModuloUno = ['1', '2', '3', '4', '5', '6', '7', '8'];
+const moduloVacio = [];
 
-// Función para desordenar array
 function shuffleArray(array) {
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
+  const resultado = [...array];
+  for (let i = resultado.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [resultado[i], resultado[j]] = [resultado[j], resultado[i]];
   }
-  return arr;
+  return resultado;
 }
 
-const Nivel2NumerosEjercicios = () => {
-  const { idBloque } = useParams();
-  const navigate = useNavigate();
+function crearPreguntaInicial(numeros) {
+  if (numeros.length === 0) return { indice: null, opciones: [] };
 
-  // Por ahora solo el bloque 1 tiene ejercicios
-  const letrasBloque = idBloque === '1' ? numerosBloque1 : [];
-  const totalPreguntas = letrasBloque.length;
+  const indice = Math.floor(Math.random() * numeros.length);
+  const numeroCorrecto = numeros[indice];
+  const opcionesIncorrectas = shuffleArray(
+    numeros.filter((_, posicion) => posicion !== indice)
+  ).slice(0, 3);
+
+  return {
+    indice,
+    opciones: shuffleArray([...opcionesIncorrectas, numeroCorrecto])
+  };
+}
+
+const Nivel2NumerosContenido = ({ idBloque }) => {
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const numeros = idBloque === '1' ? numerosModuloUno : moduloVacio;
+  const totalPreguntas = numeros.length;
+  const [preguntaInicial] = useState(() => crearPreguntaInicial(numeros));
 
   const [correctFlags, setCorrectFlags] = useState(new Array(totalPreguntas).fill(false));
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(null);
+  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(preguntaInicial.indice);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [lessonComplete, setLessonComplete] = useState(false);
-  const [shuffledOptions, setShuffledOptions] = useState([]);
+  const [shuffledOptions, setShuffledOptions] = useState(preguntaInicial.opciones);
 
   const pickNextQuestion = useCallback(() => {
-    const incorrectIndices = correctFlags.reduce((acc, flag, idx) => {
-      if (!flag) acc.push(idx);
-      return acc;
+    const pendientes = correctFlags.reduce((indices, completado, posicion) => {
+      if (!completado) indices.push(posicion);
+      return indices;
     }, []);
 
-    if (incorrectIndices.length === 0) {
-      Preferences.set({ key: `progreso_numeros_bloque_${idBloque}_nivel2`, value: 'completado' });
+    if (pendientes.length === 0) {
+      Preferences.set({
+        key: `progreso_numeros_bloque_${idBloque}_nivel2`,
+        value: 'completado'
+      });
       setLessonComplete(true);
       return;
     }
 
-    const randomIdx = incorrectIndices[Math.floor(Math.random() * incorrectIndices.length)];
-    setCurrentQuestionIdx(randomIdx);
+    const indice = pendientes[Math.floor(Math.random() * pendientes.length)];
+    const numeroCorrecto = numeros[indice];
+    const incorrectas = shuffleArray(numeros.filter((numero) => numero !== numeroCorrecto)).slice(0, 3);
+
+    setCurrentQuestionIdx(indice);
     setSelectedAnswer(null);
     setShowResult(false);
+    setShuffledOptions(shuffleArray([...incorrectas, numeroCorrecto]));
+  }, [correctFlags, idBloque, numeros]);
 
-    const numeroCorrecto = letrasBloque[randomIdx];
-    // Generar opciones: 3 números incorrectos + el correcto
-    const otrosNumeros = letrasBloque.filter(n => n !== numeroCorrecto);
-    const opcionesIncorrectas = shuffleArray(otrosNumeros).slice(0, 3);
-    const todasOpciones = [...opcionesIncorrectas, numeroCorrecto];
-    setShuffledOptions(shuffleArray(todasOpciones));
-  }, [correctFlags, idBloque, letrasBloque]);
-
-  useEffect(() => {
-    setCorrectFlags(new Array(totalPreguntas).fill(false));
-    setLessonComplete(false);
-    setCurrentQuestionIdx(null);
-    setSelectedAnswer(null);
-    setShowResult(false);
-  }, [idBloque, totalPreguntas]);
-
-  useEffect(() => {
-    if (totalPreguntas > 0 && currentQuestionIdx === null && !lessonComplete) {
-      pickNextQuestion();
-    }
-  }, [totalPreguntas, currentQuestionIdx, lessonComplete, pickNextQuestion]);
-
-  const handleSelectAnswer = (numeroSeleccionado) => {
+  const handleSelectAnswer = (numero) => {
     if (showResult) return;
-    setSelectedAnswer(numeroSeleccionado);
+    setSelectedAnswer(numero);
     setShowResult(true);
 
-    const numeroCorrecto = letrasBloque[currentQuestionIdx];
-    if (numeroSeleccionado === numeroCorrecto) {
-      setCorrectFlags(prev => {
-        const updated = [...prev];
-        updated[currentQuestionIdx] = true;
-        return updated;
+    if (numero === numeros[currentQuestionIdx]) {
+      setCorrectFlags((actuales) => {
+        const actualizados = [...actuales];
+        actualizados[currentQuestionIdx] = true;
+        return actualizados;
       });
     }
   };
 
-  const handleNext = () => {
-    if (lessonComplete) return;
-    pickNextQuestion();
-  };
-
   const superadas = correctFlags.filter(Boolean).length;
   const progreso = totalPreguntas > 0 ? (superadas / totalPreguntas) * 100 : 0;
+  const cssVars = {
+    '--quiz-card': theme.tarjeta,
+    '--quiz-text': theme.tarjetaTexto || theme.texto,
+    '--quiz-muted': theme.texto2,
+    '--quiz-border': theme.borde,
+    '--quiz-primary': theme.boton2,
+    '--quiz-primary-shadow': '#24a997',
+    '--quiz-accent': theme.boton1,
+    '--quiz-accent-shadow': '#d5ad00',
+    '--quiz-success': theme.correcto,
+    '--quiz-success-shadow': '#087f5b',
+    '--quiz-error': theme.incorrecto,
+    '--quiz-soft': theme.gris,
+  };
 
   if (totalPreguntas === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 20 }}>
-        <p>No hay ejercicios para este bloque todavía.</p>
-        <button onClick={() => navigate(-1)}>Volver</button>
+      <div className={styles.emptyState} style={cssVars}>
+        <p>No hay ejercicios para este módulo todavía.</p>
+        <button type="button" onClick={() => navigate('/numeros')}>Volver</button>
       </div>
     );
   }
 
   if (lessonComplete) {
     return (
-      <div style={{ textAlign: 'center', padding: 40 }}>
-        <h2>🎉 ¡Nivel 2 completado!</h2>
-        <p>Has acertado todas las señas numéricas.</p>
-        <button onClick={() => navigate(`/bloque-numeros/${idBloque}`)}>Volver al camino</button>
-      </div>
+      <section className={styles.completePage} style={cssVars}>
+        <div className={styles.completeCard}>
+          <span className={styles.completeIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg>
+          </span>
+          <span className={styles.completeEyebrow}>Nivel completado</span>
+          <h1>¡Excelente trabajo!</h1>
+          <p>Reconociste correctamente todas las señas numéricas.</p>
+          <div className={styles.completeScore}>
+            <strong>{totalPreguntas}</strong>
+            <span>números superados</span>
+          </div>
+          <button type="button" onClick={() => navigate(`/numeros/bloque/${idBloque}`)}>
+            Volver al camino
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </button>
+        </div>
+      </section>
     );
   }
 
-  if (currentQuestionIdx === null) {
-    return <p style={{ textAlign: 'center', padding: 40 }}>⏳ Preparando ejercicios...</p>;
-  }
-
-  const numeroCorrecto = letrasBloque[currentQuestionIdx];
-  const imagenSrc = `/assets/numeros/imagen_${numeroCorrecto}.png`; // Ajusta la ruta según tu carpeta de imágenes
+  const numeroCorrecto = numeros[currentQuestionIdx];
+  const imagenSrc = `/assets/numeros/imagen_${numeroCorrecto}.png`;
 
   return (
-    <div style={{ padding: 20, textAlign: 'center' }}>
-      <h2>Bloque {idBloque} – Practicar números</h2>
-      <p>¿Qué número representa esta seña?</p>
+    <section className={styles.page} style={cssVars}>
+      <header className={styles.quizHeader}>
+        <div>
+          <span className={styles.eyebrow}>Números · Módulo {idBloque}</span>
+          <h1>Reconoce la seña</h1>
+        </div>
+        <div className={styles.score} aria-label={`${superadas} de ${totalPreguntas} superados`}>
+          <strong>{superadas}</strong><span>/ {totalPreguntas}</span>
+        </div>
+      </header>
 
-      {/* Barra de progreso */}
-      <div style={{ width: '100%', backgroundColor: '#ddd', borderRadius: 10, margin: '20px 0', height: 12 }}>
-        <div
-          style={{
-            width: `${progreso}%`,
-            backgroundColor: '#FF9800',
-            height: '100%',
-            borderRadius: 10,
-            transition: 'width 0.3s'
-          }}
-        ></div>
-      </div>
-      <span style={{ fontSize: 14 }}>{superadas} / {totalPreguntas} superadas</span>
-
-      {/* Imagen de la seña (la pregunta) */}
-      <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-        <img
-          src={imagenSrc}
-          alt={`Seña del número ${numeroCorrecto}`}
-          style={{ width: 150, height: 150, objectFit: 'contain', border: '3px solid #ccc', borderRadius: 16 }}
-          onError={(e) => { e.target.src = `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150"%3E%3Ctext x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="80"%3E${numeroCorrecto}%3C/text%3E%3C/svg%3E`; }}
-        />
+      <div className={styles.progressTrack} role="progressbar" aria-valuenow={Math.round(progreso)} aria-valuemin="0" aria-valuemax="100">
+        <span style={{ width: `${progreso}%` }} />
       </div>
 
-      {/* Opciones (números) */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginTop: 20 }}>
-        {shuffledOptions.map((numero, idx) => {
-          const esCorrecta = numero === numeroCorrecto;
-          const esSeleccionada = selectedAnswer === numero;
-          let borderStyle = '2px solid #ddd';
-          let bgColor = '#f9f9f9';
-          if (showResult) {
-            if (esCorrecta) {
-              borderStyle = '2px solid #4CAF50';
-              bgColor = '#c8f7c5';
-            } else if (esSeleccionada && !esCorrecta) {
-              borderStyle = '2px solid #f44336';
-              bgColor = '#f7c5c5';
-            }
-          }
-          return (
-            <button
-              key={idx}
-              onClick={() => handleSelectAnswer(numero)}
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 16,
-                border: borderStyle,
-                backgroundColor: bgColor,
-                fontSize: 36,
-                fontWeight: 'bold',
-                color: 'black',
-                cursor: showResult ? 'default' : 'pointer',
-                transition: '0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              disabled={showResult}
-            >
-              {numero}
-            </button>
-          );
-        })}
+      <div className={styles.challenge}>
+        <div className={styles.prompt}>
+          <span className={styles.promptNumber}>Pregunta</span>
+          <h2>¿Qué número representa esta seña?</h2>
+          <p>Observa la posición de la mano y elige una respuesta.</p>
+        </div>
+
+        <div className={styles.signFrame}>
+          <span className={styles.signGlow} aria-hidden="true" />
+          <img
+            src={imagenSrc}
+            alt={`Seña del número ${numeroCorrecto}`}
+            onError={(event) => { event.currentTarget.style.display = 'none'; }}
+          />
+          <span className={styles.signHint}>Seña objetivo</span>
+        </div>
+
+        <div className={styles.answers} aria-label="Opciones de respuesta">
+          {shuffledOptions.map((numero) => {
+            const esCorrecta = numero === numeroCorrecto;
+            const esSeleccionada = selectedAnswer === numero;
+            const claseResultado = showResult
+              ? esCorrecta
+                ? styles.answerCorrect
+                : esSeleccionada
+                  ? styles.answerWrong
+                  : styles.answerDimmed
+              : '';
+
+            return (
+              <button
+                key={numero}
+                type="button"
+                onClick={() => handleSelectAnswer(numero)}
+                className={`${styles.answerButton} ${claseResultado}`}
+                disabled={showResult}
+                aria-label={`Número ${numero}`}
+              >
+                <span>{numero}</span>
+                {showResult && esCorrecta && (
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7" /></svg>
+                )}
+                {showResult && esSeleccionada && !esCorrecta && (
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Retroalimentación y botón siguiente */}
       {showResult && (
-        <div style={{ marginTop: 20 }}>
-          <p style={{
-            fontWeight: 'bold',
-            fontSize: 20,
-            color: selectedAnswer === numeroCorrecto ? 'green' : 'red'
-          }}>
-            {selectedAnswer === numeroCorrecto ? '✅ ¡Correcto!' : '❌ Incorrecto'}
-          </p>
-          <button
-            onClick={handleNext}
-            style={{
-              marginTop: 10,
-              padding: '12px 24px',
-              fontSize: 16,
-              backgroundColor: '#FF9800',
-              color: 'black',
-              border: 'none',
-              borderRadius: 8,
-              cursor: 'pointer'
-            }}
-          >
-            Siguiente →
+        <div className={`${styles.feedback} ${
+          selectedAnswer === numeroCorrecto ? styles.feedbackCorrect : styles.feedbackWrong
+        }`} role="status">
+          <span className={styles.feedbackIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              {selectedAnswer === numeroCorrecto
+                ? <path d="m5 12 4.5 4.5L19 7" />
+                : <path d="M6 6l12 12M18 6 6 18" />}
+            </svg>
+          </span>
+          <div>
+            <strong>{selectedAnswer === numeroCorrecto ? '¡Respuesta correcta!' : 'Sigue practicando'}</strong>
+            <p>
+              {selectedAnswer === numeroCorrecto
+                ? `Reconociste la seña del número ${numeroCorrecto}.`
+                : `La respuesta correcta era el número ${numeroCorrecto}.`}
+            </p>
+          </div>
+          <button type="button" onClick={pickNextQuestion}>
+            Continuar
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </button>
         </div>
       )}
-    </div>
+    </section>
   );
+};
+
+const Nivel2NumerosEjercicios = () => {
+  const { idBloque } = useParams();
+  return <Nivel2NumerosContenido key={idBloque} idBloque={idBloque} />;
 };
 
 export default Nivel2NumerosEjercicios;

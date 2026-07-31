@@ -1,43 +1,144 @@
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
+import styles from '../abecedario/AbecedarioMenu.module.css';
 
 const bloques = [
-  { id: 1, nombre: 'Números estáticos', numeros: ['1', '2', '3', '4', '5', '6', '7', '8'] }, // Puedes añadir más números
-  { id: 2, nombre: 'Números en movimiento', numeros: [] }, // Placeholder
-  { id: 3, nombre: 'Decenas', numeros: [] },
+  {
+    id: 1,
+    nombre: 'Números estáticos',
+    descripcion: 'Aprende las señas del 1 al 8',
+    contenidos: ['1', '2', '3', '4', '5', '6', '7', '8'],
+    disponible: true
+  },
+  {
+    id: 2,
+    nombre: 'Números en movimiento',
+    descripcion: 'Actividades dinámicas',
+    contenidos: ['Movimiento'],
+    disponible: false
+  },
+  {
+    id: 3,
+    nombre: 'Decenas',
+    descripcion: 'Retos con cantidades',
+    contenidos: ['10', '20', '30'],
+    disponible: false
+  },
 ];
 
 const NumerosMenu = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const [animandoId, setAnimandoId] = useState(null);
+  const temporizadorRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (temporizadorRef.current) clearTimeout(temporizadorRef.current);
+    };
+  }, []);
+
+  const manejarClick = (bloque) => {
+    if (!bloque.disponible || animandoId !== null) return;
+    setAnimandoId(bloque.id);
+    temporizadorRef.current = setTimeout(() => {
+      navigate(`/numeros/bloque/${bloque.id}`);
+    }, 150);
+  };
+
+  const cssVars = {
+    '--modules-card': theme.tarjeta,
+    '--modules-text': theme.tarjetaTexto || theme.texto,
+    '--modules-muted': theme.texto2,
+    '--modules-border': theme.borde,
+    '--modules-primary': theme.boton2,
+    '--modules-primary-shadow': '#24a997',
+    '--modules-accent': theme.boton1,
+    '--modules-accent-shadow': '#d5ad00',
+    '--modules-success': theme.correcto,
+    '--modules-soft': theme.gris,
+  };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2 style={{ textAlign: 'center' }}>Números</h2>
-      <p style={{ textAlign: 'center' }}>Elige un bloque para aprender</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 20 }}>
-        {bloques.map((bloque) => (
-          <div
-            key={bloque.id}
-            onClick={() => navigate(`/numeros/bloque/${bloque.id}`)}
-            style={{
-              backgroundColor: '#4AA7F7',
-              color: 'white',
-              padding: 15,
-              borderRadius: 12,
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              fontWeight: 'bold',
-              fontSize: 18,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <span>Bloque {bloque.id}</span>
-            <span>{bloque.nombre}</span>
-          </div>
-        ))}
+    <section className={styles.page} style={cssVars}>
+      <header className={styles.hero} data-decoration="123">
+        <div className={styles.heroIcon} aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 4v16M4 7l3-3 3 3" />
+            <path d="M13 8a3.5 3.5 0 1 1 7 0c0 4.5-7 5.5-7 11h7" />
+          </svg>
+        </div>
+        <div className={styles.heroText}>
+          <span className={styles.eyebrow}>Curso de LSM</span>
+          <h1>Números</h1>
+          <p>Aprende a expresar cantidades con tus manos.</p>
+        </div>
+        <div className={styles.heroCount}>
+          <strong>3</strong>
+          <span>módulos</span>
+        </div>
+      </header>
+
+      <div className={styles.sectionHeading}>
+        <div>
+          <span>Tu recorrido</span>
+          <h2>Selecciona un módulo</h2>
+        </div>
+        <span className={styles.totalLetters}>1 disponible</span>
       </div>
-    </div>
+
+      <div className={styles.grid}>
+        {bloques.map((bloque) => {
+          const estaAnimando = animandoId === bloque.id;
+          return (
+            <button
+              key={bloque.id}
+              type="button"
+              onClick={() => manejarClick(bloque)}
+              disabled={!bloque.disponible}
+              className={`${styles.moduleCard} ${estaAnimando ? styles.moduleCardActive : ''}`}
+              aria-label={
+                bloque.disponible
+                  ? `Módulo ${bloque.id}: ${bloque.nombre}`
+                  : `Módulo ${bloque.id}: ${bloque.nombre}. Próximamente`
+              }
+            >
+              <span className={styles.moduleTop}>
+                <span className={styles.moduleNumber}>{bloque.id}</span>
+                <span className={styles.moduleMeta}>
+                  <small>Módulo {bloque.id}</small>
+                  <strong>{bloque.nombre}</strong>
+                </span>
+                <span className={styles.arrow} aria-hidden="true">
+                  {bloque.disponible ? (
+                    <svg viewBox="0 0 24 24">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24">
+                      <rect x="5" y="10" width="14" height="10" rx="2" />
+                      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                    </svg>
+                  )}
+                </span>
+              </span>
+
+              <span className={styles.letterList}>
+                {bloque.contenidos.map((contenido) => (
+                  <span key={contenido} className={styles.letterChip}>{contenido}</span>
+                ))}
+              </span>
+
+              <span className={styles.cardFooter}>
+                <span className={styles.cardLine} />
+                <span>{bloque.disponible ? bloque.descripcion : 'Próximamente'}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 };
 

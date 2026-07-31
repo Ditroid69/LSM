@@ -1,0 +1,301 @@
+.page {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  padding: max(18px, env(safe-area-inset-top, 0px)) 16px max(18px, env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--welcome-text);
+  background:
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--welcome-primary) 18%, transparent) 0 150px, transparent 151px),
+    radial-gradient(circle at 95% 88%, color-mix(in srgb, var(--welcome-accent) 15%, transparent) 0 190px, transparent 191px),
+    var(--welcome-background);
+}
+
+.page::before,
+.page::after {
+  content: '';
+  position: absolute;
+  border: 2px solid color-mix(in srgb, var(--welcome-primary) 17%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.page::before { top: -95px; right: -85px; width: 240px; height: 240px; }
+.page::after { bottom: -120px; left: -90px; width: 280px; height: 280px; }
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 430px);
+  padding: clamp(26px, 7vw, 40px);
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--welcome-primary) 30%, var(--welcome-border));
+  border-radius: 30px;
+  color: var(--welcome-text);
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--welcome-accent) 19%, transparent) 0 115px, transparent 116px),
+    var(--welcome-card);
+  box-shadow:
+    0 10px 0 color-mix(in srgb, var(--welcome-border) 75%, var(--welcome-card)),
+    0 28px 60px rgba(0, 0, 0, 0.17);
+  text-align: center;
+  animation: cardIn 350ms ease-out;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.brand,
+.splash {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand {
+  width: 140px;
+  height: 108px;
+  margin: 0 auto 15px;
+}
+
+.brand img,
+.splash img {
+  position: relative;
+  z-index: 1;
+  width: 132px;
+  height: auto;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.14));
+}
+
+.logoHalo {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--welcome-primary) 22%, transparent);
+  animation: halo 2.2s ease-in-out infinite;
+}
+
+@keyframes halo {
+  0%, 100% { transform: scale(0.92); opacity: 0.65; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.eyebrow {
+  display: block;
+  color: var(--welcome-primary-shadow);
+  font-size: 0.67rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.card h1 {
+  margin: 7px 0 0;
+  color: var(--welcome-text);
+  font-size: clamp(1.65rem, 7vw, 2.15rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.card > p {
+  margin-top: 11px;
+  color: var(--welcome-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.field {
+  margin-top: 26px;
+  text-align: left;
+}
+
+.field label {
+  display: block;
+  margin: 0 0 7px 3px;
+  color: var(--welcome-text);
+  font-size: 0.71rem;
+  font-weight: 900;
+}
+
+.inputWrapper { position: relative; }
+
+.inputWrapper svg {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: var(--welcome-primary-shadow);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.inputWrapper input {
+  width: 100%;
+  height: 54px;
+  padding: 0 15px 0 47px;
+  box-sizing: border-box;
+  border: 2px solid color-mix(in srgb, var(--welcome-primary) 48%, var(--welcome-border));
+  border-radius: 16px;
+  outline: none;
+  color: var(--welcome-text);
+  background: color-mix(in srgb, var(--welcome-soft) 42%, var(--welcome-card));
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.inputWrapper input::placeholder { color: var(--welcome-muted); opacity: 0.75; }
+.inputWrapper input:focus {
+  border-color: var(--welcome-primary);
+  background: var(--welcome-card);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--welcome-primary) 18%, transparent);
+}
+
+.card > button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 22px;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #063e38;
+  background: var(--welcome-primary);
+  box-shadow: 0 6px 0 var(--welcome-primary-shadow);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.card > button svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card > button:disabled {
+  color: var(--welcome-muted);
+  background: var(--welcome-soft);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--welcome-muted) 28%, transparent);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.card > small {
+  display: block;
+  margin-top: 18px;
+  color: var(--welcome-muted);
+  font-size: 0.6rem;
+  line-height: 1.35;
+}
+
+.loadingTrack {
+  width: 100%;
+  height: 12px;
+  margin-top: 28px;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--welcome-border) 75%, transparent);
+  border-radius: 999px;
+  background: var(--welcome-soft);
+}
+
+.loadingTrack span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--welcome-primary), color-mix(in srgb, var(--welcome-primary) 68%, white));
+  animation: load 1.5s linear forwards;
+  transform-origin: left;
+}
+
+@keyframes load {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.loadingStatus {
+  margin-top: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--welcome-muted);
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.loadingStatus > span { display: flex; gap: 3px; }
+.loadingStatus i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--welcome-primary);
+  animation: dot 0.8s ease-in-out infinite alternate;
+}
+.loadingStatus i:nth-child(2) { animation-delay: 0.15s; }
+.loadingStatus i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes dot {
+  from { opacity: 0.3; transform: translateY(1px); }
+  to { opacity: 1; transform: translateY(-2px); }
+}
+
+.splash {
+  width: 220px;
+  height: 180px;
+}
+
+.splash img {
+  width: 205px;
+  animation: cardIn 400ms ease-out;
+}
+
+@media (max-width: 420px) {
+  .card { padding: 25px 20px; border-radius: 25px; }
+  .brand { height: 94px; margin-bottom: 12px; }
+  .brand img { width: 118px; }
+  .field { margin-top: 22px; }
+}
+
+@media (max-height: 650px) {
+  .card { padding-top: 20px; padding-bottom: 20px; }
+  .brand { height: 78px; margin-bottom: 8px; }
+  .brand img { width: 104px; }
+  .field { margin-top: 17px; }
+  .card > small { margin-top: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .logoHalo,
+  .loadingTrack span,
+  .loadingStatus i,
+  .splash img {
+    animation: none;
+  }
+}

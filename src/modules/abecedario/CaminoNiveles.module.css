@@ -1,0 +1,463 @@
+.page {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  padding: clamp(4px, 1vw, 12px) 0 40px;
+  box-sizing: border-box;
+  color: var(--path-text);
+}
+
+.summary {
+  position: sticky;
+  top: calc(var(--header-height, 98px) + env(safe-area-inset-top, 0px) + 14px);
+  z-index: 20;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(20px, 4vw, 30px);
+  border: 1px solid color-mix(in srgb, var(--path-primary) 35%, var(--path-border));
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 92% 10%, color-mix(in srgb, var(--path-accent) 24%, transparent) 0 62px, transparent 63px),
+    linear-gradient(135deg, color-mix(in srgb, var(--path-primary) 16%, var(--path-card)), var(--path-card) 68%);
+  box-shadow:
+    0 8px 0 color-mix(in srgb, var(--path-border) 78%, var(--path-card)),
+    0 18px 30px rgba(0, 0, 0, 0.16);
+  isolation: isolate;
+  text-align: left;
+}
+
+.summary::after {
+  content: '';
+  position: absolute;
+  right: -34px;
+  bottom: -56px;
+  width: 150px;
+  height: 150px;
+  border: 24px solid color-mix(in srgb, var(--path-primary) 12%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.summaryText {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--path-primary-shadow);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  color: var(--path-text);
+  font-size: clamp(1.55rem, 4vw, 2.2rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+.letters {
+  margin-top: 9px;
+  color: var(--path-muted);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.letters strong {
+  color: var(--path-text);
+}
+
+.progressBadge {
+  position: relative;
+  z-index: 1;
+  width: 90px;
+  min-width: 90px;
+  height: 90px;
+  border: 5px solid color-mix(in srgb, var(--path-primary) 50%, var(--path-card));
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--path-card);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--path-primary-shadow) 75%, transparent);
+}
+
+.progressNumber {
+  color: var(--path-text);
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.progressLabel {
+  margin-top: 4px;
+  color: var(--path-muted);
+  font-size: 0.57rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.path {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 560px);
+  margin: clamp(44px, 8vw, 66px) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(52px, 9vw, 72px);
+}
+
+.step {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 108px;
+  display: grid;
+  grid-template-columns: 124px minmax(0, 210px);
+  align-items: center;
+  justify-content: center;
+  column-gap: 24px;
+}
+
+.stepLeft {
+  transform: translateX(-64px);
+}
+
+.stepRight {
+  grid-template-columns: minmax(0, 210px) 124px;
+  transform: translateX(64px);
+}
+
+.stepRight .levelButton {
+  grid-column: 2;
+}
+
+.stepRight .stepInfo {
+  grid-column: 1;
+  grid-row: 1;
+  text-align: right;
+}
+
+.connector {
+  position: absolute;
+  z-index: -1;
+  top: 82px;
+  left: 50%;
+  width: 112px;
+  height: 92px;
+  border-right: 10px solid var(--path-locked);
+  border-bottom: 10px solid var(--path-locked);
+  border-radius: 0 0 70px;
+  transform: translateX(2px) rotate(20deg);
+  opacity: 0.9;
+}
+
+.stepRight .connector {
+  right: 50%;
+  left: auto;
+  border-right: 0;
+  border-bottom: 10px solid var(--path-locked);
+  border-left: 10px solid var(--path-locked);
+  border-radius: 0 0 0 70px;
+  transform: translateX(-2px) rotate(-20deg);
+}
+
+.connectorComplete,
+.stepRight .connectorComplete {
+  border-color: var(--path-complete);
+}
+
+.levelButton {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.levelButton::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 3px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+}
+
+.levelButton:not(:disabled):hover {
+  filter: brightness(1.05);
+  transform: translateY(-4px);
+}
+
+.levelButton:not(:disabled):active {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 var(--level-shadow);
+}
+
+.levelButton:focus-visible {
+  outline: 4px solid color-mix(in srgb, var(--path-accent) 80%, white);
+  outline-offset: 5px;
+}
+
+.levelAvailable {
+  --level-shadow: var(--path-primary-shadow);
+  background: var(--path-primary);
+  box-shadow: 0 9px 0 var(--level-shadow), 0 13px 20px rgba(0, 0, 0, 0.18);
+}
+
+.levelComplete {
+  --level-shadow: var(--path-complete-shadow);
+  background: var(--path-complete);
+  box-shadow: 0 9px 0 var(--level-shadow), 0 13px 20px rgba(0, 0, 0, 0.18);
+}
+
+.levelLocked {
+  --level-shadow: color-mix(in srgb, var(--path-muted) 55%, transparent);
+  color: var(--path-muted);
+  background: var(--path-locked);
+  box-shadow: 0 8px 0 var(--level-shadow);
+  cursor: not-allowed;
+}
+
+.levelLocked::before {
+  border-color: color-mix(in srgb, var(--path-muted) 22%, transparent);
+}
+
+.levelInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.levelInner svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.levelCurrent::after {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  border: 3px solid var(--path-accent);
+  border-radius: 50%;
+  animation: currentPulse 1.8s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes currentPulse {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.88);
+  }
+  75%,
+  100% {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+}
+
+.stepInfo {
+  min-width: 0;
+  text-align: left;
+}
+
+.levelNumber {
+  color: var(--path-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stepInfo h2 {
+  margin: 2px 0 3px;
+  color: var(--path-text);
+  font-size: clamp(1.08rem, 3vw, 1.3rem);
+  font-weight: 900;
+}
+
+.stepInfo p {
+  color: var(--path-muted);
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.status {
+  display: inline-flex;
+  margin-top: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.statusComplete {
+  color: var(--path-complete);
+  background: color-mix(in srgb, var(--path-complete) 15%, transparent);
+}
+
+.statusAvailable {
+  color: var(--path-primary-shadow);
+  background: color-mix(in srgb, var(--path-primary) 18%, transparent);
+}
+
+.statusLocked {
+  color: var(--path-muted);
+  background: var(--path-locked);
+}
+
+@media (max-width: 640px) {
+  .summary {
+    top: calc(var(--header-height, 78px) + env(safe-area-inset-top, 0px) + 10px);
+    border-radius: 22px;
+  }
+
+  .progressBadge {
+    width: 76px;
+    min-width: 76px;
+    height: 76px;
+    border-width: 4px;
+  }
+
+  .progressNumber {
+    font-size: 1.15rem;
+  }
+
+  .progressLabel {
+    font-size: 0.5rem;
+  }
+
+  .path {
+    gap: 54px;
+  }
+
+  .step {
+    grid-template-columns: 100px minmax(0, 170px);
+    column-gap: 14px;
+  }
+
+  .stepRight {
+    grid-template-columns: minmax(0, 170px) 100px;
+  }
+
+  .stepLeft {
+    transform: translateX(-28px);
+  }
+
+  .stepRight {
+    transform: translateX(28px);
+  }
+
+  .levelButton {
+    width: 88px;
+    height: 88px;
+  }
+
+  .levelInner svg {
+    width: 37px;
+    height: 37px;
+  }
+
+  .connector {
+    top: 72px;
+    width: 80px;
+    height: 80px;
+    border-right-width: 8px;
+    border-bottom-width: 8px;
+  }
+
+  .stepRight .connector {
+    border-bottom-width: 8px;
+    border-left-width: 8px;
+  }
+}
+
+@media (max-width: 410px) {
+  .summary {
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .progressBadge {
+    width: 66px;
+    min-width: 66px;
+    height: 66px;
+  }
+
+  .progressLabel {
+    display: none;
+  }
+
+  .path {
+    margin-top: 42px;
+  }
+
+  .step,
+  .stepRight {
+    grid-template-columns: 86px minmax(0, 145px);
+    column-gap: 10px;
+  }
+
+  .stepRight {
+    grid-template-columns: minmax(0, 145px) 86px;
+  }
+
+  .stepLeft {
+    transform: translateX(-15px);
+  }
+
+  .stepRight {
+    transform: translateX(15px);
+  }
+
+  .levelButton {
+    width: 77px;
+    height: 77px;
+  }
+
+  .levelInner svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .stepInfo p {
+    font-size: 0.74rem;
+  }
+
+  .connector {
+    top: 65px;
+    width: 65px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .levelButton {
+    transition: none;
+  }
+
+  .levelCurrent::after {
+    animation: none;
+  }
+}

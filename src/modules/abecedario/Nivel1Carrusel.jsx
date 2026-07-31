@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
+import { useTheme } from '../../context/ThemeContext';
+import styles from './Nivel1Carrusel.module.css';
 
 const contenidoBloque = {
   1: [
@@ -27,7 +29,7 @@ const contenidoBloque = {
   4: [
     { letra: 'L', descripcion: 'Índice extendido, pulgar extendido formando una L.', imagen: '/assets/abecedario/imagen_l.jpg' },
     { letra: 'M', descripcion: 'Índice, medio y anular extendidos y juntos, meñique doblado, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_m.jpg' },
-    { letra: 'Ñ', descripcion: 'Índice y medio juntos, pulgar entre los dedos (similar a H).', imagen: '/assets/abecedario/imagen_ñ.jpg' },
+    { letra: 'Ñ', descripcion: 'Índice y medio juntos, pulgar entre los dedos (similar a H).', imagen: '/assets/abecedario/imagen_n.jpg' },
     { letra: 'R', descripcion: 'Índice y medio juntos, pulgar tocando la base del índice.', imagen: '/assets/abecedario/imagen_r.jpg' },
   ],
   5: [
@@ -42,6 +44,7 @@ const contenidoBloque = {
 const Nivel1Carrusel = () => {
   const { idBloque } = useParams();
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [indice, setIndice] = useState(0);
 
   const bloque = contenidoBloque[idBloque];
@@ -57,77 +60,139 @@ const Nivel1Carrusel = () => {
   const item = bloque[indice];
   const esUltimo = indice === bloque.length - 1;
 
-  const siguiente = () => {
+  const siguiente = async () => {
     if (esUltimo) {
-      // Marcar nivel como completado
-      Preferences.set({ key: `progreso_bloque_${idBloque}_nivel1`, value: 'completado' });
-      navigate(`/bloque/${idBloque}`); // volver al camino de niveles
+      await Preferences.set({
+        key: `progreso_bloque_${idBloque}_nivel1`,
+        value: 'completado'
+      });
+      navigate(`/bloque/${idBloque}`);
     } else {
-      setIndice(indice + 1);
+      setIndice((actual) => actual + 1);
     }
   };
 
   const anterior = () => {
-    if (indice > 0) setIndice(indice - 1);
+    if (indice > 0) setIndice((actual) => actual - 1);
+  };
+
+  const progreso = ((indice + 1) / bloque.length) * 100;
+  const cssVars = {
+    '--lesson-card': theme.tarjeta,
+    '--lesson-text': theme.tarjetaTexto || theme.texto,
+    '--lesson-muted': theme.texto2,
+    '--lesson-border': theme.borde,
+    '--lesson-primary': theme.boton2,
+    '--lesson-primary-shadow': '#24a997',
+    '--lesson-accent': theme.boton1,
+    '--lesson-accent-shadow': '#d5ad00',
+    '--lesson-success': theme.correcto,
+    '--lesson-success-shadow': '#087f5b',
+    '--lesson-soft': theme.gris,
   };
 
   return (
-    <div style={{ padding: 20, textAlign: 'center' }}>
-      <h2>Bloque {idBloque} - Aprender</h2>
-      <div style={{
-        backgroundColor: '#f9f9f9',
-        borderRadius: 16,
-        padding: 30,
-        margin: '20px 0',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-        minHeight: 200,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <div style={{
-  backgroundColor: '#f9f9f9',
-  borderRadius: 16,
-  padding: 30,
-  margin: '20px 0',
-  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-  minHeight: 200,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center'
-}}>
-  {/* Imagen de la seña */}
-  {item.imagen && (
-          <img
-            src={item.imagen}
-            alt={`Seña de ${item.letra}`}
-            style={{ width: 120, height: 120, objectFit: 'contain', marginBottom: 10 }}
-            onError={(e) => { e.target.style.display = 'none'; }} // oculta si no carga
-          />
-        )}
-        <div style={{ fontSize: 80, margin: 20 }}>{item.letra}</div>
-        <p style={{ fontSize: 18, maxWidth: 300 }}>{item.descripcion}</p>
-      </div>
-        {/* Aquí más adelante podemos añadir una imagen o GIF de la seña */}
+    <section className={styles.page} style={cssVars}>
+      <header className={styles.lessonHeader}>
+        <div>
+          <span className={styles.eyebrow}>Abecedario · Bloque {idBloque}</span>
+          <h1>Aprende la seña</h1>
+        </div>
+        <div className={styles.counter} aria-label={`Seña ${indice + 1} de ${bloque.length}`}>
+          <strong>{indice + 1}</strong>
+          <span>/ {bloque.length}</span>
+        </div>
+      </header>
+
+      <div
+        className={styles.progressTrack}
+        role="progressbar"
+        aria-label="Progreso del nivel"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow={Math.round(progreso)}
+      >
+        <span className={styles.progressFill} style={{ width: `${progreso}%` }} />
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}>
-        <button onClick={anterior} disabled={indice === 0}
-          style={{ padding: '10px 20px', fontSize: 16 }}>
-          ← Anterior
+      <article className={styles.signCard} key={item.letra}>
+        <div className={styles.imageColumn}>
+          <span className={styles.imageLabel}>Observa la posición</span>
+          <div className={styles.imageFrame}>
+            <span className={styles.imageGlow} aria-hidden="true" />
+            {item.imagen && (
+              <img
+                src={item.imagen}
+                alt={`Demostración de la seña para la letra ${item.letra}`}
+                onError={(event) => {
+                  event.currentTarget.style.display = 'none';
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className={styles.contentColumn}>
+          <span className={styles.signTag}>Letra</span>
+          <div className={styles.letter}>{item.letra}</div>
+          <h2>¿Cómo hacerla?</h2>
+          <p>{item.descripcion}</p>
+          <div className={styles.tip}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 18h6M10 22h4" />
+              <path d="M8.2 14.5A7 7 0 1 1 15.8 14.5 4 4 0 0 0 15 16H9a4 4 0 0 0-.8-1.5z" />
+            </svg>
+            <span>Observa bien los dedos y practica con calma.</span>
+          </div>
+        </div>
+      </article>
+
+      <div className={styles.dots} aria-hidden="true">
+        {bloque.map((seña, posicion) => (
+          <span
+            key={seña.letra}
+            className={`${styles.dot} ${
+              posicion === indice
+                ? styles.dotCurrent
+                : posicion < indice
+                  ? styles.dotVisited
+                  : ''
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className={styles.controls}>
+        <button
+          type="button"
+          onClick={anterior}
+          disabled={indice === 0}
+          className={styles.previousButton}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5M11 6l-6 6 6 6" />
+          </svg>
+          <span>Anterior</span>
         </button>
-        <span>{indice + 1} / {bloque.length}</span>
-        <button onClick={siguiente}
-          style={{ padding: '10px 20px', fontSize: 16, backgroundColor: '#4CAF50', color: 'black', border: 'none', borderRadius: 8 }}>
-          {esUltimo ? 'Finalizar' : 'Siguiente →'}
+
+        <button
+          type="button"
+          onClick={siguiente}
+          className={`${styles.nextButton} ${esUltimo ? styles.finishButton : ''}`}
+        >
+          <span>{esUltimo ? 'Finalizar nivel' : 'Siguiente'}</span>
+          {esUltimo ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m5 12 4.5 4.5L19 7" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          )}
         </button>
       </div>
-      <div style={{ width: '100%', backgroundColor: '#ddd', borderRadius: 10, marginTop: 20, height: 10 }}>
-        <div style={{ width: `${((indice + 1) / bloque.length) * 100}%`, backgroundColor: '#4CAF50', height: '100%', borderRadius: 10 }}></div>
-      </div>
-    </div>
+    </section>
   );
 };
 
