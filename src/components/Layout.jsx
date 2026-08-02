@@ -25,13 +25,9 @@ const Layout = () => {
     cargarNombre();
   }, []);
 
-  const esNivel =
-    location.pathname.includes('/nivel1') ||
-    location.pathname.includes('/nivel2') ||
-    location.pathname.includes('/nivel3');
   const esInicio = location.pathname === '/';
   const esMenu = location.pathname === '/menu';
-  const mostrarBotonAtras = !esNivel && !esInicio && !esMenu;
+  const mostrarBotonAtras = !esInicio && !esMenu;
 
   const obtenerClaveNivelActual = () => {
     const nivelAbecedario = location.pathname.match(/^\/bloque\/([^/]+)\/nivel([1-3])$/);
@@ -42,6 +38,11 @@ const Layout = () => {
     const nivelNumeros = location.pathname.match(/^\/numeros\/bloque\/([^/]+)\/nivel([1-3])$/);
     if (nivelNumeros) {
       return `progreso_numeros_bloque_${nivelNumeros[1]}_nivel${nivelNumeros[2]}`;
+    }
+
+    const nivelSaludos = location.pathname.match(/^\/saludos\/modulo\/([^/]+)\/nivel([1-2])$/);
+    if (nivelSaludos) {
+      return `progreso_saludos_modulo_${nivelSaludos[1]}_nivel${nivelSaludos[2]}`;
     }
 
     return null;
@@ -64,6 +65,33 @@ const Layout = () => {
 
   const handleBack = async () => {
     const path = location.pathname;
+    const nivelSaludos = path.match(/^\/saludos\/modulo\/([^/]+)\/nivel[1-2]$/);
+    if (nivelSaludos) {
+      await solicitarNavegacion(`/saludos/modulo/${nivelSaludos[1]}`);
+      return;
+    }
+    if (/^\/saludos\/modulo\/[^/]+$/.test(path)) {
+      await solicitarNavegacion('/saludos');
+      return;
+    }
+    const nivelNumeros = path.match(/^\/numeros\/bloque\/([^/]+)\/nivel[1-3]$/);
+    if (nivelNumeros) {
+      await solicitarNavegacion(`/numeros/bloque/${nivelNumeros[1]}`);
+      return;
+    }
+    const nivelAbecedario = path.match(/^\/bloque\/([^/]+)\/nivel[1-3]$/);
+    if (nivelAbecedario) {
+      await solicitarNavegacion(`/bloque/${nivelAbecedario[1]}`);
+      return;
+    }
+    if (path.startsWith('/abecedario/actividades/')) {
+      await solicitarNavegacion('/abecedario/actividades');
+      return;
+    }
+    if (path === '/abecedario/actividades') {
+      await solicitarNavegacion('/abecedario');
+      return;
+    }
     if (path.startsWith('/numeros/bloque/')) {
       await solicitarNavegacion('/numeros');
       return;
@@ -72,7 +100,7 @@ const Layout = () => {
       await solicitarNavegacion('/abecedario');
       return;
     }
-    if (path === '/abecedario' || path === '/numeros' || path === '/practica') {
+    if (path === '/abecedario' || path === '/numeros' || path === '/saludos' || path === '/practica') {
       await solicitarNavegacion('/menu');
       return;
     }

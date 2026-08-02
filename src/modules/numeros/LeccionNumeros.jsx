@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import HandTracker from '../../components/HandTracker';
 import { useTheme } from '../../context/ThemeContext';
-import styles from '../abecedario/Leccion.module.css';
+import styles from '../abecedario/styles/Leccion.module.css';
 
 // Bloques de números (solo el bloque 1 por ahora)
 const bloquesNumeros = {
@@ -25,12 +25,10 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
 
   const [indiceLetra, setIndiceLetra] = useState(0);
   const [aciertoLocal, setAciertoLocal] = useState(false);
-  const [completado, setCompletado] = useState(false);
 
   useEffect(() => {
     setIndiceLetra(0);
     setAciertoLocal(false);
-    setCompletado(false);
   }, [id, bloque]);
 
   if (!letras.length) {
@@ -81,28 +79,9 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
         key: `progreso_numeros_bloque_${bloque}_nivel3`,
         value: 'completado'
       });
-      setCompletado(true);
+      navigate(`/numeros/bloque/${bloque}`, { replace: true });
     }
   };
-
-  if (completado) {
-    return (
-      <section className={styles.completePage} style={cssVars}>
-        <div className={styles.completeCard}>
-          <span className={styles.completeIcon} aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg>
-          </span>
-          <span className={styles.completeEyebrow}>Práctica completada</span>
-          <h1>¡Lo lograste!</h1>
-          <p>Completaste todas las señas numéricas del módulo {bloque}.</p>
-          <button type="button" onClick={() => navigate(`/numeros/bloque/${bloque}`)}>
-            Volver al camino
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-          </button>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className={styles.page} style={cssVars}>

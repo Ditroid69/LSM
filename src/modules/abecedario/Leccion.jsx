@@ -3,15 +3,15 @@ import { useState, useEffect } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import HandTracker from "../../components/HandTracker";
 import { useTheme } from '../../context/ThemeContext';
-import styles from './Leccion.module.css';
+import styles from './styles/Leccion.module.css';
 
 // Definimos los bloques del abecedario (igual que en AbecedarioMenu)
 const bloquesAbecedario = {
   1: ['A', 'E', 'S', 'T', 'O'],
   2: ['B', 'C', 'D', 'F', 'U'],
-  3: ['I', 'K', 'P', 'V', 'W'],
+  3: ['I', 'P', 'V', 'W'],
   4: ['L', 'M', 'Ñ', 'R'],
-  5: ['G', 'H', 'X', 'Y', 'Z']
+  5: ['G', 'H', 'X', 'Y']
 };
 
 const contenidoLecciones = {
@@ -42,12 +42,10 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
 
   const [indiceLetra, setIndiceLetra] = useState(0);
   const [aciertoLocal, setAciertoLocal] = useState(false);
-  const [completado, setCompletado] = useState(false);
 
   useEffect(() => {
     setIndiceLetra(0);
     setAciertoLocal(false);
-    setCompletado(false);
   }, [id, bloque]);
 
   if (!letras.length) {
@@ -102,32 +100,9 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
           value: 'completado'
         });
       }
-      setCompletado(true);
+      navigate(esAbecedario ? `/bloque/${bloque}` : '/menu', { replace: true });
     }
   };
-
-  if (completado) {
-    return (
-      <section className={styles.completePage} style={cssVars}>
-        <div className={styles.completeCard}>
-          <span className={styles.completeIcon} aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="m5 12 4.5 4.5L19 7" />
-            </svg>
-          </span>
-          <span className={styles.completeEyebrow}>Práctica completada</span>
-          <h1>¡Lo lograste!</h1>
-          <p>Completaste todas las señas del bloque {bloque}.</p>
-          <button type="button" onClick={() => navigate(`/bloque/${bloque}`)}>
-            Volver al camino
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </button>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className={styles.page} style={cssVars}>

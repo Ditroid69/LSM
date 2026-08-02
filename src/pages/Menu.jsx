@@ -10,7 +10,7 @@ const modulos = [
     icono: '/assets/menu/icono-abecedario.png',
     ruta: '/abecedario',
     color: 'primary',
-    contenido: '24 letras'
+    contenido: '22 letras'
   },
   {
     nombre: 'Números',
@@ -24,9 +24,9 @@ const modulos = [
     nombre: 'Saludos y cortesía',
     descripcion: 'Inicia conversaciones cotidianas',
     icono: '/assets/menu/icono-saludos.png',
-    ruta: '/leccion/saludos',
+    ruta: '/saludos',
     color: 'success',
-    contenido: 'Conversación'
+    contenido: '3 módulos'
   },
   {
     nombre: 'Comunicación básica',

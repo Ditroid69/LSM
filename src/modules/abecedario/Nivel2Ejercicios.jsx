@@ -2,15 +2,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
-import styles from './Nivel2Ejercicios.module.css';
+import styles from './styles/Nivel2Ejercicios.module.css';
 
 // Bloques del abecedario (igual que en Leccion.jsx)
 const bloquesAbecedario = {
   1: ['A', 'E', 'S', 'T', 'O'],
   2: ['B', 'C', 'D', 'F', 'U'],
-  3: ['I', 'K', 'P', 'V', 'W'],
+  3: ['I', 'P', 'V', 'W'],
   4: ['L', 'M', 'Ñ', 'R'],
-  5: ['G', 'H', 'X', 'Y', 'Z']
+  5: ['G', 'H', 'X', 'Y']
 };
 const bloqueVacio = [];
 
@@ -55,19 +55,18 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(preguntaInicial.indice);
   const [selectedAnswer, setSelectedAnswer] = useState(null); // letra seleccionada
   const [showResult, setShowResult] = useState(false);
-  const [lessonComplete, setLessonComplete] = useState(false);
   const [shuffledOptions, setShuffledOptions] = useState(preguntaInicial.opciones); // letras (texto) desordenadas
 
   // Elegir siguiente pregunta entre las no superadas
-  const pickNextQuestion = useCallback(() => {
+  const pickNextQuestion = useCallback(async () => {
     const incorrectIndices = correctFlags.reduce((acc, flag, idx) => {
       if (!flag) acc.push(idx);
       return acc;
     }, []);
 
     if (incorrectIndices.length === 0) {
-      Preferences.set({ key: `progreso_bloque_${idBloque}_nivel2`, value: 'completado' });
-      setLessonComplete(true);
+      await Preferences.set({ key: `progreso_bloque_${idBloque}_nivel2`, value: 'completado' });
+      navigate(`/bloque/${idBloque}`, { replace: true });
       return;
     }
 
@@ -82,7 +81,7 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
     const opcionesIncorrectas = shuffleArray(otrasLetras).slice(0, 3); // máximo 3 incorrectas
     const todasOpciones = [...opcionesIncorrectas, letraCorrecta];
     setShuffledOptions(shuffleArray(todasOpciones));
-  }, [correctFlags, idBloque, letrasBloque]);
+  }, [correctFlags, idBloque, letrasBloque, navigate]);
 
   const handleSelectAnswer = (letraSeleccionada) => {
     if (showResult) return;
@@ -100,7 +99,6 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
   };
 
   const handleNext = () => {
-    if (lessonComplete) return;
     pickNextQuestion();
   };
 
@@ -130,33 +128,6 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
     );
   }
 
-  if (lessonComplete) {
-    return (
-      <section className={styles.completePage} style={cssVars}>
-        <div className={styles.completeCard}>
-          <span className={styles.completeIcon} aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="m5 12 4.5 4.5L19 7" />
-            </svg>
-          </span>
-          <span className={styles.completeEyebrow}>Nivel completado</span>
-          <h1>¡Excelente trabajo!</h1>
-          <p>Reconociste correctamente todas las señas del bloque {idBloque}.</p>
-          <div className={styles.completeScore}>
-            <strong>{totalPreguntas}</strong>
-            <span>señas superadas</span>
-          </div>
-          <button type="button" onClick={() => navigate(`/bloque/${idBloque}`)}>
-            Volver al camino
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
-          </button>
-        </div>
-      </section>
-    );
-  }
-
   if (currentQuestionIdx === null) {
     return (
       <div className={styles.loading} style={cssVars}>
@@ -168,7 +139,7 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
 
   const letraCorrecta = letrasBloque[currentQuestionIdx];
   const nombreImagen = letraCorrecta === 'Ñ' ? 'n' : letraCorrecta.toLowerCase();
-  const imagenSrc = `/assets/abecedario/imagen_${nombreImagen}.jpg`;
+  const imagenSrc = `/assets/abecedario/imagen_${nombreImagen}.png`;
 
   return (
     <section className={styles.page} style={cssVars}>

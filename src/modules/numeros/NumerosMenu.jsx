@@ -1,31 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import styles from '../abecedario/AbecedarioMenu.module.css';
+import styles from '../abecedario/styles/AbecedarioMenu.module.css';
+import { modulosNumeros } from '../../data/numeros';
 
-const bloques = [
-  {
-    id: 1,
-    nombre: 'Números estáticos',
-    descripcion: 'Aprende las señas del 1 al 8',
-    contenidos: ['1', '2', '3', '4', '5', '6', '7', '8'],
-    disponible: true
-  },
-  {
-    id: 2,
-    nombre: 'Números en movimiento',
-    descripcion: 'Actividades dinámicas',
-    contenidos: ['Movimiento'],
-    disponible: false
-  },
-  {
-    id: 3,
-    nombre: 'Decenas',
-    descripcion: 'Retos con cantidades',
-    contenidos: ['10', '20', '30'],
-    disponible: false
-  },
-];
+const bloques = modulosNumeros.map((modulo) => ({
+  ...modulo,
+  contenidos: modulo.numeros.map(({ numero }) => numero),
+  disponible: true,
+}));
 
 const NumerosMenu = () => {
   const navigate = useNavigate();
@@ -75,7 +58,7 @@ const NumerosMenu = () => {
           <p>Aprende a expresar cantidades con tus manos.</p>
         </div>
         <div className={styles.heroCount}>
-          <strong>3</strong>
+          <strong>{bloques.length}</strong>
           <span>módulos</span>
         </div>
       </header>
@@ -85,7 +68,7 @@ const NumerosMenu = () => {
           <span>Tu recorrido</span>
           <h2>Selecciona un módulo</h2>
         </div>
-        <span className={styles.totalLetters}>1 disponible</span>
+        <span className={styles.totalLetters}>{bloques.length} disponibles</span>
       </div>
 
       <div className={styles.grid}>

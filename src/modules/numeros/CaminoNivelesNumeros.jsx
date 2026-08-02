@@ -2,20 +2,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
-import styles from '../abecedario/CaminoNiveles.module.css';
-
-const numerosModuloUno = ['1', '2', '3', '4', '5', '6', '7', '8'];
+import styles from '../abecedario/styles/CaminoNiveles.module.css';
+import { obtenerModuloNumeros } from '../../data/numeros';
 
 const CaminoNivelesNumeros = () => {
   const { idBloque } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [estadoNiveles, setEstadoNiveles] = useState([false, false, false]);
+  const modulo = obtenerModuloNumeros(idBloque);
+  const totalNiveles = modulo?.niveles || 0;
+  const [estadoNiveles, setEstadoNiveles] = useState([]);
 
   useEffect(() => {
     const cargarProgreso = async () => {
       const niveles = [];
-      for (let i = 1; i <= 3; i++) {
+      for (let i = 1; i <= totalNiveles; i++) {
         const key = `progreso_numeros_bloque_${idBloque}_nivel${i}`;
         const { value } = await Preferences.get({ key });
         niveles.push(value === 'completado');
@@ -23,12 +24,12 @@ const CaminoNivelesNumeros = () => {
       setEstadoNiveles(niveles);
     };
     cargarProgreso();
-  }, [idBloque]);
+  }, [idBloque, totalNiveles]);
 
-  if (idBloque !== '1') {
+  if (!modulo) {
     return (
       <div style={{ textAlign: 'center', padding: 24 }}>
-        <p>Este módulo tendrá actividades diferentes próximamente.</p>
+        <p>Módulo no disponible.</p>
         <button type="button" onClick={() => navigate('/numeros')}>Volver a números</button>
       </div>
     );
@@ -78,7 +79,7 @@ const CaminoNivelesNumeros = () => {
         </svg>
       )
     }
-  ];
+  ].slice(0, totalNiveles);
 
   const completados = estadoNiveles.filter(Boolean).length;
   const siguienteNivel = estadoNiveles.findIndex((completado) => !completado);
@@ -104,12 +105,12 @@ const CaminoNivelesNumeros = () => {
           <span className={styles.eyebrow}>Números · Módulo {idBloque}</span>
           <h1 className={styles.title}>Continúa tu camino</h1>
           <p className={styles.letters}>
-            Aprende los números <strong>{numerosModuloUno.join(' · ')}</strong>
+            Aprende los números <strong>{modulo.numeros.map(({ numero }) => numero).join(' · ')}</strong>
           </p>
         </div>
 
-        <div className={styles.progressBadge} aria-label={`${completados} de 3 niveles completados`}>
-          <span className={styles.progressNumber}>{completados}/3</span>
+        <div className={styles.progressBadge} aria-label={`${completados} de ${totalNiveles} niveles completados`}>
+          <span className={styles.progressNumber}>{completados}/{totalNiveles}</span>
           <span className={styles.progressLabel}>completados</span>
         </div>
       </div>

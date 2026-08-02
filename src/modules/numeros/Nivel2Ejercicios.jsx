@@ -1,11 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
-import styles from '../abecedario/Nivel2Ejercicios.module.css';
-
-const numerosModuloUno = ['1', '2', '3', '4', '5', '6', '7', '8'];
-const moduloVacio = [];
+import styles from '../abecedario/styles/Nivel2Ejercicios.module.css';
+import { obtenerModuloNumeros } from '../../data/numeros';
+import VideoNumero from './VideoNumero';
 
 function shuffleArray(array) {
   const resultado = [...array];
@@ -34,7 +33,8 @@ function crearPreguntaInicial(numeros) {
 const Nivel2NumerosContenido = ({ idBloque }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const numeros = idBloque === '1' ? numerosModuloUno : moduloVacio;
+  const modulo = obtenerModuloNumeros(idBloque);
+  const numeros = useMemo(() => modulo?.numeros.map(({ numero }) => numero) || [], [modulo]);
   const totalPreguntas = numeros.length;
   const [preguntaInicial] = useState(() => crearPreguntaInicial(numeros));
 
@@ -42,21 +42,20 @@ const Nivel2NumerosContenido = ({ idBloque }) => {
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(preguntaInicial.indice);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const [lessonComplete, setLessonComplete] = useState(false);
   const [shuffledOptions, setShuffledOptions] = useState(preguntaInicial.opciones);
 
-  const pickNextQuestion = useCallback(() => {
+  const pickNextQuestion = useCallback(async () => {
     const pendientes = correctFlags.reduce((indices, completado, posicion) => {
       if (!completado) indices.push(posicion);
       return indices;
     }, []);
 
     if (pendientes.length === 0) {
-      Preferences.set({
+      await Preferences.set({
         key: `progreso_numeros_bloque_${idBloque}_nivel2`,
         value: 'completado'
       });
-      setLessonComplete(true);
+      navigate(`/numeros/bloque/${idBloque}`, { replace: true });
       return;
     }
 
@@ -68,7 +67,7 @@ const Nivel2NumerosContenido = ({ idBloque }) => {
     setSelectedAnswer(null);
     setShowResult(false);
     setShuffledOptions(shuffleArray([...incorrectas, numeroCorrecto]));
-  }, [correctFlags, idBloque, numeros]);
+  }, [correctFlags, idBloque, navigate, numeros]);
 
   const handleSelectAnswer = (numero) => {
     if (showResult) return;
@@ -110,34 +109,12 @@ const Nivel2NumerosContenido = ({ idBloque }) => {
     );
   }
 
-  if (lessonComplete) {
-    return (
-      <section className={styles.completePage} style={cssVars}>
-        <div className={styles.completeCard}>
-          <span className={styles.completeIcon} aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg>
-          </span>
-          <span className={styles.completeEyebrow}>Nivel completado</span>
-          <h1>¡Excelente trabajo!</h1>
-          <p>Reconociste correctamente todas las señas numéricas.</p>
-          <div className={styles.completeScore}>
-            <strong>{totalPreguntas}</strong>
-            <span>números superados</span>
-          </div>
-          <button type="button" onClick={() => navigate(`/numeros/bloque/${idBloque}`)}>
-            Volver al camino
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-          </button>
-        </div>
-      </section>
-    );
-  }
-
   const numeroCorrecto = numeros[currentQuestionIdx];
-  const imagenSrc = `/assets/numeros/imagen_${numeroCorrecto}.png`;
+  const usaVideo = modulo.numeros[currentQuestionIdx].tipo === 'video';
+  const recursoSrc = modulo.numeros[currentQuestionIdx].recurso;
 
   return (
-    <section className={styles.page} style={cssVars}>
+    <section className={`${styles.page} ${usaVideo ? styles.videoQuizPage : ''}`} style={cssVars}>
       <header className={styles.quizHeader}>
         <div>
           <span className={styles.eyebrow}>Números · Módulo {idBloque}</span>
@@ -152,20 +129,24 @@ const Nivel2NumerosContenido = ({ idBloque }) => {
         <span style={{ width: `${progreso}%` }} />
       </div>
 
-      <div className={styles.challenge}>
+      <div className={`${styles.challenge} ${usaVideo ? styles.videoChallenge : ''}`}>
         <div className={styles.prompt}>
           <span className={styles.promptNumber}>Pregunta</span>
           <h2>¿Qué número representa esta seña?</h2>
-          <p>Observa la posición de la mano y elige una respuesta.</p>
+          <p>Observa {usaVideo ? 'el video completo' : 'la posición de la mano'} y elige una respuesta.</p>
         </div>
 
-        <div className={styles.signFrame}>
+        <div className={`${styles.signFrame} ${usaVideo ? styles.videoFrame : ''}`}>
           <span className={styles.signGlow} aria-hidden="true" />
-          <img
-            src={imagenSrc}
-            alt={`Seña del número ${numeroCorrecto}`}
-            onError={(event) => { event.currentTarget.style.display = 'none'; }}
-          />
+          {usaVideo ? (
+            <VideoNumero key={recursoSrc} src={recursoSrc} numero={numeroCorrecto} ocultarNumero />
+          ) : (
+            <img
+              src={recursoSrc}
+              alt={`Seña del número ${numeroCorrecto}`}
+              onError={(event) => { event.currentTarget.style.display = 'none'; }}
+            />
+          )}
           <span className={styles.signHint}>Seña objetivo</span>
         </div>
 

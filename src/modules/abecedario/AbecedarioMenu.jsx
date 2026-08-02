@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import styles from './AbecedarioMenu.module.css';
+import styles from './styles/AbecedarioMenu.module.css';
 
 const bloques = [
   { id: 1, letras: ['A', 'E', 'S', 'T', 'O'] },
   { id: 2, letras: ['B', 'C', 'D', 'F', 'U'] },
-  { id: 3, letras: ['I', 'K', 'P', 'V', 'W'] },
+  { id: 3, letras: ['I', 'P', 'V', 'W'] },
   { id: 4, letras: ['L', 'M', 'Ñ', 'R'] },
-  { id: 5, letras: ['G', 'H', 'X', 'Y', 'Z'] },
+  { id: 5, letras: ['G', 'H', 'X', 'Y'] },
 ];
 
 const AbecedarioMenu = () => {
@@ -69,7 +69,7 @@ const AbecedarioMenu = () => {
           <span>Tu recorrido</span>
           <h2>Selecciona un módulo</h2>
         </div>
-        <span className={styles.totalLetters}>24 letras</span>
+        <span className={styles.totalLetters}>22 letras</span>
       </div>
 
       <div className={styles.grid}>
@@ -110,6 +110,28 @@ const AbecedarioMenu = () => {
           );
         })}
       </div>
+
+      <section className={styles.practiceSection}>
+        <div className={styles.sectionHeading}>
+          <div>
+            <span>Después de los módulos</span>
+            <h2>Práctica general</h2>
+          </div>
+          <span className={styles.totalLetters}>2 actividades</span>
+        </div>
+        <button type="button" className={styles.practiceCard} onClick={() => navigate('/abecedario/actividades')}>
+          <span className={styles.practiceIcon} aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8 6h8M8 12h8M8 18h5"/><circle cx="5" cy="6" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="5" cy="18" r="1"/></svg>
+          </span>
+          <span className={styles.practiceCopy}>
+            <small>Nuevo recorrido</small>
+            <strong>Practica todo el abecedario</strong>
+            <span>Relaciona señas y aprende a deletrear palabras.</span>
+            <span className={styles.practiceTags}><i>Relacionar</i><i>Deletrear</i></span>
+          </span>
+          <span className={styles.practiceArrow} aria-hidden="true">›</span>
+        </button>
+      </section>
     </section>
   );
 };

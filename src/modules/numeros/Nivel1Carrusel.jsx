@@ -2,7 +2,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
-import styles from '../abecedario/Nivel1Carrusel.module.css';
+import styles from '../abecedario/styles/Nivel1Carrusel.module.css';
+import { obtenerModuloNumeros } from '../../data/numeros';
+import VideoNumero from './VideoNumero';
 
 // Datos para el Bloque 1 (números estáticos). Amplía según los números que quieras.
 const contenidoBloque = {
@@ -25,7 +27,13 @@ const Nivel1CarruselNumeros = () => {
   const { theme } = useTheme();
   const [indice, setIndice] = useState(0);
 
-  const bloque = contenidoBloque[idBloque];
+  const modulo = obtenerModuloNumeros(idBloque);
+  const bloque = idBloque === '1'
+    ? contenidoBloque[1]
+    : modulo?.numeros.map((item) => ({
+      ...item,
+      video: item.recurso,
+    }));
   if (!bloque || bloque.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: 20 }}>
@@ -67,11 +75,11 @@ const Nivel1CarruselNumeros = () => {
   };
 
   return (
-    <section className={styles.page} style={cssVars}>
+    <section className={`${styles.page} ${item.video ? styles.fullVideoPage : ''}`} style={cssVars}>
       <header className={styles.lessonHeader}>
         <div>
           <span className={styles.eyebrow}>Números · Módulo {idBloque}</span>
-          <h1>Aprende la seña</h1>
+          <h1>{item.video ? 'Visualiza los videos' : 'Aprende la seña'}</h1>
         </div>
         <div className={styles.counter} aria-label={`Número ${indice + 1} de ${bloque.length}`}>
           <strong>{indice + 1}</strong>
@@ -83,16 +91,44 @@ const Nivel1CarruselNumeros = () => {
         <span className={styles.progressFill} style={{ width: `${progreso}%` }} />
       </div>
 
+      {item.video ? (
+        <article className={styles.fullVideoLesson} key={item.numero}>
+          <div className={styles.videoNumberBlock}>
+            <span className={styles.signTag}>Número</span>
+            <div className={styles.videoNumber}>{item.numero}</div>
+          </div>
+
+          <div className={styles.fullVideoFrame}>
+            <VideoNumero src={item.video} numero={item.numero} />
+          </div>
+
+          <div className={styles.videoDescription}>
+            <h2>¿Cómo hacerlo?</h2>
+            <p>{item.descripcion}</p>
+            <div className={styles.tip}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 18h6M10 22h4" />
+                <path d="M8.2 14.5A7 7 0 1 1 15.8 14.5 4 4 0 0 0 15 16H9a4 4 0 0 0-.8-1.5z" />
+              </svg>
+              <span>Reproduce el video las veces que necesites antes de continuar.</span>
+            </div>
+          </div>
+        </article>
+      ) : (
       <article className={styles.signCard} key={item.numero}>
         <div className={styles.imageColumn}>
-          <span className={styles.imageLabel}>Observa la posición</span>
-          <div className={styles.imageFrame}>
+          <span className={styles.imageLabel}>{item.video ? 'Observa el movimiento' : 'Observa la posición'}</span>
+          <div className={`${styles.imageFrame} ${item.video ? styles.videoFrame : ''}`}>
             <span className={styles.imageGlow} aria-hidden="true" />
-            <img
-              src={item.imagen}
-              alt={`Demostración de la seña para el número ${item.numero}`}
-              onError={(event) => { event.currentTarget.style.display = 'none'; }}
-            />
+            {item.video ? (
+              <VideoNumero src={item.video} numero={item.numero} />
+            ) : (
+              <img
+                src={item.imagen}
+                alt={`Demostración de la seña para el número ${item.numero}`}
+                onError={(event) => { event.currentTarget.style.display = 'none'; }}
+              />
+            )}
           </div>
         </div>
 
@@ -106,10 +142,11 @@ const Nivel1CarruselNumeros = () => {
               <path d="M9 18h6M10 22h4" />
               <path d="M8.2 14.5A7 7 0 1 1 15.8 14.5 4 4 0 0 0 15 16H9a4 4 0 0 0-.8-1.5z" />
             </svg>
-            <span>Observa los dedos y practica con calma.</span>
+            <span>{item.video ? 'Reproduce el video las veces que necesites antes de continuar.' : 'Observa los dedos y practica con calma.'}</span>
           </div>
         </div>
       </article>
+      )}
 
       <div className={styles.dots} aria-hidden="true">
         {bloque.map((seña, posicion) => (

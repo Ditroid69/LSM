@@ -2,14 +2,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
-import styles from './CaminoNiveles.module.css';
+import styles from './styles/CaminoNiveles.module.css';
 
 const bloques = {
   1: { letras: ['A','E','S','T','O'] },
   2: { letras: ['B','C','D','F','U'] },
-  3: { letras: ['I','K','P','V','W'] },
+  3: { letras: ['I','P','V','W'] },
   4: { letras: ['L','M','Ñ','R'] },
-  5: { letras: ['G','H','X','Y','Z'] }
+  5: { letras: ['G','H','X','Y'] }
 };
 
 const CaminoNiveles = () => {

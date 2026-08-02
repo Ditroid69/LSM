@@ -2,42 +2,40 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
-import styles from './Nivel1Carrusel.module.css';
+import styles from './styles/Nivel1Carrusel.module.css';
 
 const contenidoBloque = {
   1: [
-    { letra: 'A', descripcion: 'Puño cerrado, pulgar extendido hacia arriba pegado al índice.', imagen: '/assets/abecedario/imagen_a.jpeg' },    
-    { letra: 'E', descripcion: 'Dedos doblados hacia abajo, pulgar tocando el índice.', imagen: '/assets/abecedario/imagen_e.jpg' },
-    { letra: 'S', descripcion: 'Puño cerrado, pulgar doblado sobre los dedos.', imagen: '/assets/abecedario/imagen_s.jpg' },
-    { letra: 'T', descripcion: 'Puño cerrado, pulgar metido entre índice y medio.', imagen: '/assets/abecedario/imagen_t.jpg' },
-    { letra: 'O', descripcion: 'Puntas de los dedos juntas formando un círculo.', imagen: '/assets/abecedario/imagen_o.jpg' },
+    { letra: 'A', descripcion: 'Puño cerrado, pulgar extendido hacia arriba pegado al índice.', imagen: '/assets/abecedario/imagen_a.png' },    
+    { letra: 'E', descripcion: 'Dedos doblados hacia abajo, pulgar tocando el índice.', imagen: '/assets/abecedario/imagen_e.png' },
+    { letra: 'S', descripcion: 'Puño cerrado, pulgar doblado sobre los dedos.', imagen: '/assets/abecedario/imagen_s.png' },
+    { letra: 'T', descripcion: 'Puño cerrado, pulgar metido entre índice y medio.', imagen: '/assets/abecedario/imagen_t.png' },
+    { letra: 'O', descripcion: 'Puntas de los dedos juntas formando un círculo.', imagen: '/assets/abecedario/imagen_o.png' },
   ],
   2: [
-    { letra: 'B', descripcion: 'Mano abierta, dedos juntos, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_b.jpg' },
-    { letra: 'C', descripcion: 'Mano curvada en forma de C, dedos juntos.', imagen: '/assets/abecedario/imagen_c.jpg' },
-    { letra: 'D', descripcion: 'Índice extendido hacia arriba, demás dedos doblados, pulgar tocando el medio.', imagen: '/assets/abecedario/imagen_d.jpg' },
-    { letra: 'F', descripcion: 'Índice flexionado tocando el pulgar, demás dedos extendidos.', imagen: '/assets/abecedario/imagen_f.jpg' },
-    { letra: 'U', descripcion: 'Índice y medio juntos extendidos, anular y meñique doblados, pulgar tocando el anular.', imagen: '/assets/abecedario/imagen_u.jpg' },
+    { letra: 'B', descripcion: 'Mano abierta, dedos juntos, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_b.png' },
+    { letra: 'C', descripcion: 'Mano curvada en forma de C, dedos juntos.', imagen: '/assets/abecedario/imagen_c.png' },
+    { letra: 'D', descripcion: 'Índice extendido hacia arriba, demás dedos doblados, pulgar tocando el medio.', imagen: '/assets/abecedario/imagen_d.png' },
+    { letra: 'F', descripcion: 'Índice flexionado tocando el pulgar, demás dedos extendidos.', imagen: '/assets/abecedario/imagen_f.png' },
+    { letra: 'U', descripcion: 'Índice y medio juntos extendidos, anular y meñique doblados, pulgar tocando el anular.', imagen: '/assets/abecedario/imagen_u.png' },
   ],
   3: [
-    { letra: 'I', descripcion: 'Meñique extendido hacia arriba, demás dedos flexionados, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_i.jpg' },
-    { letra: 'K', descripcion: 'Índice y medio extendidos en V, pulgar entre ellos (con movimiento).', imagen: '/assets/abecedario/imagen_k.jpg' },
-    { letra: 'P', descripcion: 'Índice y medio extendidos en V, pulgar entre ellos (sin movimiento).', imagen: '/assets/abecedario/imagen_p.jpg' },
-    { letra: 'V', descripcion: 'Índice y medio extendidos y juntos, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_v.jpg' },
-    { letra: 'W', descripcion: 'Índice, medio y anular extendidos y separados, meñique doblado.', imagen: '/assets/abecedario/imagen_w.jpg' },
+    { letra: 'I', descripcion: 'Meñique extendido hacia arriba, demás dedos flexionados, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_i.png' },
+    { letra: 'P', descripcion: 'Índice y medio extendidos en V, pulgar entre ellos (sin movimiento).', imagen: '/assets/abecedario/imagen_p.png' },
+    { letra: 'V', descripcion: 'Índice y medio extendidos y juntos, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_v.png' },
+    { letra: 'W', descripcion: 'Índice, medio y anular extendidos y separados, meñique doblado.', imagen: '/assets/abecedario/imagen_w.png' },
   ],
   4: [
-    { letra: 'L', descripcion: 'Índice extendido, pulgar extendido formando una L.', imagen: '/assets/abecedario/imagen_l.jpg' },
-    { letra: 'M', descripcion: 'Índice, medio y anular extendidos y juntos, meñique doblado, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_m.jpg' },
-    { letra: 'Ñ', descripcion: 'Índice y medio juntos, pulgar entre los dedos (similar a H).', imagen: '/assets/abecedario/imagen_n.jpg' },
-    { letra: 'R', descripcion: 'Índice y medio juntos, pulgar tocando la base del índice.', imagen: '/assets/abecedario/imagen_r.jpg' },
+    { letra: 'L', descripcion: 'Índice extendido, pulgar extendido formando una L.', imagen: '/assets/abecedario/imagen_l.png' },
+    { letra: 'M', descripcion: 'Índice, medio y anular extendidos y juntos, meñique doblado, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_m.png' },
+    { letra: 'Ñ', descripcion: 'Índice y medio juntos, pulgar entre los dedos (similar a H).', imagen: '/assets/abecedario/imagen_n.png' },
+    { letra: 'R', descripcion: 'Índice y medio juntos, pulgar tocando la base del índice.', imagen: '/assets/abecedario/imagen_r.png' },
   ],
   5: [
-    { letra: 'G', descripcion: 'Índice extendido, demás flexionados, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_g.jpg' },
-    { letra: 'H', descripcion: 'Índice y medio juntos extendidos, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_h.jpg' },
-    { letra: 'X', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_x.jpg' },
-    { letra: 'Y', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_y.jpg' },
-    { letra: 'Z', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_z.jpg' },
+    { letra: 'G', descripcion: 'Índice extendido, demás flexionados, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_g.png' },
+    { letra: 'H', descripcion: 'Índice y medio juntos extendidos, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_h.png' },
+    { letra: 'X', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_x.png' },
+    { letra: 'Y', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_y.png' },
   ]
 };
 

@@ -1,0 +1,21 @@
+export const letrasAbecedario = [
+  'A', 'E', 'S', 'T', 'O',
+  'B', 'C', 'D', 'F', 'U',
+  'I', 'P', 'V', 'W',
+  'L', 'M', 'Ñ', 'R',
+  'G', 'H', 'X', 'Y',
+];
+
+export const imagenDeLetra = (letra) => {
+  const nombreImagen = letra === 'Ñ' ? 'n' : letra.toLowerCase();
+  return `/assets/abecedario/imagen_${nombreImagen}.png`;
+};
+
+export const mezclar = (elementos) => {
+  const copia = [...elementos];
+  for (let i = copia.length - 1; i > 0; i -= 1) {
+    const indice = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[indice]] = [copia[indice], copia[i]];
+  }
+  return copia;
+};
