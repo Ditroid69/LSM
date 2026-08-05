@@ -5,8 +5,9 @@ import { useTheme } from '../../context/ThemeContext';
 import styles from './styles/ActividadesAbecedario.module.css';
 
 const actividades = [
-  { id: 'relacionar', numero: 1, titulo: 'Relaciona las señas', descripcion: 'Une cada seña con la letra que representa.', icono: '↔' },
-  { id: 'deletreo', numero: 2, titulo: 'Deletreo de palabras', descripcion: 'Ordena las señas para formar cada palabra.', icono: 'ABC' },
+  { id: 'relacionar', numero: 1, titulo: 'Relaciona las señas', descripcion: 'Une cada seña con la letra que representa.', icono: '↔', tono: 'turquesa', detalle: 'Asociación visual' },
+  { id: 'deletreo', numero: 2, titulo: 'Deletreo de palabras', descripcion: 'Ordena las señas para formar cada palabra.', icono: 'ABC', tono: 'amarillo', detalle: 'Orden y vocabulario' },
+  { id: 'memorama', numero: 3, titulo: 'Memorama de señas', descripcion: 'Encuentra las parejas entre señas y letras.', icono: '2×', tono: 'verde', detalle: 'Memoria y atención' },
 ];
 
 const ActividadesAbecedario = () => {
@@ -38,30 +39,31 @@ const ActividadesAbecedario = () => {
     <section className={styles.page} style={cssVars}>
       <header className={styles.hero}>
         <span className={styles.heroIcon}>✦</span>
-        <div><span>Práctica general</span><h1>Refuerza el abecedario</h1><p>Combina lo aprendido en todos los módulos.</p></div>
-        <strong>{completadas.length}/2</strong>
+        <div><span>Práctica general</span><h1>Refuerza el abecedario</h1><p>Elige cualquier actividad y practica a tu ritmo.</p></div>
+        <strong>{completadas.length}/3</strong>
       </header>
 
-      <div className={styles.path}>
-        <span className={styles.pathLine} aria-hidden="true" />
-        {actividades.map((actividad, indice) => {
+      <div className={styles.activityGrid}>
+        {actividades.map((actividad) => {
           const completada = completadas.includes(actividad.id);
-          const bloqueada = indice > 0 && !completadas.includes(actividades[indice - 1].id);
           return (
             <button
               key={actividad.id}
               type="button"
-              className={`${styles.activity} ${completada ? styles.completed : ''} ${bloqueada ? styles.locked : ''}`}
-              onClick={() => !bloqueada && navigate(`/abecedario/actividades/${actividad.id}`)}
-              disabled={bloqueada}
+              className={`${styles.activity} ${styles[actividad.tono]} ${completada ? styles.completed : ''}`}
+              onClick={() => navigate(`/abecedario/actividades/${actividad.id}`)}
             >
-              <span className={styles.node}>{bloqueada ? '🔒' : actividad.icono}</span>
-              <span className={styles.copy}>
-                <small>Actividad {actividad.numero}</small>
-                <strong>{actividad.titulo}</strong>
-                <span>{bloqueada ? 'Completa la actividad anterior' : actividad.descripcion}</span>
+              <span className={styles.cardTop}>
+                <span className={styles.activityNumber}>Actividad {actividad.numero}</span>
+                <span className={styles.completion}>{completada ? '✓ Completada' : 'Disponible'}</span>
               </span>
-              <span className={styles.status}>{completada ? '✓' : '›'}</span>
+              <span className={styles.node}>{actividad.icono}</span>
+              <span className={styles.copy}>
+                <small>{actividad.detalle}</small>
+                <strong>{actividad.titulo}</strong>
+                <span>{actividad.descripcion}</span>
+              </span>
+              <span className={styles.cardAction}>{completada ? 'Practicar otra vez' : 'Comenzar'}<span aria-hidden="true">→</span></span>
             </button>
           );
         })}

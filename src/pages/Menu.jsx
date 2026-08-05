@@ -32,9 +32,9 @@ const modulos = [
     nombre: 'Comunicación básica',
     descripcion: 'Construye tus primeras expresiones',
     icono: '/assets/menu/icono-comunicacion.png',
-    ruta: '/leccion/comunicacion',
+    ruta: '/comunicacion',
     color: 'error',
-    contenido: 'Expresiones'
+    contenido: '3 módulos'
   }
 ];
 

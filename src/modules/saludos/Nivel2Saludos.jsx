@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
 import { mezclarSaludos, obtenerModuloSaludos } from '../../data/saludosCortesia';
+import VideoExpresion from '../../components/VideoExpresion';
 import styles from '../abecedario/styles/Nivel2Ejercicios.module.css';
 
 const prepararPregunta = (expresiones, indice) => mezclarSaludos(expresiones.filter((_, posicion) => posicion !== indice)).slice(0, 3).concat(expresiones[indice]).sort(() => Math.random() - 0.5);
@@ -52,8 +53,8 @@ const Nivel2Saludos = () => {
       <div className={styles.challenge}>
         <div className={styles.prompt}><span className={styles.promptNumber}>Pregunta</span><h2>¿Qué expresión representa esta seña?</h2><p>Observa la demostración y elige su significado.</p></div>
         <div className={styles.signFrame}>
-          <span className={styles.signGlow} aria-hidden="true" /><span aria-hidden="true" style={{ position: 'absolute', fontSize: '1.15rem', fontWeight: 900 }}>Demostración</span>
-          <img src={correcta.imagen} alt="Seña por reconocer" onError={(event) => { event.currentTarget.style.display = 'none'; }} /><span className={styles.signHint}>Seña objetivo</span>
+          <span className={styles.signGlow} aria-hidden="true" />
+          <VideoExpresion src={correcta.video} texto={correcta.texto} ocultarTexto /><span className={styles.signHint}>Seña objetivo</span>
         </div>
         <div className={styles.answers} style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
           {opciones.map((opcion) => {

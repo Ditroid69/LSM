@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
 import { obtenerModuloSaludos } from '../../data/saludosCortesia';
+import VideoExpresion from '../../components/VideoExpresion';
 import styles from '../abecedario/styles/Nivel1Carrusel.module.css';
 
 const Nivel1Saludos = () => {
@@ -40,8 +41,7 @@ const Nivel1Saludos = () => {
           <span className={styles.imageLabel}>Observa la demostración</span>
           <div className={styles.imageFrame}>
             <span className={styles.imageGlow} aria-hidden="true" />
-            <span aria-hidden="true" style={{ position: 'absolute', fontSize: 'clamp(1rem, 4vw, 1.4rem)', fontWeight: 900, textAlign: 'center', padding: 16 }}>{item.texto}</span>
-            <img src={item.imagen} alt={`Demostración de la seña para ${item.texto}`} onError={(event) => { event.currentTarget.style.display = 'none'; }} />
+            <VideoExpresion src={item.video} texto={item.texto} />
           </div>
         </div>
         <div className={styles.contentColumn}>

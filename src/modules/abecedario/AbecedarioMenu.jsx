@@ -117,7 +117,7 @@ const AbecedarioMenu = () => {
             <span>Después de los módulos</span>
             <h2>Práctica general</h2>
           </div>
-          <span className={styles.totalLetters}>2 actividades</span>
+          <span className={styles.totalLetters}>3 actividades</span>
         </div>
         <button type="button" className={styles.practiceCard} onClick={() => navigate('/abecedario/actividades')}>
           <span className={styles.practiceIcon} aria-hidden="true">
@@ -126,8 +126,8 @@ const AbecedarioMenu = () => {
           <span className={styles.practiceCopy}>
             <small>Nuevo recorrido</small>
             <strong>Practica todo el abecedario</strong>
-            <span>Relaciona señas y aprende a deletrear palabras.</span>
-            <span className={styles.practiceTags}><i>Relacionar</i><i>Deletrear</i></span>
+            <span>Relaciona señas, deletrea palabras y encuentra parejas en el memorama.</span>
+            <span className={styles.practiceTags}><i>Relacionar</i><i>Deletrear</i><i>Memorama</i></span>
           </span>
           <span className={styles.practiceArrow} aria-hidden="true">›</span>
         </button>

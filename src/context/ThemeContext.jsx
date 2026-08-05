@@ -1,4 +1,7 @@
-import { createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import { Preferences } from '@capacitor/preferences';
+
+const CLAVE_MODO = 'preferencia_modo_color';
 
 // Paleta de colores según modo
 const lightPalette = {
@@ -14,9 +17,8 @@ const lightPalette = {
   borde: '#CBD5E1',           // Bordes suaves
   blanco: '#FFFFFF',
   gris: '#E2E8F0',
-    icono: '#1e3a8a', // azul oscuro para iconos en modo claro
-    tarjeta: '#FFFFFF',
-tarjetaTexto: '#1E3A8A',
+  icono: '#1e3a8a', // azul oscuro para iconos en modo claro
+  tarjetaTexto: '#1E3A8A',
 };
 
 const darkPalette = {
@@ -32,9 +34,8 @@ const darkPalette = {
   borde: '#334155',           // Bordes oscuros
   blanco: '#1E1E1E',
   gris: '#334155',
-    icono: '#ffffff', // blanco para iconos en modo oscuro
-    tarjeta: '#16213E',
-tarjetaTexto: '#FFFFFF',
+  icono: '#ffffff', // blanco para iconos en modo oscuro
+  tarjetaTexto: '#FFFFFF',
 
 };
 
@@ -42,13 +43,39 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [modo, setModo] = useState('claro'); // 'claro' o 'oscuro'
+  const [preferenciaCargada, setPreferenciaCargada] = useState(false);
+
+  useEffect(() => {
+    let activo = true;
+
+    const cargarPreferencia = async () => {
+      try {
+        const { value } = await Preferences.get({ key: CLAVE_MODO });
+        if (activo && (value === 'claro' || value === 'oscuro')) setModo(value);
+      } catch (error) {
+        console.error('No se pudo cargar la preferencia de apariencia:', error);
+      } finally {
+        if (activo) setPreferenciaCargada(true);
+      }
+    };
+
+    cargarPreferencia();
+    return () => { activo = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!preferenciaCargada) return;
+    Preferences.set({ key: CLAVE_MODO, value: modo }).catch((error) => {
+      console.error('No se pudo guardar la preferencia de apariencia:', error);
+    });
+  }, [modo, preferenciaCargada]);
 
   const theme = useMemo(() => {
     return modo === 'claro' ? lightPalette : darkPalette;
   }, [modo]);
 
   const toggleModo = () => {
-    setModo(prev => (prev === 'claro' ? 'oscuro' : 'claro'));
+    setModo((prev) => (prev === 'claro' ? 'oscuro' : 'claro'));
   };
 
   return (
@@ -58,6 +85,7 @@ export function ThemeProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTheme() {
   return useContext(ThemeContext);
 }

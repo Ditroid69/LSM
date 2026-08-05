@@ -45,6 +45,11 @@ const Layout = () => {
       return `progreso_saludos_modulo_${nivelSaludos[1]}_nivel${nivelSaludos[2]}`;
     }
 
+    const nivelComunicacion = location.pathname.match(/^\/comunicacion\/modulo\/([^/]+)\/nivel([1-2])$/);
+    if (nivelComunicacion) {
+      return `progreso_comunicacion_modulo_${nivelComunicacion[1]}_nivel${nivelComunicacion[2]}`;
+    }
+
     return null;
   };
 
@@ -65,6 +70,15 @@ const Layout = () => {
 
   const handleBack = async () => {
     const path = location.pathname;
+    const nivelComunicacion = path.match(/^\/comunicacion\/modulo\/([^/]+)\/nivel[1-2]$/);
+    if (nivelComunicacion) {
+      await solicitarNavegacion(`/comunicacion/modulo/${nivelComunicacion[1]}`);
+      return;
+    }
+    if (/^\/comunicacion\/modulo\/[^/]+$/.test(path)) {
+      await solicitarNavegacion('/comunicacion');
+      return;
+    }
     const nivelSaludos = path.match(/^\/saludos\/modulo\/([^/]+)\/nivel[1-2]$/);
     if (nivelSaludos) {
       await solicitarNavegacion(`/saludos/modulo/${nivelSaludos[1]}`);
@@ -100,7 +114,7 @@ const Layout = () => {
       await solicitarNavegacion('/abecedario');
       return;
     }
-    if (path === '/abecedario' || path === '/numeros' || path === '/saludos' || path === '/practica') {
+    if (path === '/abecedario' || path === '/numeros' || path === '/saludos' || path === '/comunicacion' || path === '/practica') {
       await solicitarNavegacion('/menu');
       return;
     }
@@ -195,6 +209,7 @@ const Layout = () => {
                 className={styles.themeControl}
                 onClick={toggleModo}
                 aria-label={modo === 'claro' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+                aria-pressed={modo === 'oscuro'}
               >
                 <span className={styles.themeIcon}>
                   {modo === 'claro' ? (
@@ -212,7 +227,7 @@ const Layout = () => {
                   <strong>{modo === 'claro' ? 'Modo oscuro' : 'Modo claro'}</strong>
                   <small>Cambiar apariencia</small>
                 </span>
-                <span className={styles.themeSwitch} aria-hidden="true">
+                <span className={`${styles.themeSwitch} ${modo === 'oscuro' ? styles.themeSwitchActive : ''}`} aria-hidden="true">
                   <span />
                 </span>
               </button>

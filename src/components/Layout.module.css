@@ -365,17 +365,35 @@
   height: 22px;
   border-radius: 999px;
   background: var(--app-primary);
+  transition: background-color 180ms ease, box-shadow 180ms ease;
 }
 
 .themeSwitch span {
   position: absolute;
   top: 3px;
-  right: 3px;
+  left: 3px;
   width: 16px;
   height: 16px;
   border-radius: 50%;
   background: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
+  transition: transform 180ms ease;
+}
+
+.themeSwitchActive {
+  background: var(--app-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-accent) 24%, transparent);
+}
+
+.themeSwitchActive span {
+  transform: translateX(16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themeSwitch,
+  .themeSwitch span {
+    transition: none;
+  }
 }
 
 .confirmOverlay {
