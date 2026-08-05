@@ -9,20 +9,22 @@ const bloques = {
   2: { letras: ['B','C','D','F','U'] },
   3: { letras: ['I','P','V','W'] },
   4: { letras: ['L','M','Ñ','R'] },
-  5: { letras: ['G','H','X','Y'] }
+  5: { letras: ['G','H','X','Y'] },
+  6: { letras: ['K','Ñ','Z','Q'], niveles: 2 }
 };
 
 const CaminoNiveles = () => {
   const { idBloque } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [estadoNiveles, setEstadoNiveles] = useState([false, false, false]); // nivel1, nivel2, nivel3 completados
+  const [estadoNiveles, setEstadoNiveles] = useState([]);
   const bloque = bloques[idBloque];
+  const totalNiveles = bloque?.niveles || 3;
 
   useEffect(() => {
     const cargarProgreso = async () => {
       const niveles = [];
-      for (let i = 1; i <= 3; i++) {
+      for (let i = 1; i <= totalNiveles; i++) {
         const key = `progreso_bloque_${idBloque}_nivel${i}`;
         const { value } = await Preferences.get({ key });
         niveles.push(value === 'completado');
@@ -30,7 +32,7 @@ const CaminoNiveles = () => {
       setEstadoNiveles(niveles);
     };
     cargarProgreso();
-  }, [idBloque]);
+  }, [idBloque, totalNiveles]);
 
   if (!bloque) return <p>Bloque no encontrado</p>;
 
@@ -81,7 +83,7 @@ const CaminoNiveles = () => {
         </svg>
       )
     }
-  ];
+  ].slice(0, totalNiveles);
 
   const completados = estadoNiveles.filter(Boolean).length;
   const siguienteNivel = estadoNiveles.findIndex((completado) => !completado);
@@ -113,9 +115,9 @@ const CaminoNiveles = () => {
 
         <div
           className={styles.progressBadge}
-          aria-label={`${completados} de 3 niveles completados`}
+          aria-label={`${completados} de ${totalNiveles} niveles completados`}
         >
-          <span className={styles.progressNumber}>{completados}/3</span>
+          <span className={styles.progressNumber}>{completados}/{totalNiveles}</span>
           <span className={styles.progressLabel}>completados</span>
         </div>
       </div>

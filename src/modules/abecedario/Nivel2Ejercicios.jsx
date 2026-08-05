@@ -3,6 +3,8 @@ import { useState, useCallback } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
 import styles from './styles/Nivel2Ejercicios.module.css';
+import VideoNumero from '../numeros/VideoNumero';
+import { letrasConMovimiento, obtenerLetraConMovimiento } from '../../data/abecedarioMovimiento';
 
 // Bloques del abecedario (igual que en Leccion.jsx)
 const bloquesAbecedario = {
@@ -10,7 +12,8 @@ const bloquesAbecedario = {
   2: ['B', 'C', 'D', 'F', 'U'],
   3: ['I', 'P', 'V', 'W'],
   4: ['L', 'M', 'Ñ', 'R'],
-  5: ['G', 'H', 'X', 'Y']
+  5: ['G', 'H', 'X', 'Y'],
+  6: letrasConMovimiento.map(({ letra }) => letra)
 };
 const bloqueVacio = [];
 
@@ -140,6 +143,7 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
   const letraCorrecta = letrasBloque[currentQuestionIdx];
   const nombreImagen = letraCorrecta === 'Ñ' ? 'n' : letraCorrecta.toLowerCase();
   const imagenSrc = `/assets/abecedario/imagen_${nombreImagen}.png`;
+  const letraEnMovimiento = idBloque === '6' ? obtenerLetraConMovimiento(letraCorrecta) : null;
 
   return (
     <section className={styles.page} style={cssVars}>
@@ -169,18 +173,22 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
         <div className={styles.prompt}>
           <span className={styles.promptNumber}>Pregunta</span>
           <h2>¿Qué letra representa esta seña?</h2>
-          <p>Observa la posición de la mano y elige una respuesta.</p>
+          <p>Observa {letraEnMovimiento ? 'el video completo' : 'la posición de la mano'} y elige una respuesta.</p>
         </div>
 
-        <div className={styles.signFrame}>
+        <div className={`${styles.signFrame} ${letraEnMovimiento ? styles.videoFrame : ''}`}>
           <span className={styles.signGlow} aria-hidden="true" />
-          <img
-            src={imagenSrc}
-            alt={`Seña de ${letraCorrecta}`}
-            onError={(event) => {
-              event.currentTarget.style.display = 'none';
-            }}
-          />
+          {letraEnMovimiento ? (
+            <VideoNumero key={letraEnMovimiento.recurso} src={letraEnMovimiento.recurso} valor={letraCorrecta} etiqueta="letra" ocultarNumero />
+          ) : (
+            <img
+              src={imagenSrc}
+              alt={`Seña de ${letraCorrecta}`}
+              onError={(event) => {
+                event.currentTarget.style.display = 'none';
+              }}
+            />
+          )}
           <span className={styles.signHint}>Seña objetivo</span>
         </div>
 

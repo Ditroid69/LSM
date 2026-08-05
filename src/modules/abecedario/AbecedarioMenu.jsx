@@ -9,6 +9,7 @@ const bloques = [
   { id: 3, letras: ['I', 'P', 'V', 'W'] },
   { id: 4, letras: ['L', 'M', 'Ñ', 'R'] },
   { id: 5, letras: ['G', 'H', 'X', 'Y'] },
+  { id: 6, letras: ['K', 'Ñ', 'Z', 'Q'], nombre: 'Letras en movimiento' },
 ];
 
 const AbecedarioMenu = () => {
@@ -87,7 +88,7 @@ const AbecedarioMenu = () => {
                 <span className={styles.moduleNumber}>{bloque.id}</span>
                 <span className={styles.moduleMeta}>
                   <small>Módulo {bloque.id}</small>
-                  <strong>{bloque.letras.length} letras</strong>
+                  <strong>{bloque.nombre || `${bloque.letras.length} letras`}</strong>
                 </span>
                 <span className={styles.arrow} aria-hidden="true">
                   <svg viewBox="0 0 24 24">
@@ -104,7 +105,7 @@ const AbecedarioMenu = () => {
 
               <span className={styles.cardFooter}>
                 <span className={styles.cardLine} />
-                <span>Comenzar</span>
+                <span>{bloque.id === 6 ? 'Videos y reconocimiento' : 'Comenzar'}</span>
               </span>
             </button>
           );

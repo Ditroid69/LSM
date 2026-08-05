@@ -13,7 +13,7 @@ const IconoRepetir = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" /></svg>
 );
 
-const VideoNumero = ({ src, numero, ocultarNumero = false }) => {
+const VideoNumero = ({ src, numero, valor = numero, etiqueta = 'número', ocultarNumero = false }) => {
   const videoRef = useRef(null);
   const [reproduciendo, setReproduciendo] = useState(false);
   const [finalizado, setFinalizado] = useState(false);
@@ -43,7 +43,7 @@ const VideoNumero = ({ src, numero, ocultarNumero = false }) => {
         src={src}
         playsInline
         preload="metadata"
-        aria-label={ocultarNumero ? 'Video de la seña por reconocer' : `Video de la seña para el número ${numero}`}
+        aria-label={ocultarNumero ? 'Video de la seña por reconocer' : `Video de la seña para ${etiqueta === 'letra' ? 'la' : 'el'} ${etiqueta} ${valor}`}
         onClick={alternarReproduccion}
         onPlay={() => { setReproduciendo(true); setFinalizado(false); }}
         onPause={() => setReproduciendo(false)}

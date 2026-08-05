@@ -200,7 +200,7 @@
   --card-shadow: var(--modules-accent-shadow);
 }
 
-.moduleCard:last-child {
+.moduleCard:nth-child(odd):last-child {
   grid-column: 1 / -1;
   width: calc(50% - clamp(7px, 1.25vw, 11px));
   justify-self: center;
@@ -395,7 +395,7 @@
     grid-template-columns: 1fr;
   }
 
-  .moduleCard:last-child {
+  .moduleCard:nth-child(odd):last-child {
     grid-column: auto;
     width: 100%;
   }

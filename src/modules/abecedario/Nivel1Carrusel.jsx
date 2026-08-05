@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import { useTheme } from '../../context/ThemeContext';
 import styles from './styles/Nivel1Carrusel.module.css';
+import VideoNumero from '../numeros/VideoNumero';
+import { letrasConMovimiento } from '../../data/abecedarioMovimiento';
 
 const contenidoBloque = {
   1: [
@@ -36,7 +38,8 @@ const contenidoBloque = {
     { letra: 'H', descripcion: 'Índice y medio juntos extendidos, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_h.png' },
     { letra: 'X', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_x.png' },
     { letra: 'Y', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_y.png' },
-  ]
+  ],
+  6: letrasConMovimiento.map((item) => ({ ...item, video: item.recurso })),
 };
 
 const Nivel1Carrusel = () => {
@@ -90,11 +93,11 @@ const Nivel1Carrusel = () => {
   };
 
   return (
-    <section className={styles.page} style={cssVars}>
+    <section className={`${styles.page} ${item.video ? styles.fullVideoPage : ''}`} style={cssVars}>
       <header className={styles.lessonHeader}>
         <div>
           <span className={styles.eyebrow}>Abecedario · Bloque {idBloque}</span>
-          <h1>Aprende la seña</h1>
+          <h1>{item.video ? 'Letras en movimiento' : 'Aprende la seña'}</h1>
         </div>
         <div className={styles.counter} aria-label={`Seña ${indice + 1} de ${bloque.length}`}>
           <strong>{indice + 1}</strong>
@@ -113,6 +116,25 @@ const Nivel1Carrusel = () => {
         <span className={styles.progressFill} style={{ width: `${progreso}%` }} />
       </div>
 
+      {item.video ? (
+        <article className={styles.fullVideoLesson} key={item.letra}>
+          <div className={styles.videoNumberBlock}>
+            <span className={styles.signTag}>Letra</span>
+            <div className={styles.videoNumber}>{item.letra}</div>
+          </div>
+          <div className={styles.fullVideoFrame}>
+            <VideoNumero src={item.video} valor={item.letra} etiqueta="letra" />
+          </div>
+          <div className={styles.videoDescription}>
+            <h2>¿Cómo hacerla?</h2>
+            <p>{item.descripcion}</p>
+            <div className={styles.tip}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 22h4" /><path d="M8.2 14.5A7 7 0 1 1 15.8 14.5 4 4 0 0 0 15 16H9a4 4 0 0 0-.8-1.5z" /></svg>
+              <span>Observa la forma de la mano y la trayectoria completa antes de practicar.</span>
+            </div>
+          </div>
+        </article>
+      ) : (
       <article className={styles.signCard} key={item.letra}>
         <div className={styles.imageColumn}>
           <span className={styles.imageLabel}>Observa la posición</span>
@@ -144,6 +166,7 @@ const Nivel1Carrusel = () => {
           </div>
         </div>
       </article>
+      )}
 
       <div className={styles.dots} aria-hidden="true">
         {bloque.map((seña, posicion) => (
