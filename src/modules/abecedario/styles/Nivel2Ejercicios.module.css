@@ -379,6 +379,7 @@
 .emptyState,
 .loading {
   min-height: calc(100vh - 190px);
+  min-height: calc(100dvh - 190px);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -42,6 +42,8 @@ const VideoNumero = ({ src, numero, valor = numero, etiqueta = 'número', oculta
         ref={videoRef}
         src={src}
         playsInline
+        disablePictureInPicture
+        controlsList="nodownload noplaybackrate"
         preload="metadata"
         aria-label={ocultarNumero ? 'Video de la seña por reconocer' : `Video de la seña para ${etiqueta === 'letra' ? 'la' : 'el'} ${etiqueta} ${valor}`}
         onClick={alternarReproduccion}

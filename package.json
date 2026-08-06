@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prepare:mediapipe": "node scripts/copy-mediapipe.mjs",
+    "predev": "npm run prepare:mediapipe",
     "dev": "vite",
+    "prebuild": "npm run prepare:mediapipe",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -15,6 +18,9 @@
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
     "@capacitor/preferences": "^8.0.1",
+    "@mediapipe/camera_utils": "0.3.1675466862",
+    "@mediapipe/drawing_utils": "0.3.1675466124",
+    "@mediapipe/hands": "0.4.1675469240",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.17.0"

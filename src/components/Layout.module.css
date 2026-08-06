@@ -1,6 +1,7 @@
 .layout {
   --header-height: 98px;
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   overflow-x: clip;
   background:
@@ -164,6 +165,7 @@
 
 .main {
   min-height: 100vh;
+  min-height: 100dvh;
   box-sizing: border-box;
   padding:
     calc(var(--header-height) + env(safe-area-inset-top, 0px) + clamp(26px, 4vw, 42px))

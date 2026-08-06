@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Camera } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import styles from './HandTracker.module.css';
 
@@ -19,6 +18,8 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
   const validandoRef = useRef(false);
   const progressRef = useRef(0);            // para el temporizador
   const falloVisibleRef = useRef(false);
+  const validacionCompletaRef = useRef(false);
+  const enviandoFrameRef = useRef(false);
   const letraRef = useRef(letraObjetivo);
   const onAciertoRef = useRef(onAcierto);
   const [handDetected, setHandDetected] = useState(false);   // ¿hay mano en cámara?
@@ -28,15 +29,19 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
   // Reiniciar todo solo al cambiar de letra
   useEffect(() => {
     letraRef.current = letraObjetivo;
-    setProgress(0);
-    setValidando(false);
-    setFalloVisible(false);
-     falloVisibleRef.current = false;
-    setHandDetected(false);
     if (intervaloRef.current) clearInterval(intervaloRef.current);
     validandoRef.current = false;
     progressRef.current = 0;
-    setValidacionCompleta(false);
+    falloVisibleRef.current = false;
+    validacionCompletaRef.current = false;
+    const reinicioId = requestAnimationFrame(() => {
+      setProgress(0);
+      setValidando(false);
+      setFalloVisible(false);
+      setHandDetected(false);
+      setValidacionCompleta(false);
+    });
+    return () => cancelAnimationFrame(reinicioId);
   }, [letraObjetivo]);
 
   // Actualizar callback sin reiniciar nada
@@ -48,12 +53,18 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
   useEffect(() => {
     let cancelado = false;
 
-    const { Hands, Camera } = window;
+    const { Hands, Camera: MediaPipeCamera } = window;
     const { drawConnectors, drawLandmarks } = window;
     const { HAND_CONNECTIONS } = window;
 
     const iniciar = async () => {
       try {
+        if (!Hands || !MediaPipeCamera || !drawConnectors || !drawLandmarks || !HAND_CONNECTIONS) {
+          throw new Error('No se pudo cargar el motor local de reconocimiento de manos.');
+        }
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error('Este dispositivo no ofrece acceso compatible a la cámara.');
+        }
       // Solo pedir permiso en plataformas nativas (Android/iOS)
 if (Capacitor.isNativePlatform()) {
   const { Camera } = await import('@capacitor/camera');
@@ -68,7 +79,14 @@ if (Capacitor.isNativePlatform()) {
         const video = videoRef.current;
         if (!video) return;
 
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: 'user',
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+          },
+        });
         if (cancelado) {
           stream.getTracks().forEach(t => t.stop());
           return;
@@ -80,7 +98,7 @@ if (Capacitor.isNativePlatform()) {
 
         const hands = new Hands({
           locateFile: (file) =>
-           `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+           `/vendor/mediapipe/hands/${file}`
         });
 
         hands.setOptions({
@@ -104,16 +122,19 @@ if (Capacitor.isNativePlatform()) {
           } else {
             setHandDetected(false);
             // Si estábamos validando y la mano desaparece, es un fallo
-            if (validando || progress > 0) {
+            if (validandoRef.current || progressRef.current > 0) {
               clearInterval(intervaloRef.current);
+              validandoRef.current = false;
+              progressRef.current = 0;
               setValidando(false);
               setProgress(0);
               setFalloVisible(true);
+              falloVisibleRef.current = true;
             }
           }
           if (results.multiHandLandmarks?.length) {
             for (const landmarks of results.multiHandLandmarks) {
-               if (validacionCompleta) return;
+               if (validacionCompletaRef.current) return;
               drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
                 color: '#41D6C3',
                 lineWidth: 4
@@ -125,7 +146,7 @@ if (Capacitor.isNativePlatform()) {
                 radius: 4
               });
               // Solo evaluar si no se ha completado aún
-              if (!validacionCompleta) {
+              if (!validacionCompletaRef.current) {
                 const letra = letraRef.current;
                 let esCorrecta = false;
                 if (letra === 'A') esCorrecta = detectarA(landmarks);
@@ -177,6 +198,7 @@ if (Capacitor.isNativePlatform()) {
                         setProgress(100);
                         setValidando(false);
                         validandoRef.current = false;
+                        validacionCompletaRef.current = true;
                         setValidacionCompleta(true);
                         if (onAciertoRef.current) onAciertoRef.current(letra);
                       } else {
@@ -204,12 +226,17 @@ if (Capacitor.isNativePlatform()) {
 
        let frameSkip = 0; // contador de frames
 
-        const camera = new Camera(video, {
+        const camera = new MediaPipeCamera(video, {
           onFrame: async () => {
             frameSkip++;
             if (frameSkip % 2 !== 0) return; // procesa solo frames pares (la mitad)
-            if (handsRef.current && !cancelado) {
-              await handsRef.current.send({ image: video });
+            if (handsRef.current && !cancelado && !enviandoFrameRef.current) {
+              enviandoFrameRef.current = true;
+              try {
+                await handsRef.current.send({ image: video });
+              } finally {
+                enviandoFrameRef.current = false;
+              }
             }
           },
           width: 640,
@@ -217,7 +244,7 @@ if (Capacitor.isNativePlatform()) {
         });
 
         cameraRef.current = camera;
-        camera.start();
+        await camera.start();
         setStatus('listo');
       } catch (err) {
         console.error(err);
@@ -243,6 +270,8 @@ if (Capacitor.isNativePlatform()) {
     return () => {
       cancelado = true;
       clearInterval(intervaloRef.current);   // <-- añade esto
+      validandoRef.current = false;
+      enviandoFrameRef.current = false;
       if (cameraRef.current) cameraRef.current.stop();
       if (handsRef.current) handsRef.current.close();
       if (streamRef.current) {
@@ -255,6 +284,8 @@ if (Capacitor.isNativePlatform()) {
     falloVisibleRef.current = false; 
     setProgress(0);
     setValidando(false);
+    validandoRef.current = false;
+    progressRef.current = 0;
     if (intervaloRef.current) clearInterval(intervaloRef.current);
   };
   return (
@@ -288,7 +319,6 @@ if (Capacitor.isNativePlatform()) {
         <div className={styles.ready}>
           <div className={styles.cameraShell}>
             <div className={styles.camera}>
-              <video ref={videoRef} style={{ display: 'none' }} playsInline />
               <canvas
                 ref={canvasRef}
                 width={640}
@@ -315,7 +345,7 @@ if (Capacitor.isNativePlatform()) {
                   stroke={validacionCompleta ? 'var(--camera-success)' : 'var(--camera-soft)'}
                   strokeWidth="2.5"
                 />
-                {(validandoRef.current || validacionCompleta) && !falloVisible && (
+                {(validando || validacionCompleta) && !falloVisible && (
                   <circle
                     cx="50"
                     cy="50"
@@ -457,7 +487,6 @@ function detectarD(landmarks) {
   const PINKY_TIP = 20;
   const PINKY_MCP = 17;
   const THUMB_TIP = 4;
-  const WRIST = 0;
 
   // Distancias punta‑base de cada dedo
   const distIndice = Math.hypot(landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x, landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y);
@@ -624,7 +653,7 @@ function detectarO(landmarks) {
 function detectarI(landmarks) {
   const INDEX_TIP = 8, INDEX_MCP = 5, MIDDLE_TIP = 12, MIDDLE_MCP = 9,
         RING_TIP = 16, RING_MCP = 13, PINKY_TIP = 20, PINKY_MCP = 17,
-        THUMB_TIP = 4, THUMB_CMC = 1;
+        THUMB_TIP = 4;
 
   const distIndice = Math.hypot(landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x, landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y);
   const distMedio = Math.hypot(landmarks[MIDDLE_TIP].x - landmarks[MIDDLE_MCP].x, landmarks[MIDDLE_TIP].y - landmarks[MIDDLE_MCP].y);
@@ -811,9 +840,9 @@ function detectarW(landmarks) {
 }
 
 // Funciones X, Y, Z pendientes de diagnóstico (placeholder)
-function detectarX(landmarks) { return false; }
-function detectarY(landmarks) { return false; }
-function detectarZ(landmarks) { return false; }
+function detectarX() { return false; }
+function detectarY() { return false; }
+function detectarZ() { return false; }
 
 // Número 1: índice extendido, otros flexionados, pulgar extendido y separado del índice
 function detectar1(landmarks) {
@@ -909,7 +938,7 @@ function detectar5(landmarks) {
 function detectar6(landmarks) {
   const INDEX_TIP = 8, INDEX_MCP = 5, MIDDLE_TIP = 12, MIDDLE_MCP = 9,
         RING_TIP = 16, RING_MCP = 13, PINKY_TIP = 20, PINKY_MCP = 17,
-        THUMB_TIP = 4, THUMB_CMC = 1, WRIST = 0;
+        THUMB_TIP = 4, THUMB_CMC = 1;
   const distIndice = Math.hypot(landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x, landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y);
   const distMedio = Math.hypot(landmarks[MIDDLE_TIP].x - landmarks[MIDDLE_MCP].x, landmarks[MIDDLE_TIP].y - landmarks[MIDDLE_MCP].y);
   const distAnular = Math.hypot(landmarks[RING_TIP].x - landmarks[RING_MCP].x, landmarks[RING_TIP].y - landmarks[RING_MCP].y);
