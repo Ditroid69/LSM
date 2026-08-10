@@ -34,23 +34,37 @@
 }
 
 .counter {
-  min-width: 68px;
-  height: 48px;
-  padding: 0 12px;
+  min-width: 58px;
+  height: auto;
+  padding: 2px 0 2px 13px;
   box-sizing: border-box;
-  border: 1px solid var(--camera-border);
-  border-radius: 16px;
-  display: flex;
+  border: 0;
+  border-left: 3px solid var(--camera-primary);
+  border-radius: 0;
+  display: grid;
+  grid-template-columns: auto auto;
   align-items: baseline;
-  justify-content: center;
-  gap: 4px;
+  justify-content: end;
+  column-gap: 4px;
   color: var(--camera-muted);
-  background: var(--camera-card);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--camera-border) 70%, transparent);
+  background: transparent;
+  box-shadow: none;
+  text-align: right;
 }
 
-.counter strong { color: var(--camera-text); font-size: 1.2rem; }
-.counter span { font-size: 0.7rem; font-weight: 900; }
+.counter::before {
+  content: 'Avance';
+  grid-column: 1 / -1;
+  margin-bottom: 1px;
+  color: var(--camera-muted);
+  font-size: 0.56rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.counter strong { color: var(--camera-primary); font-size: 1.35rem; line-height: 1; }
+.counter span { font-size: 0.76rem; font-weight: 900; }
 
 .progressTrack {
   height: 10px;
@@ -179,6 +193,40 @@
   cursor: pointer;
 }
 
+.cameraActions {
+  width: min(100%, 590px);
+  margin: 20px auto 0;
+  display: grid;
+  grid-template-columns: minmax(145px, 0.55fr) minmax(220px, 1fr);
+  align-items: stretch;
+  gap: 12px;
+}
+
+.cameraActions .nextButton {
+  width: 100%;
+  margin: 0;
+}
+
+.skipButton {
+  min-height: 52px;
+  padding: 10px 15px;
+  border: 2px solid var(--camera-border);
+  border-radius: 17px;
+  color: var(--camera-text);
+  background: var(--camera-card);
+  box-shadow: 0 5px 0 var(--camera-border);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.skipButton:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 .nextButton:disabled {
   color: var(--camera-muted);
   background: var(--camera-soft);
@@ -251,7 +299,7 @@
 }
 
 @media (max-width: 640px) {
-  .page { padding-bottom: 12px; }
+  .page { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
   .lessonHeader h1 { font-size: 1.4rem; }
   .cameraCard {
     margin-top: 15px;
@@ -279,10 +327,26 @@
   .letterSteps { margin-top: 18px; gap: 7px; }
   .letterStep { width: 34px; height: 34px; border-radius: 10px; }
   .nextButton {
-    position: sticky;
-    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-    z-index: 10;
+    position: static;
+    width: 100%;
+    margin-top: 16px;
   }
+  .cameraActions {
+    width: 100%;
+    margin-top: 16px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .cameraActions .nextButton { margin-top: 0; }
+  .skipButton { min-height: 46px; }
+}
+
+@media (max-height: 700px) and (max-width: 640px) {
+  .lessonHeader h1 { font-size: 1.2rem; }
+  .progressTrack { margin-top: 12px; }
+  .cameraCard { margin-top: 12px; padding: 12px; }
+  .letterSteps { margin-top: 13px; }
+  .nextButton { min-height: 48px; margin-top: 13px; }
 }
 
 @media (max-width: 360px) {

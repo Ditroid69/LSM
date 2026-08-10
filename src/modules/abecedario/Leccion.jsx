@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import HandTracker from "../../components/HandTracker";
 import { useTheme } from '../../context/ThemeContext';
@@ -10,7 +10,7 @@ const bloquesAbecedario = {
   1: ['A', 'E', 'S', 'T', 'O'],
   2: ['B', 'C', 'D', 'F', 'U'],
   3: ['I', 'P', 'V', 'W'],
-  4: ['L', 'M', 'Ñ', 'R'],
+  4: ['L', 'M', 'N', 'R'],
   5: ['G', 'H', 'X', 'Y']
 };
 
@@ -40,13 +40,9 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
 
   const leccion = contenidoLecciones[id] || { titulo: 'Lección', descripcion: '' };
 
-  const [indiceLetra, setIndiceLetra] = useState(0);
+  const [pendientes, setPendientes] = useState(() => mezclar(letras));
+  const [completadas, setCompletadas] = useState([]);
   const [aciertoLocal, setAciertoLocal] = useState(false);
-
-  useEffect(() => {
-    setIndiceLetra(0);
-    setAciertoLocal(false);
-  }, [id, bloque]);
 
   if (!letras.length) {
     return (
@@ -59,8 +55,9 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
     );
   }
 
-  const letraActual = letras[indiceLetra];
-  const progreso = ((indiceLetra + (aciertoLocal ? 1 : 0)) / letras.length) * 100;
+  const letraActual = pendientes[0];
+  const secuenciaVisible = [...completadas, ...pendientes];
+  const progreso = ((completadas.length + (aciertoLocal ? 1 : 0)) / letras.length) * 100;
   const cssVars = {
     '--camera-card': theme.tarjeta,
     '--camera-text': theme.tarjetaTexto || theme.texto,
@@ -72,7 +69,7 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
     '--camera-accent-shadow': '#d5ad00',
     '--camera-success': theme.correcto,
     '--camera-success-shadow': '#087f5b',
-    '--camera-error': theme.incorrecto,
+    '--camera-error': '#ef5b72',
     '--camera-soft': theme.gris,
   };
 
@@ -90,8 +87,9 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
   };
 
   const siguienteLetra = async () => {
-    if (indiceLetra < letras.length - 1) {
-      setIndiceLetra(indiceLetra + 1);
+    if (pendientes.length > 1) {
+      setCompletadas((actuales) => [...actuales, letraActual]);
+      setPendientes((actuales) => actuales.slice(1));
       setAciertoLocal(false);
     } else {
       if (esAbecedario) {
@@ -104,6 +102,11 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
     }
   };
 
+  const saltarLetra = () => {
+    if (aciertoLocal || pendientes.length <= 1) return;
+    setPendientes((actuales) => [...actuales.slice(1), actuales[0]]);
+  };
+
   return (
     <section className={styles.page} style={cssVars}>
       <header className={styles.lessonHeader}>
@@ -113,8 +116,8 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
           </span>
           <h1>Practica con la cámara</h1>
         </div>
-        <div className={styles.counter} aria-label={`Letra ${indiceLetra + 1} de ${letras.length}`}>
-          <strong>{indiceLetra + 1}</strong>
+        <div className={styles.counter} aria-label={`${completadas.length + 1} de ${letras.length} letras completadas`}>
+          <strong>{completadas.length + 1}</strong>
           <span>/ {letras.length}</span>
         </div>
       </header>
@@ -146,35 +149,39 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
       </div>
 
       <div className={styles.letterSteps} aria-label="Progreso por letras">
-        {letras.map((letra, posicion) => (
+        {secuenciaVisible.map((letra, posicion) => (
           <span
             key={letra}
             className={`${styles.letterStep} ${
-              posicion < indiceLetra || (posicion === indiceLetra && aciertoLocal)
+              posicion < completadas.length || (posicion === completadas.length && aciertoLocal)
                 ? styles.letterStepComplete
-                : posicion === indiceLetra
+                : posicion === completadas.length
                   ? styles.letterStepCurrent
                   : ''
             }`}
           >
-            {posicion < indiceLetra || (posicion === indiceLetra && aciertoLocal) ? '✓' : letra}
+            {posicion < completadas.length || (posicion === completadas.length && aciertoLocal) ? '✓' : letra}
           </span>
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={siguienteLetra}
-        disabled={!aciertoLocal}
-        className={styles.nextButton}
-      >
-        <span>{aciertoLocal ? 'Siguiente letra' : 'Completa la seña para continuar'}</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 12h14M13 6l6 6-6 6" />
-        </svg>
-      </button>
+      <div className={styles.cameraActions}>
+        <button type="button" onClick={saltarLetra} disabled={aciertoLocal || pendientes.length <= 1} className={styles.skipButton}>Saltar por ahora</button>
+        <button type="button" onClick={siguienteLetra} disabled={!aciertoLocal} className={styles.nextButton}>
+          <span>{aciertoLocal ? 'Siguiente letra' : 'Completa la seña para continuar'}</span>
+        </button>
+      </div>
     </section>
   );
+};
+
+const mezclar = (elementos) => {
+  const copia = [...elementos];
+  for (let i = copia.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
 };
 
 export default Leccion;

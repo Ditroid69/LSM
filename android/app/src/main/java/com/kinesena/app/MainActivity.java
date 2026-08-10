@@ -1,4 +1,4 @@
-package com.tuempresa.appmanos;
+package com.kinesena.app;
 
 import com.getcapacitor.BridgeActivity;
 

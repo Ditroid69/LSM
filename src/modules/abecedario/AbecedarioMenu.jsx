@@ -7,7 +7,7 @@ const bloques = [
   { id: 1, letras: ['A', 'E', 'S', 'T', 'O'] },
   { id: 2, letras: ['B', 'C', 'D', 'F', 'U'] },
   { id: 3, letras: ['I', 'P', 'V', 'W'] },
-  { id: 4, letras: ['L', 'M', 'Ñ', 'R'] },
+  { id: 4, letras: ['L', 'M', 'N', 'R'] },
   { id: 5, letras: ['G', 'H', 'X', 'Y'] },
   { id: 6, letras: ['K', 'Ñ', 'Z', 'Q'], nombre: 'Letras en movimiento' },
 ];
@@ -90,11 +90,6 @@ const AbecedarioMenu = () => {
                   <small>Módulo {bloque.id}</small>
                   <strong>{bloque.nombre || `${bloque.letras.length} letras`}</strong>
                 </span>
-                <span className={styles.arrow} aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </span>
               </span>
 
               <span className={styles.letterList}>
@@ -126,11 +121,10 @@ const AbecedarioMenu = () => {
           </span>
           <span className={styles.practiceCopy}>
             <small>Nuevo recorrido</small>
-            <strong>Practica todo el abecedario</strong>
+            <strong>Refuerza el abecedario</strong>
             <span>Relaciona señas, deletrea palabras y encuentra parejas en el memorama.</span>
             <span className={styles.practiceTags}><i>Relacionar</i><i>Deletrear</i><i>Memorama</i></span>
           </span>
-          <span className={styles.practiceArrow} aria-hidden="true">›</span>
         </button>
       </section>
     </section>

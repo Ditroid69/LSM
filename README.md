@@ -1,16 +1,43 @@
-# React + Vite
+# Kineseña
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación híbrida para aprender vocabulario introductorio de Lengua de Señas Mexicana mediante demostraciones, ejercicios, actividades de refuerzo y prácticas de reconocimiento de mano ejecutadas localmente.
 
-Currently, two official plugins are available:
+## Documentación
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- [Especificación de requisitos actualizada](docs/REQUERIMIENTOS_ACTUALIZADOS.md)
+- [Guía de recursos de video](public/assets/GUIA_VIDEOS.md)
 
-## React Compiler
+La especificación actualizada contrasta el PDF inicial con el estado real del proyecto, registra los cambios de alcance y separa lo implementado de los pendientes de validación o prueba.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologías
 
-## Expanding the ESLint configuration
+- React 19 y Vite 8
+- Capacitor 8 para Android
+- Capacitor Preferences para nombre, apariencia y progreso local
+- MediaPipe Hands empaquetado localmente para seguimiento de mano
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Desarrollo
+
+```bash
+npm install
+npm run dev
+```
+
+Antes de iniciar o compilar, el proyecto copia los archivos necesarios de MediaPipe a `public/vendor/mediapipe`.
+
+## Verificación
+
+```bash
+npm run lint
+npm run build
+```
+
+Para sincronizar los recursos web compilados con Android:
+
+```bash
+npx cap sync android
+```
+
+## Privacidad y operación
+
+El nombre y el progreso se guardan únicamente en el dispositivo. Los fotogramas de cámara se procesan localmente y no se almacenan ni se envían a un servidor. El contenido y el modelo de seguimiento están incluidos en la aplicación para permitir el uso sin conexión.

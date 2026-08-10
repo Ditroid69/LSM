@@ -2,12 +2,12 @@ export const letrasAbecedario = [
   'A', 'E', 'S', 'T', 'O',
   'B', 'C', 'D', 'F', 'U',
   'I', 'P', 'V', 'W',
-  'L', 'M', 'Ñ', 'R',
+  'L', 'M', 'N', 'R',
   'G', 'H', 'X', 'Y',
 ];
 
 export const imagenDeLetra = (letra) => {
-  const nombreImagen = letra === 'Ñ' ? 'n' : letra.toLowerCase();
+  const nombreImagen = letra.toLowerCase();
   return `/assets/abecedario/imagen_${nombreImagen}.png`;
 };
 

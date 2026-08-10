@@ -11,7 +11,7 @@ const bloquesAbecedario = {
   1: ['A', 'E', 'S', 'T', 'O'],
   2: ['B', 'C', 'D', 'F', 'U'],
   3: ['I', 'P', 'V', 'W'],
-  4: ['L', 'M', 'Ñ', 'R'],
+  4: ['L', 'M', 'N', 'R'],
   5: ['G', 'H', 'X', 'Y'],
   6: letrasConMovimiento.map(({ letra }) => letra)
 };
@@ -141,7 +141,7 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
   }
 
   const letraCorrecta = letrasBloque[currentQuestionIdx];
-  const nombreImagen = letraCorrecta === 'Ñ' ? 'n' : letraCorrecta.toLowerCase();
+  const nombreImagen = letraCorrecta.toLowerCase();
   const imagenSrc = `/assets/abecedario/imagen_${nombreImagen}.png`;
   const letraEnMovimiento = idBloque === '6' ? obtenerLetraConMovimiento(letraCorrecta) : null;
 
@@ -263,9 +263,6 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
             onClick={handleNext}
           >
             Continuar
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
           </button>
         </div>
       )}

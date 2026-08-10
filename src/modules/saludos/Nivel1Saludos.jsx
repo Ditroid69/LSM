@@ -54,7 +54,7 @@ const Nivel1Saludos = () => {
       <div className={styles.dots} aria-hidden="true">{modulo.expresiones.map((expresion, posicion) => <span key={expresion.texto} className={`${styles.dot} ${posicion === indice ? styles.dotCurrent : posicion < indice ? styles.dotVisited : ''}`} />)}</div>
       <div className={styles.controls}>
         <button type="button" onClick={() => setIndice((actual) => actual - 1)} disabled={indice === 0} className={styles.previousButton}><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6" /></svg><span>Anterior</span></button>
-        <button type="button" onClick={siguiente} className={`${styles.nextButton} ${esUltimo ? styles.finishButton : ''}`}><span>{esUltimo ? 'Finalizar nivel' : 'Siguiente'}</span><svg viewBox="0 0 24 24"><path d={esUltimo ? 'm5 12 4.5 4.5L19 7' : 'M5 12h14M13 6l6 6-6 6'} /></svg></button>
+        <button type="button" onClick={siguiente} className={`${styles.nextButton} ${esUltimo ? styles.finishButton : ''}`}><span>{esUltimo ? 'Finalizar nivel' : 'Siguiente'}</span>{esUltimo && <svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg>}</button>
       </div>
     </section>
   );

@@ -103,7 +103,7 @@ const Nivel1CarruselNumeros = () => {
           </div>
 
           <div className={styles.videoDescription}>
-            <h2>¿Cómo hacerlo?</h2>
+            <h2>¿Cómo se hace?</h2>
             <p>{item.descripcion}</p>
             <div className={styles.tip}>
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -135,7 +135,7 @@ const Nivel1CarruselNumeros = () => {
         <div className={styles.contentColumn}>
           <span className={styles.signTag}>Número</span>
           <div className={styles.letter}>{item.numero}</div>
-          <h2>¿Cómo hacerlo?</h2>
+          <h2>¿Cómo se hace?</h2>
           <p>{item.descripcion}</p>
           <div className={styles.tip}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -165,9 +165,7 @@ const Nivel1CarruselNumeros = () => {
 
         <button type="button" onClick={siguiente} className={`${styles.nextButton} ${esUltimo ? styles.finishButton : ''}`}>
           <span>{esUltimo ? 'Finalizar nivel' : 'Siguiente'}</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            {esUltimo ? <path d="m5 12 4.5 4.5L19 7" /> : <path d="M5 12h14M13 6l6 6-6 6" />}
-          </svg>
+          {esUltimo && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7" /></svg>}
         </button>
       </div>
     </section>

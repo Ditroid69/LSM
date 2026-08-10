@@ -60,7 +60,7 @@ const Inicio = ({ onCompletar }) => {
       <main className={styles.page} style={cssVars}>
         <div className={styles.splash}>
           <span className={styles.logoHalo} aria-hidden="true" />
-          <img src={logo} alt="Kinesseña" />
+          <img src={logo} alt="Kineseña" />
         </div>
       </main>
     );
@@ -72,7 +72,7 @@ const Inicio = ({ onCompletar }) => {
         <section className={styles.card} aria-live="polite">
           <div className={styles.brand}>
             <span className={styles.logoHalo} aria-hidden="true" />
-            <img src={logo} alt="Kinesseña" />
+            <img src={logo} alt="Kineseña" />
           </div>
           <span className={styles.eyebrow}>Preparando tu aprendizaje</span>
           <h1>¡Todo listo!</h1>
@@ -92,10 +92,10 @@ const Inicio = ({ onCompletar }) => {
       <section className={styles.card}>
         <div className={styles.brand}>
           <span className={styles.logoHalo} aria-hidden="true" />
-          <img src={logo} alt="Kinesseña" />
+          <img src={logo} alt="Kineseña" />
         </div>
 
-        <span className={styles.eyebrow}>Bienvenido a Kinesseña</span>
+        <span className={styles.eyebrow}>Bienvenido a Kineseña</span>
         <h1>Comencemos a aprender</h1>
         <p>Dinos cómo te llamas para personalizar tu experiencia.</p>
 
@@ -121,9 +121,6 @@ const Inicio = ({ onCompletar }) => {
 
         <button type="button" onClick={manejarEntrar} disabled={nombre.trim() === ''}>
           Comenzar
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
         </button>
 
         <small>Tu nombre se guarda únicamente en este dispositivo.</small>

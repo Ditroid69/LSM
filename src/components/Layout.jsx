@@ -25,6 +25,10 @@ const Layout = () => {
     cargarNombre();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   const esInicio = location.pathname === '/';
   const esMenu = location.pathname === '/menu';
   const mostrarBotonAtras = !esInicio && !esMenu;
@@ -153,9 +157,9 @@ const Layout = () => {
         </div>
 
         <div className={styles.brand}>
-          <img src={logo} alt="Logo de Kinesseña" className={styles.logo} />
+          <img src={logo} alt="Logo de Kineseña" className={styles.logo} />
           <div className={styles.info}>
-            <span className={styles.title}>Kinesseña</span>
+            <span className={styles.title}>Kineseña</span>
             <span className={styles.user}>
               {nombre ? `Hola, ${nombre}` : 'Aprendiz'}
             </span>
@@ -180,7 +184,7 @@ const Layout = () => {
             <div className={styles.drawerTopBar}>
               <div className={styles.drawerBrand}>
                 <img src={logo} alt="" className={styles.drawerLogo} />
-                <span>Kinesseña</span>
+                <span>Kineseña</span>
               </div>
               <button
                 className={styles.iconButton}

@@ -93,18 +93,14 @@ const NumerosMenu = () => {
                   <small>Módulo {bloque.id}</small>
                   <strong>{bloque.nombre}</strong>
                 </span>
-                <span className={styles.arrow} aria-hidden="true">
-                  {bloque.disponible ? (
-                    <svg viewBox="0 0 24 24">
-                      <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
-                  ) : (
+                {!bloque.disponible && (
+                  <span className={styles.arrow} aria-hidden="true">
                     <svg viewBox="0 0 24 24">
                       <rect x="5" y="10" width="14" height="10" rx="2" />
                       <path d="M8 10V7a4 4 0 0 1 8 0v3" />
                     </svg>
-                  )}
-                </span>
+                  </span>
+                )}
               </span>
 
               <span className={styles.letterList}>

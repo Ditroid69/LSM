@@ -2,7 +2,7 @@ export const letrasConMovimiento = [
   {
     letra: 'K',
     recurso: '/assets/abecedario/video_k.mp4',
-    descripcion: 'Coloca la mano a la altura del pecho con el índice y el medio extendidos y separados. Apoya el pulgar entre ambos dedos, cerca de la base del dedo medio, y mantén el anular y el meñique doblados. Conserva esta configuración mientras realizas un movimiento corto de arriba hacia abajo.',
+    descripcion: 'Coloca la mano a la altura del pecho con el índice y el medio extendidos y separados. Apoya el pulgar entre ambos dedos, cerca de la base del dedo medio, y mantén el anular y el meñique doblados. Conserva esta posición mientras realizas un movimiento corto de arriba hacia abajo.',
   },
   {
     letra: 'Ñ',
@@ -17,7 +17,7 @@ export const letrasConMovimiento = [
   {
     letra: 'Q',
     recurso: '/assets/abecedario/video_q.mp4',
-    descripcion: 'Extiende el índice y el pulgar y mantén los demás dedos doblados. Orienta las puntas hacia abajo y conserva la configuración mientras haces un movimiento corto hacia ti, tal como se muestra en el video.',
+    descripcion: 'Extiende el índice y el pulgar y mantén los demás dedos doblados. Orienta las puntas hacia abajo y conserva la posición mientras haces un movimiento corto hacia ti, tal como se muestra en el video.',
   },
 ];
 

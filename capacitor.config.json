@@ -1,6 +1,6 @@
 {
-  "appId": "com.tuempresa.appmanos",
-  "appName": "AppManos",
+  "appId": "com.kinesena.app",
+  "appName": "Kineseña",
   "webDir": "dist",
   "bundledWebRuntime": false
 }

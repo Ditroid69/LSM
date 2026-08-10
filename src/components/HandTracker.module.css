@@ -1,11 +1,20 @@
 .tracker { width: 100%; margin: 0 auto; color: var(--camera-text); }
 .ready { display: flex; flex-direction: column; align-items: center; }
+.captureHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
 .cameraShell {
   position: relative;
   width: min(100%, 390px);
   aspect-ratio: 1;
 }
 .camera {
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -15,9 +24,49 @@
   background: #10151c;
   box-shadow: 0 8px 0 var(--camera-primary-shadow), 0 15px 30px rgba(0, 0, 0, 0.24);
 }
-.canvas { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-.progressRing { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.progressArc { transition: stroke-dashoffset 0.1s linear; }
+.sourceVideo,
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+.sourceVideo { z-index: 1; background: #10151c; }
+.canvas { z-index: 2; pointer-events: none; }
+.progressRing { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; pointer-events: none; }
+.progressRing circle { transition: stroke 180ms ease; }
+.progressArc { transition: stroke-dashoffset 0.1s linear, stroke 180ms ease; }
+.errorMark {
+  position: absolute;
+  top: 12%;
+  right: 12%;
+  z-index: 4;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--camera-card);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--camera-error);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--camera-error) 38%, transparent);
+  animation: errorMarkIn 180ms ease-out;
+}
+.errorMark svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+}
+@keyframes errorMarkIn {
+  from { opacity: 0; transform: scale(0.65); }
+  to { opacity: 1; transform: scale(1); }
+}
 .cameraStatus {
   position: absolute;
   left: 50%;
@@ -62,35 +111,6 @@
   background: var(--camera-accent);
   box-shadow: 0 4px 0 var(--camera-accent-shadow);
   font-size: 1rem;
-}
-.failure {
-  width: 100%;
-  margin-top: 16px;
-  padding: 11px;
-  box-sizing: border-box;
-  border: 1px solid var(--camera-error);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  color: var(--camera-text);
-  background: color-mix(in srgb, var(--camera-error) 10%, var(--camera-card));
-  text-align: left;
-}
-.failure strong { font-size: 0.72rem; }
-.failure p { margin-top: 2px; color: var(--camera-muted); font-size: 0.61rem; line-height: 1.3; }
-.failure button {
-  min-height: 38px;
-  padding: 8px 11px;
-  border: 0;
-  border-radius: 12px;
-  color: white;
-  background: var(--camera-error);
-  font: inherit;
-  font-size: 0.65rem;
-  font-weight: 900;
-  cursor: pointer;
 }
 .loading {
   min-height: 280px;
@@ -139,17 +159,23 @@
 .error pre { margin: 0; color: var(--camera-muted); font: inherit; font-size: 0.68rem; white-space: pre-wrap; overflow-wrap: anywhere; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 640px) {
-  .cameraShell { width: min(82vw, 350px); }
+  .cameraShell { width: min(82vw, 350px, 48dvh); }
   .camera { border-width: 4px; box-shadow: 0 6px 0 var(--camera-primary-shadow), 0 12px 24px rgba(0, 0, 0, 0.22); }
   .target { margin-top: 14px; }
-  .failure { flex-direction: column; align-items: stretch; text-align: center; }
-  .failure button { width: 100%; }
   .loading { min-height: 220px; }
 }
 @media (max-width: 360px) {
-  .cameraShell { width: min(80vw, 300px); }
+  .cameraShell { width: min(78vw, 300px, 44dvh); }
   .cameraStatus { bottom: 8px; padding: 5px 8px; font-size: 0.5rem; }
+  .errorMark { width: 24px; height: 24px; border-width: 2px; }
+  .errorMark svg { width: 14px; height: 14px; }
+}
+
+@media (max-height: 700px) and (max-width: 640px) {
+  .cameraShell { width: min(72vw, 42dvh, 280px); }
+  .target { margin-top: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation: none; }
+  .errorMark { animation: none; }
 }

@@ -7,3 +7,10 @@
 .actions{margin-top:25px;display:flex;justify-content:center;gap:13px}.actions button{min-height:48px;padding:0 22px;border-radius:16px;font:inherit;font-weight:900;cursor:pointer}.primaryButton{border:1px solid color-mix(in srgb,var(--memory-success) 70%,#075f47);color:white;background:var(--memory-success);box-shadow:0 5px 0 color-mix(in srgb,var(--memory-success) 68%,#075f47)}.secondaryButton{border:1px solid var(--memory-border);color:var(--memory-text);background:var(--memory-card);box-shadow:0 5px 0 var(--memory-border)}
 @media(max-width:650px){.board{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.memoryCard{aspect-ratio:4/3}.cardFront img{width:85%;height:85%}.top{padding:16px}.feedback{margin-top:20px}.actions{flex-direction:column}.actions button{width:100%}}
 @media(prefers-reduced-motion:reduce){.memoryCard,.cardInner,.progress i{transition:none}.boardShuffling .memoryCard{animation:none!important}}
+
+/* En WebView móvil, las caras 3D no deben capturar el toque: toda la
+   tarjeta responde igual, ya sea una letra o una imagen. */
+.memoryCard { touch-action: manipulation; }
+.cardInner,
+.cardBack,
+.cardFront { pointer-events: none; }

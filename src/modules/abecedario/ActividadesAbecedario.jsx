@@ -6,8 +6,8 @@ import styles from './styles/ActividadesAbecedario.module.css';
 
 const actividades = [
   { id: 'relacionar', numero: 1, titulo: 'Relaciona las señas', descripcion: 'Une cada seña con la letra que representa.', icono: '↔', tono: 'turquesa', detalle: 'Asociación visual' },
-  { id: 'deletreo', numero: 2, titulo: 'Deletreo de palabras', descripcion: 'Ordena las señas para formar cada palabra.', icono: 'ABC', tono: 'amarillo', detalle: 'Orden y vocabulario' },
-  { id: 'memorama', numero: 3, titulo: 'Memorama de señas', descripcion: 'Encuentra las parejas entre señas y letras.', icono: '2×', tono: 'verde', detalle: 'Memoria y atención' },
+  { id: 'deletreo', numero: 2, titulo: 'Deletreo de palabras', descripcion: 'Ordena las señas para formar cada palabra.', icono: 'ABC', tono: 'turquesa', detalle: 'Orden y vocabulario' },
+  { id: 'memorama', numero: 3, titulo: 'Memorama de señas', descripcion: 'Encuentra las parejas entre señas y letras.', icono: '2×', tono: 'turquesa', detalle: 'Memoria y atención' },
 ];
 
 const ActividadesAbecedario = () => {
@@ -38,7 +38,14 @@ const ActividadesAbecedario = () => {
   return (
     <section className={styles.page} style={cssVars}>
       <header className={styles.hero}>
-        <span className={styles.heroIcon}>✦</span>
+        <span className={styles.heroIcon} aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M8 6h8M8 12h8M8 18h5" />
+            <circle cx="5" cy="6" r="1" />
+            <circle cx="5" cy="12" r="1" />
+            <circle cx="5" cy="18" r="1" />
+          </svg>
+        </span>
         <div><span>Práctica general</span><h1>Refuerza el abecedario</h1><p>Elige cualquier actividad y practica a tu ritmo.</p></div>
         <strong>{completadas.length}/3</strong>
       </header>
@@ -63,7 +70,7 @@ const ActividadesAbecedario = () => {
                 <strong>{actividad.titulo}</strong>
                 <span>{actividad.descripcion}</span>
               </span>
-              <span className={styles.cardAction}>{completada ? 'Practicar otra vez' : 'Comenzar'}<span aria-hidden="true">→</span></span>
+              <span className={styles.cardAction}>{completada ? 'Practicar otra vez' : 'Comenzar'}</span>
             </button>
           );
         })}

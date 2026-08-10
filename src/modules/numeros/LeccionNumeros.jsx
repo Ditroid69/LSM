@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Preferences } from '@capacitor/preferences';
 import HandTracker from '../../components/HandTracker';
 import { useTheme } from '../../context/ThemeContext';
@@ -23,13 +23,9 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
     letras = bloquesNumeros[bloque];
   }
 
-  const [indiceLetra, setIndiceLetra] = useState(0);
+  const [pendientes, setPendientes] = useState(() => mezclar(letras));
+  const [completadas, setCompletadas] = useState([]);
   const [aciertoLocal, setAciertoLocal] = useState(false);
-
-  useEffect(() => {
-    setIndiceLetra(0);
-    setAciertoLocal(false);
-  }, [id, bloque]);
 
   if (!letras.length) {
     return (
@@ -40,8 +36,9 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
     );
   }
 
-  const letraActual = letras[indiceLetra];
-  const progresoVisual = ((indiceLetra + (aciertoLocal ? 1 : 0)) / letras.length) * 100;
+  const letraActual = pendientes[0];
+  const secuenciaVisible = [...completadas, ...pendientes];
+  const progresoVisual = ((completadas.length + (aciertoLocal ? 1 : 0)) / letras.length) * 100;
   const cssVars = {
     '--camera-card': theme.tarjeta,
     '--camera-text': theme.tarjetaTexto || theme.texto,
@@ -53,7 +50,7 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
     '--camera-accent-shadow': '#d5ad00',
     '--camera-success': theme.correcto,
     '--camera-success-shadow': '#087f5b',
-    '--camera-error': theme.incorrecto,
+    '--camera-error': '#ef5b72',
     '--camera-soft': theme.gris,
   };
 
@@ -71,8 +68,9 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
   };
 
   const siguienteLetra = async () => {
-    if (indiceLetra < letras.length - 1) {
-      setIndiceLetra(indiceLetra + 1);
+    if (pendientes.length > 1) {
+      setCompletadas((actuales) => [...actuales, letraActual]);
+      setPendientes((actuales) => actuales.slice(1));
       setAciertoLocal(false);
     } else {
       await Preferences.set({
@@ -83,6 +81,11 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
     }
   };
 
+  const saltarNumero = () => {
+    if (aciertoLocal || pendientes.length <= 1) return;
+    setPendientes((actuales) => [...actuales.slice(1), actuales[0]]);
+  };
+
   return (
     <section className={styles.page} style={cssVars}>
       <header className={styles.lessonHeader}>
@@ -90,8 +93,8 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
           <span className={styles.eyebrow}>Números · Módulo {bloque}</span>
           <h1>Practica con la cámara</h1>
         </div>
-        <div className={styles.counter} aria-label={`Número ${indiceLetra + 1} de ${letras.length}`}>
-          <strong>{indiceLetra + 1}</strong><span>/ {letras.length}</span>
+        <div className={styles.counter} aria-label={`${completadas.length + 1} de ${letras.length} números completados`}>
+          <strong>{completadas.length + 1}</strong><span>/ {letras.length}</span>
         </div>
       </header>
 
@@ -111,28 +114,39 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
       </div>
 
       <div className={styles.letterSteps} aria-label="Progreso por números">
-        {letras.map((numero, posicion) => (
+        {secuenciaVisible.map((numero, posicion) => (
           <span
             key={numero}
             className={`${styles.letterStep} ${
-              posicion < indiceLetra || (posicion === indiceLetra && aciertoLocal)
+              posicion < completadas.length || (posicion === completadas.length && aciertoLocal)
                 ? styles.letterStepComplete
-                : posicion === indiceLetra
+                : posicion === completadas.length
                   ? styles.letterStepCurrent
                   : ''
             }`}
           >
-            {posicion < indiceLetra || (posicion === indiceLetra && aciertoLocal) ? '✓' : numero}
+            {posicion < completadas.length || (posicion === completadas.length && aciertoLocal) ? '✓' : numero}
           </span>
         ))}
       </div>
 
-      <button type="button" onClick={siguienteLetra} disabled={!aciertoLocal} className={styles.nextButton}>
-        <span>{aciertoLocal ? 'Siguiente número' : 'Completa la seña para continuar'}</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </button>
+      <div className={styles.cameraActions}>
+        <button type="button" onClick={saltarNumero} disabled={aciertoLocal || pendientes.length <= 1} className={styles.skipButton}>Saltar por ahora</button>
+        <button type="button" onClick={siguienteLetra} disabled={!aciertoLocal} className={styles.nextButton}>
+          <span>{aciertoLocal ? 'Siguiente número' : 'Completa la seña para continuar'}</span>
+        </button>
+      </div>
     </section>
   );
+};
+
+const mezclar = (elementos) => {
+  const copia = [...elementos];
+  for (let i = copia.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
 };
 
 export default LeccionNumeros;

@@ -30,7 +30,7 @@ const contenidoBloque = {
   4: [
     { letra: 'L', descripcion: 'Índice extendido, pulgar extendido formando una L.', imagen: '/assets/abecedario/imagen_l.png' },
     { letra: 'M', descripcion: 'Índice, medio y anular extendidos y juntos, meñique doblado, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_m.png' },
-    { letra: 'Ñ', descripcion: 'Índice y medio juntos, pulgar entre los dedos (similar a H).', imagen: '/assets/abecedario/imagen_n.png' },
+    { letra: 'N', descripcion: 'Índice y medio juntos, pulgar entre los dedos (similar a H).', imagen: '/assets/abecedario/imagen_n.png' },
     { letra: 'R', descripcion: 'Índice y medio juntos, pulgar tocando la base del índice.', imagen: '/assets/abecedario/imagen_r.png' },
   ],
   5: [
@@ -126,7 +126,7 @@ const Nivel1Carrusel = () => {
             <VideoNumero src={item.video} valor={item.letra} etiqueta="letra" />
           </div>
           <div className={styles.videoDescription}>
-            <h2>¿Cómo hacerla?</h2>
+            <h2>¿Cómo se hace?</h2>
             <p>{item.descripcion}</p>
             <div className={styles.tip}>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 22h4" /><path d="M8.2 14.5A7 7 0 1 1 15.8 14.5 4 4 0 0 0 15 16H9a4 4 0 0 0-.8-1.5z" /></svg>
@@ -155,7 +155,7 @@ const Nivel1Carrusel = () => {
         <div className={styles.contentColumn}>
           <span className={styles.signTag}>Letra</span>
           <div className={styles.letter}>{item.letra}</div>
-          <h2>¿Cómo hacerla?</h2>
+          <h2>¿Cómo se hace?</h2>
           <p>{item.descripcion}</p>
           <div className={styles.tip}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -202,13 +202,9 @@ const Nivel1Carrusel = () => {
           className={`${styles.nextButton} ${esUltimo ? styles.finishButton : ''}`}
         >
           <span>{esUltimo ? 'Finalizar nivel' : 'Siguiente'}</span>
-          {esUltimo ? (
+          {esUltimo && (
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m5 12 4.5 4.5L19 7" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           )}
         </button>

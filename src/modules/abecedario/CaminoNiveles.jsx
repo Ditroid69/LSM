@@ -8,7 +8,7 @@ const bloques = {
   1: { letras: ['A','E','S','T','O'] },
   2: { letras: ['B','C','D','F','U'] },
   3: { letras: ['I','P','V','W'] },
-  4: { letras: ['L','M','Ñ','R'] },
+  4: { letras: ['L','M','N','R'] },
   5: { letras: ['G','H','X','Y'] },
   6: { letras: ['K','Ñ','Z','Q'], niveles: 2 }
 };

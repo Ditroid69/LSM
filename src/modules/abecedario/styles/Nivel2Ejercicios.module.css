@@ -157,8 +157,8 @@
   filter: blur(8px);
 }
 
-.signFrame img,
-.signFrame video {
+.signFrame > img,
+.signFrame > video {
   position: relative;
   z-index: 1;
   width: 90%;
@@ -167,7 +167,7 @@
   object-fit: contain;
 }
 
-.signFrame video {
+.signFrame > video {
   object-fit: contain;
   background: #000;
 }
@@ -176,6 +176,24 @@
   max-width: 820px;
   height: clamp(440px, 60vh, 720px);
   aspect-ratio: auto;
+}
+
+.signFrame:has(video) {
+  width: min(100%, 520px);
+  max-width: 520px;
+  height: auto;
+  aspect-ratio: auto;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.signFrame:has(video) .signHint {
+  top: 12px;
+  right: 12px;
+  bottom: auto;
 }
 
 .videoChallenge {
@@ -279,9 +297,8 @@
 }
 
 .feedback {
-  position: sticky;
-  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-  z-index: 10;
+  position: relative;
+  z-index: 1;
   margin-top: 20px;
   padding: 13px;
   border: 1px solid var(--feedback-color);
@@ -517,8 +534,13 @@
   .videoFrame {
     width: 100%;
     max-width: none;
-    height: min(54vh, 560px);
-    min-height: 360px;
+    height: auto;
+    min-height: 0;
+  }
+
+  .signFrame:has(video) {
+    width: min(100%, 390px);
+    max-width: 390px;
   }
 
   .signHint {
@@ -563,6 +585,8 @@
 
   .feedback {
     grid-template-columns: auto minmax(0, 1fr);
+    padding: 11px;
+    overflow-wrap: anywhere;
   }
 
   .feedback button {

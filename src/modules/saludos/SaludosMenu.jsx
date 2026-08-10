@@ -51,7 +51,6 @@ const SaludosMenu = () => {
             <span className={styles.moduleTop}>
               <span className={styles.moduleNumber}>{modulo.id}</span>
               <span className={styles.moduleMeta}><small>Módulo {modulo.id}</small><strong>{modulo.nombre}</strong></span>
-              <span className={styles.arrow} aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
             </span>
             <span className={styles.letterList}>
               {modulo.expresiones.map(({ texto }) => <span key={texto} className={styles.letterChip}>{texto}</span>)}

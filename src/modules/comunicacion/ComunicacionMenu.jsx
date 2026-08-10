@@ -37,7 +37,7 @@ const ComunicacionMenu = () => {
       <div className={styles.grid}>
         {modulosComunicacion.map((modulo) => (
           <button key={modulo.id} type="button" onClick={() => abrirModulo(modulo.id)} className={`${styles.moduleCard} ${animandoId === modulo.id ? styles.moduleCardActive : ''}`}>
-            <span className={styles.moduleTop}><span className={styles.moduleNumber}>{modulo.id}</span><span className={styles.moduleMeta}><small>Módulo {modulo.id}</small><strong>{modulo.nombre}</strong></span><span className={styles.arrow} aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></span>
+            <span className={styles.moduleTop}><span className={styles.moduleNumber}>{modulo.id}</span><span className={styles.moduleMeta}><small>Módulo {modulo.id}</small><strong>{modulo.nombre}</strong></span></span>
             <span className={styles.letterList}>{modulo.expresiones.map(({ texto }) => <span key={texto} className={styles.letterChip}>{texto}</span>)}</span>
             <span className={styles.cardFooter}><span className={styles.cardLine} /><span>{modulo.descripcion}</span></span>
           </button>

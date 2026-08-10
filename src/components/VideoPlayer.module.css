@@ -1,0 +1,103 @@
+.player {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.videoBox {
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #071513;
+}
+
+.videoBox video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background: #071513;
+}
+
+.controls {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.externalPlayer {
+  height: auto;
+  padding: 0;
+  gap: 12px;
+}
+
+.externalPlayer .videoBox {
+  width: 100%;
+  flex: none;
+  aspect-ratio: 4 / 3;
+  border: 5px solid color-mix(in srgb, var(--lesson-primary, #38d7c5) 58%, transparent);
+  border-radius: 28px;
+  box-shadow: 0 7px 0 var(--lesson-primary-shadow, #24a997), 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.externalControls {
+  width: min(100%, 300px);
+  margin-inline: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.externalControls button {
+  min-height: 48px;
+  font-size: clamp(0.72rem, 2.6vw, 0.86rem);
+}
+
+.controls button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 7px 9px;
+  border: 1px solid color-mix(in srgb, var(--lesson-primary, var(--quiz-primary, #38d7c5)) 52%, transparent);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--lesson-text, var(--quiz-text, #f7fbff));
+  background: color-mix(in srgb, var(--lesson-primary, var(--quiz-primary, #38d7c5)) 14%, var(--lesson-card, var(--quiz-card, #172544)));
+  font: inherit;
+  font-size: clamp(0.62rem, 2.4vw, 0.74rem);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.controls button:not(:disabled):active { transform: translateY(2px); }
+.controls button:focus-visible { outline: 3px solid var(--lesson-accent, var(--quiz-accent, #ffd93d)); outline-offset: 2px; }
+.controls button:disabled { opacity: 0.45; cursor: default; }
+
+.controls svg {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 380px) {
+  .player { padding: 7px; gap: 7px; }
+  .controls { gap: 5px; }
+  .controls button { min-height: 38px; padding-inline: 5px; }
+  .controls svg { width: 17px; height: 17px; }
+  .externalPlayer { gap: 10px; }
+  .externalControls button { min-height: 44px; }
+}

@@ -66,12 +66,12 @@ const DeletreoPalabras = () => {
         <div className={styles.slots}>
           {[...palabra.texto].map((_, posicion) => {
             const ficha = fichas.find(({ id }) => id === colocadas[posicion]);
-            return <button key={posicion} className={styles.slot} onClick={() => ficha && quitar(posicion)} aria-label={ficha ? `Quitar seña ${ficha.letra}` : `Espacio ${posicion + 1}`}>{ficha ? <img src={imagenDeLetra(ficha.letra)} alt={`Seña ${ficha.letra}`} /> : <span>{posicion + 1}</span>}</button>;
+            return <button key={posicion} className={styles.slot} onClick={() => ficha && quitar(posicion)} aria-label={ficha ? 'Quitar seña colocada' : `Espacio ${posicion + 1}`}>{ficha ? <img src={imagenDeLetra(ficha.letra)} alt="Seña colocada" /> : <span>{posicion + 1}</span>}</button>;
           })}
         </div>
       </article>
       <div className={styles.tray}>
-        {fichas.map((ficha) => <button key={ficha.id} onClick={() => agregar(ficha.id)} disabled={colocadas.includes(ficha.id)}><img src={imagenDeLetra(ficha.letra)} alt={`Seña de la letra ${ficha.letra}`} /><span>{ficha.letra}</span></button>)}
+        {fichas.map((ficha) => <button key={ficha.id} onClick={() => agregar(ficha.id)} disabled={colocadas.includes(ficha.id)} aria-label="Seleccionar seña"><img src={imagenDeLetra(ficha.letra)} alt="Seña para ordenar" /></button>)}
       </div>
       {estado === 'correcto' ? <button className={styles.primaryButton} onClick={siguiente}>Siguiente palabra</button> : <button className={styles.primaryButton} onClick={comprobar} disabled={colocadas.length !== palabra.texto.length}>Comprobar</button>}
     </section>

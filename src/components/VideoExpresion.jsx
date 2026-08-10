@@ -1,15 +1,11 @@
-const VideoExpresion = ({ src, texto, ocultarTexto = false }) => (
-      <video
+import VideoPlayer from './VideoPlayer';
+
+const VideoExpresion = ({ src, texto, ocultarTexto = false, controlesExternos = true }) => (
+  <VideoPlayer
     src={src}
-    controls
-        playsInline
-        disablePictureInPicture
-        controlsList="nodownload noplaybackrate"
-        preload="metadata"
-    aria-label={ocultarTexto ? 'Video de una seña por reconocer' : `Video de la seña para ${texto}`}
-  >
-    Tu dispositivo no puede reproducir este video.
-  </video>
+    ariaLabel={ocultarTexto ? 'Video de una seña por reconocer' : `Video de la seña para ${texto}`}
+    controlesExternos={controlesExternos}
+  />
 );
 
 export default VideoExpresion;

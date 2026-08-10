@@ -23,6 +23,7 @@ const MemoramaAbecedario = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const temporizadoresRef = useRef([]);
+  const seleccionadasRef = useRef([]);
   const [partida, setPartida] = useState(crearPartida);
   const [tarjetas, setTarjetas] = useState(partida.tarjetas);
   const [fase, setFase] = useState('vista');
@@ -48,21 +49,35 @@ const MemoramaAbecedario = () => {
   }, [programar, partida]);
 
   const elegir = (tarjeta) => {
-    if (fase !== 'jugando' || seleccionadas.length === 2 || parejas.includes(tarjeta.letra) || seleccionadas.some(({ id }) => id === tarjeta.id)) return;
-    const nuevas = [...seleccionadas, tarjeta];
+    const seleccionActual = seleccionadasRef.current;
+    if (fase !== 'jugando' || seleccionActual.length === 2 || parejas.includes(tarjeta.letra) || seleccionActual.some(({ id }) => id === tarjeta.id)) return;
+    const nuevas = [...seleccionActual, tarjeta];
+    seleccionadasRef.current = nuevas;
     setSeleccionadas(nuevas);
     if (nuevas.length < 2) { setEstado('seleccion'); return; }
 
     if (nuevas[0].letra === nuevas[1].letra && nuevas[0].tipo !== nuevas[1].tipo) {
       const parejasNuevas = [...parejas, tarjeta.letra];
       setParejas(parejasNuevas);
+      seleccionadasRef.current = [];
       setSeleccionadas([]);
       setEstado(parejasNuevas.length === TAMANO_MEMORAMA ? 'completo' : 'correcto');
       return;
     }
 
     setEstado('error');
-    programar(() => { setSeleccionadas([]); setEstado('jugando'); }, ESPERA_ERROR);
+    programar(() => {
+      seleccionadasRef.current = [];
+      setSeleccionadas([]);
+      setEstado('jugando');
+    }, ESPERA_ERROR);
+  };
+
+  const manejarClick = (evento, tarjeta) => {
+    // Los toques táctiles se procesan en pointerup; click se conserva para
+    // teclado y tecnologías de asistencia sin ejecutar dos veces la jugada.
+    if (evento.type === 'click' && evento.detail !== 0) return;
+    elegir(tarjeta);
   };
 
   const reiniciar = () => {
@@ -70,6 +85,7 @@ const MemoramaAbecedario = () => {
     temporizadoresRef.current = [];
     const nueva = crearPartida();
     setPartida(nueva); setTarjetas(nueva.tarjetas); setFase('vista');
+    seleccionadasRef.current = [];
     setSeleccionadas([]); setParejas([]); setEstado('vista');
   };
 
@@ -85,9 +101,14 @@ const MemoramaAbecedario = () => {
     if (estado === 'completo') return ['¡Memorama completado!', 'Encontraste correctamente las cuatro parejas.'];
     if (estado === 'correcto') return ['¡Pareja correcta!', 'La seña y la letra permanecerán visibles.'];
     if (estado === 'error') return ['No coinciden', 'Estas tarjetas volverán a ocultarse.'];
-    if (estado === 'seleccion') return ['Elige otra tarjeta', 'Busca la seña o letra correspondiente.'];
+    if (estado === 'seleccion') {
+      const primera = seleccionadas[0];
+      return primera?.tipo === 'letra'
+        ? ['Ahora busca su seña', `Elegiste la letra ${primera.letra}. Toca la imagen que le corresponde.`]
+        : ['Ahora busca su letra', 'Elegiste una seña. Toca la letra que le corresponde.'];
+    }
     return ['Encuentra las parejas', 'Relaciona cada seña con la letra que representa.'];
-  }, [estado, fase]);
+  }, [estado, fase, seleccionadas]);
 
   const cssVars = {
     '--memory-card': theme.tarjeta, '--memory-text': theme.tarjetaTexto || theme.texto,
@@ -115,7 +136,7 @@ const MemoramaAbecedario = () => {
           const visible = fase === 'vista' || seleccionadas.some(({ id }) => id === tarjeta.id) || parejas.includes(tarjeta.letra);
           const encontrada = parejas.includes(tarjeta.letra);
           return (
-            <button key={tarjeta.id} type="button" className={`${styles.memoryCard} ${visible ? styles.flipped : ''} ${encontrada ? styles.matched : ''}`} onClick={() => elegir(tarjeta)} disabled={fase !== 'jugando' || encontrada} aria-label={visible ? `${tarjeta.tipo === 'sena' ? 'Seña' : 'Letra'} ${tarjeta.letra}` : 'Tarjeta oculta'}>
+            <button key={tarjeta.id} type="button" className={`${styles.memoryCard} ${visible ? styles.flipped : ''} ${encontrada ? styles.matched : ''}`} onPointerUp={(evento) => manejarClick(evento, tarjeta)} onClick={(evento) => manejarClick(evento, tarjeta)} disabled={fase !== 'jugando' || encontrada} aria-label={visible ? `${tarjeta.tipo === 'sena' ? 'Seña' : 'Letra'} ${tarjeta.letra}` : 'Tarjeta oculta'}>
               <span className={styles.cardInner}>
                 <span className={styles.cardBack} aria-hidden="true"><strong>?</strong><small>LSM</small></span>
                 <span className={styles.cardFront}>

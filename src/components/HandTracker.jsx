@@ -5,7 +5,6 @@ import styles from './HandTracker.module.css';
 const HandTracker = ({ letraObjetivo, onAcierto }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const streamRef = useRef(null);
   const cameraRef = useRef(null);
   const handsRef = useRef(null);
 
@@ -20,6 +19,7 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
   const falloVisibleRef = useRef(false);
   const validacionCompletaRef = useRef(false);
   const enviandoFrameRef = useRef(false);
+  const fallosConsecutivosRef = useRef(0);
   const letraRef = useRef(letraObjetivo);
   const onAciertoRef = useRef(onAcierto);
   const [handDetected, setHandDetected] = useState(false);   // ¿hay mano en cámara?
@@ -34,6 +34,7 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
     progressRef.current = 0;
     falloVisibleRef.current = false;
     validacionCompletaRef.current = false;
+    fallosConsecutivosRef.current = 0;
     const reinicioId = requestAnimationFrame(() => {
       setProgress(0);
       setValidando(false);
@@ -52,6 +53,7 @@ const HandTracker = ({ letraObjetivo, onAcierto }) => {
   
   useEffect(() => {
     let cancelado = false;
+    let primerResultadoRecibido = false;
 
     const { Hands, Camera: MediaPipeCamera } = window;
     const { drawConnectors, drawLandmarks } = window;
@@ -79,22 +81,7 @@ if (Capacitor.isNativePlatform()) {
         const video = videoRef.current;
         if (!video) return;
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: {
-            facingMode: 'user',
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-          },
-        });
-        if (cancelado) {
-          stream.getTracks().forEach(t => t.stop());
-          return;
-        }
-        streamRef.current = stream;
-        video.srcObject = stream;
         video.muted = true;
-        await video.play();
 
         const hands = new Hands({
           locateFile: (file) =>
@@ -102,20 +89,24 @@ if (Capacitor.isNativePlatform()) {
         });
 
         hands.setOptions({
-          maxNumHands: 2,
-          modelComplexity: 0,
-          minDetectionConfidence: 0.7,
-          minTrackingConfidence: 0.5
+          maxNumHands: 1,
+          modelComplexity: 1,
+          minDetectionConfidence: 0.6,
+          minTrackingConfidence: 0.65
         });
 
         hands.onResults((results) => {
           if (cancelado) return;
+
+          if (!primerResultadoRecibido) {
+            primerResultadoRecibido = true;
+            setStatus('listo');
+          }
           
           const canvas = canvasRef.current;
           if (!canvas) return;
           const ctx = canvas.getContext('2d');
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           // Actualizar si hay mano presente
           if (results.multiHandLandmarks?.length) {
             setHandDetected(true);
@@ -135,11 +126,30 @@ if (Capacitor.isNativePlatform()) {
           if (results.multiHandLandmarks?.length) {
             for (const landmarks of results.multiHandLandmarks) {
                if (validacionCompletaRef.current) return;
-              drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
+              // El video 4:3 se recorta al centro para llenar el visor circular.
+              // Aplicamos la misma transformación a los puntos para que la
+              // superposición siga exactamente la posición de la mano.
+              const proporcionVideo = video.videoWidth && video.videoHeight
+                ? video.videoWidth / video.videoHeight
+                : 4 / 3;
+              const landmarksVisuales = landmarks.map((punto) => {
+                if (proporcionVideo >= 1) {
+                  return {
+                    ...punto,
+                    x: (punto.x * proporcionVideo) - ((proporcionVideo - 1) / 2),
+                  };
+                }
+                const proporcionVertical = 1 / proporcionVideo;
+                return {
+                  ...punto,
+                  y: (punto.y * proporcionVertical) - ((proporcionVertical - 1) / 2),
+                };
+              });
+              drawConnectors(ctx, landmarksVisuales, HAND_CONNECTIONS, {
                 color: '#41D6C3',
                 lineWidth: 4
               });
-              drawLandmarks(ctx, landmarks, {
+              drawLandmarks(ctx, landmarksVisuales, {
                 color: '#1E3A8A',
                 fillColor: '#FED301',
                 lineWidth: 2,
@@ -167,7 +177,7 @@ if (Capacitor.isNativePlatform()) {
                 else if (letra === 'H') esCorrecta = detectarH(landmarks);
                 else if (letra === 'L') esCorrecta = detectarL(landmarks);
                 else if (letra === 'M') esCorrecta = detectarM(landmarks);
-                else if (letra === 'Ñ') esCorrecta = detectarÑ(landmarks);
+                else if (letra === 'N' || letra === 'Ñ') esCorrecta = detectarÑ(landmarks);
                 else if (letra === 'R') esCorrecta = detectarR(landmarks);
                 else if (letra === 'X') esCorrecta = detectarX(landmarks);
                 else if (letra === 'Y') esCorrecta = detectarY(landmarks);
@@ -184,7 +194,11 @@ if (Capacitor.isNativePlatform()) {
 
                 // ===== LÓGICA DE TEMPORIZADOR =====
                 if (esCorrecta) {
-                  if (falloVisibleRef.current) return; // si ya hubo fallo, no reiniciamos
+                  fallosConsecutivosRef.current = 0;
+                  if (falloVisibleRef.current) {
+                    falloVisibleRef.current = false;
+                    setFalloVisible(false);
+                  }
                   if (!validandoRef.current) {
                     validandoRef.current = true;
                     setValidando(true);
@@ -208,8 +222,13 @@ if (Capacitor.isNativePlatform()) {
                   }
                 } else {
                   if (validandoRef.current) {
+                    fallosConsecutivosRef.current += 1;
+                    // Tolera variaciones breves del seguimiento para que una
+                    // lectura aislada no cancele una seña bien sostenida.
+                    if (fallosConsecutivosRef.current < 6) continue;
                     clearInterval(intervaloRef.current);
                     validandoRef.current = false;
+                    fallosConsecutivosRef.current = 0;
                     setValidando(false);
                     progressRef.current = 0;
                     setProgress(0);
@@ -224,12 +243,8 @@ if (Capacitor.isNativePlatform()) {
 
         handsRef.current = hands;
 
-       let frameSkip = 0; // contador de frames
-
         const camera = new MediaPipeCamera(video, {
           onFrame: async () => {
-            frameSkip++;
-            if (frameSkip % 2 !== 0) return; // procesa solo frames pares (la mitad)
             if (handsRef.current && !cancelado && !enviandoFrameRef.current) {
               enviandoFrameRef.current = true;
               try {
@@ -239,18 +254,23 @@ if (Capacitor.isNativePlatform()) {
               }
             }
           },
-          width: 640,
-          height: 480
+          width: 960,
+          height: 720,
+          facingMode: 'user'
         });
 
         cameraRef.current = camera;
         await camera.start();
-        setStatus('listo');
       } catch (err) {
         console.error(err);
         if (!cancelado) {
           setStatus('error');
-          setMensajeError(err.message || 'Error desconocido');
+          const detalle = err?.message || '';
+          setMensajeError(
+            detalle.includes('Module.arguments')
+              ? 'No se pudo preparar el modelo de reconocimiento. Cierra la pantalla e inténtalo nuevamente.'
+              : detalle || 'Error desconocido'
+          );
         }
       }
     };
@@ -274,24 +294,10 @@ if (Capacitor.isNativePlatform()) {
       enviandoFrameRef.current = false;
       if (cameraRef.current) cameraRef.current.stop();
       if (handsRef.current) handsRef.current.close();
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(t => t.stop());
-      }
     };
   }, []);
-  const reintentar = () => {
-    setFalloVisible(false);
-    falloVisibleRef.current = false; 
-    setProgress(0);
-    setValidando(false);
-    validandoRef.current = false;
-    progressRef.current = 0;
-    if (intervaloRef.current) clearInterval(intervaloRef.current);
-  };
   return (
     <div className={styles.tracker}>
-      <video ref={videoRef} style={{ display: 'none' }} playsInline />
-
       {status === 'cargando' && (
         <div className={styles.loading}>
           <span className={styles.spinner} />
@@ -315,19 +321,19 @@ if (Capacitor.isNativePlatform()) {
         </div>
       )}
 
-      {status === 'listo' && (
-        <div className={styles.ready}>
+        <div className={`${styles.ready} ${status !== 'listo' ? styles.captureHidden : ''}`} aria-hidden={status !== 'listo'}>
           <div className={styles.cameraShell}>
             <div className={styles.camera}>
+              <video ref={videoRef} className={styles.sourceVideo} playsInline muted autoPlay />
               <canvas
                 ref={canvasRef}
                 width={640}
-                height={480}
+                height={640}
                 className={styles.canvas}
               />
             </div>
 
-            {(handDetected || validacionCompleta) && (
+            {(handDetected || falloVisible || validacionCompleta) && (
               <svg viewBox="0 0 100 100" className={styles.progressRing}>
                 <circle
                   cx="50"
@@ -342,7 +348,13 @@ if (Capacitor.isNativePlatform()) {
                   cy="50"
                   r="47"
                   fill="none"
-                  stroke={validacionCompleta ? 'var(--camera-success)' : 'var(--camera-soft)'}
+                  stroke={
+                    validacionCompleta
+                      ? 'var(--camera-success)'
+                      : falloVisible
+                        ? 'var(--camera-error)'
+                        : 'var(--camera-soft)'
+                  }
                   strokeWidth="2.5"
                 />
                 {(validando || validacionCompleta) && !falloVisible && (
@@ -355,13 +367,19 @@ if (Capacitor.isNativePlatform()) {
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeDasharray={2 * Math.PI * 47}
-                    strokeDashoffset={
-                      2 * Math.PI * 47 * (1 - (validacionCompleta ? 100 : progress) / 100)
-                    }
+                    strokeDashoffset={2 * Math.PI * 47 * (1 - (validacionCompleta ? 100 : progress) / 100)}
                     className={styles.progressArc}
                   />
                 )}
               </svg>
+            )}
+
+            {falloVisible && !validacionCompleta && (
+              <span className={styles.errorMark} aria-label="Seña incorrecta">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 7l10 10M17 7 7 17" />
+                </svg>
+              </span>
             )}
 
             <span className={`${styles.cameraStatus} ${handDetected ? styles.handVisible : ''}`}>
@@ -377,17 +395,7 @@ if (Capacitor.isNativePlatform()) {
             </div>
           )}
 
-          {falloVisible && !validacionCompleta && (
-            <div className={styles.failure}>
-              <div>
-                <strong>La seña aún no es correcta</strong>
-                <p>Ajusta la posición de tu mano e intenta nuevamente.</p>
-              </div>
-              <button type="button" onClick={reintentar}>Reintentar</button>
-            </div>
-          )}
         </div>
-      )}
     </div>
   );
 };
