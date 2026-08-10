@@ -7,28 +7,42 @@ import styles from './styles/PracticaActividades.module.css';
 
 const TAMANO_RONDA = 3;
 
+const crearRondas = (letras) => {
+  const rondas = [];
+  for (let inicio = 0; inicio < letras.length; inicio += TAMANO_RONDA) {
+    rondas.push(letras.slice(inicio, inicio + TAMANO_RONDA));
+  }
+  if (rondas.length > 1 && rondas.at(-1).length === 1) {
+    rondas.at(-2).push(...rondas.pop());
+  }
+  return rondas;
+};
+
 const RelacionarSenas = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const [orden] = useState(() => mezclar(letrasAbecedario));
+  const [rondas] = useState(() => crearRondas(orden));
   const [ronda, setRonda] = useState(0);
   const [seleccionada, setSeleccionada] = useState(null);
   const [aciertos, setAciertos] = useState([]);
   const [estado, setEstado] = useState('');
-  const totalRondas = Math.ceil(orden.length / TAMANO_RONDA);
-  const grupo = useMemo(() => orden.slice(ronda * TAMANO_RONDA, (ronda + 1) * TAMANO_RONDA), [orden, ronda]);
+  const grupo = rondas[ronda];
   const opciones = useMemo(() => mezclar(grupo), [grupo]);
   const rondaCompleta = aciertos.length === grupo.length;
+  const completadasAntes = rondas.slice(0, ronda).reduce((total, letras) => total + letras.length, 0);
 
-  const elegirSigno = (letra) => {
+  const elegir = (tipo, letra) => {
     if (aciertos.includes(letra)) return;
-    setSeleccionada(letra);
-    setEstado('seleccion');
-  };
 
-  const elegirLetra = (letra) => {
-    if (!seleccionada || aciertos.includes(letra)) return;
-    if (seleccionada === letra) {
+    // Elegir otra tarjeta del mismo tipo solo cambia el punto de partida.
+    if (!seleccionada || seleccionada.tipo === tipo) {
+      setSeleccionada({ tipo, letra });
+      setEstado('seleccion');
+      return;
+    }
+
+    if (seleccionada.letra === letra) {
       setAciertos((actuales) => [...actuales, letra]);
       setEstado('correcto');
     } else {
@@ -38,9 +52,10 @@ const RelacionarSenas = () => {
   };
 
   const continuar = async () => {
-    if (ronda + 1 < totalRondas) {
+    if (ronda + 1 < rondas.length) {
       setRonda((actual) => actual + 1);
       setAciertos([]);
+      setSeleccionada(null);
       setEstado('');
       return;
     }
@@ -56,24 +71,35 @@ const RelacionarSenas = () => {
     '--practice-soft': theme.gris,
   };
 
+  const mensaje = rondaCompleta
+    ? ['¡Grupo completado!', 'Relacionaste correctamente todas las señas.']
+    : estado === 'error'
+      ? ['Respuesta incorrecta', 'La seña y la letra no corresponden. Vuelve a intentarlo.']
+      : estado === 'correcto'
+        ? ['¡Muy bien!', 'La seña y la letra son correctas.']
+        : seleccionada
+          ? [`${seleccionada.tipo === 'signo' ? 'Seña' : 'Letra'} seleccionada`, `Ahora elige ${seleccionada.tipo === 'signo' ? 'la letra' : 'la seña'} que corresponde.`]
+          : ['¿Cómo jugar?', 'Puedes comenzar por una seña o por una letra y luego elegir su pareja.'];
+
   return (
     <section className={styles.page} style={cssVars}>
       <header className={styles.top}>
         <div><small>Actividad 1</small><h1>Relaciona la seña</h1></div>
-        <span>Ronda {ronda + 1} de {totalRondas}</span>
-        <div className={styles.progress}><i style={{ width: `${((ronda * TAMANO_RONDA + aciertos.length) / orden.length) * 100}%` }} /></div>
+        <span className={styles.progressCounter} aria-label={`${ronda + 1} de ${rondas.length} rondas`}><strong>{ronda + 1}</strong><span>/ {rondas.length}</span></span>
+        <div className={styles.progress}><i style={{ width: `${((completadasAntes + aciertos.length) / orden.length) * 100}%` }} /></div>
       </header>
 
       <div className={`${styles.feedback} ${styles.feedbackTop} ${estado === 'error' ? styles.feedbackError : ''} ${estado === 'correcto' || rondaCompleta ? styles.feedbackSuccess : ''}`} aria-live="polite">
         <span className={styles.feedbackIcon}>{estado === 'error' ? '×' : estado === 'correcto' || rondaCompleta ? '✓' : 'i'}</span>
-        <span><strong>{rondaCompleta ? '¡Grupo completado!' : estado === 'error' ? 'Respuesta incorrecta' : estado === 'correcto' ? '¡Muy bien!' : seleccionada ? 'Seña seleccionada' : '¿Cómo jugar?'}</strong><small>{rondaCompleta ? 'Relacionaste correctamente todas las señas.' : estado === 'error' ? 'Esa letra no corresponde. Vuelve a intentarlo.' : estado === 'correcto' ? 'La seña y la letra son correctas.' : seleccionada ? 'Ahora toca la letra que representa.' : 'Toca una imagen y después la letra que representa.'}</small></span>
+        <span><strong>{mensaje[0]}</strong><small>{mensaje[1]}</small></span>
       </div>
+
       <div className={styles.boardLabels}><span>Señas</span><span>Letras</span></div>
       <div className={styles.matchBoard}>
         <div className={styles.column} aria-label="Señas">
           {grupo.map((letra) => (
-            <button key={letra} className={`${styles.signCard} ${seleccionada === letra ? styles.selected : ''} ${aciertos.includes(letra) ? styles.matched : ''}`} onClick={() => elegirSigno(letra)} disabled={aciertos.includes(letra)}>
-              <img src={imagenDeLetra(letra)} alt={`Seña por relacionar`} onError={(evento) => { evento.currentTarget.hidden = true; evento.currentTarget.nextElementSibling.hidden = false; }} />
+            <button key={letra} className={`${styles.signCard} ${seleccionada?.tipo === 'signo' && seleccionada.letra === letra ? styles.selected : ''} ${aciertos.includes(letra) ? styles.matched : ''}`} onClick={() => elegir('signo', letra)} disabled={aciertos.includes(letra)}>
+              <img src={imagenDeLetra(letra)} alt="Seña por relacionar" onError={(evento) => { evento.currentTarget.hidden = true; evento.currentTarget.nextElementSibling.hidden = false; }} />
               <span className={styles.imageFallback} hidden>?</span>
               {aciertos.includes(letra) && <i>✓</i>}
             </button>
@@ -81,12 +107,12 @@ const RelacionarSenas = () => {
         </div>
         <div className={styles.column} aria-label="Letras">
           {opciones.map((letra) => (
-            <button key={letra} className={`${styles.letterOption} ${aciertos.includes(letra) ? styles.matched : ''}`} onClick={() => elegirLetra(letra)} disabled={aciertos.includes(letra)}>{letra}</button>
+            <button key={letra} className={`${styles.letterOption} ${seleccionada?.tipo === 'letra' && seleccionada.letra === letra ? styles.selected : ''} ${aciertos.includes(letra) ? styles.matched : ''}`} onClick={() => elegir('letra', letra)} disabled={aciertos.includes(letra)}>{letra}</button>
           ))}
         </div>
       </div>
 
-      {rondaCompleta && <button className={styles.primaryButton} onClick={continuar}>{ronda + 1 === totalRondas ? 'Terminar actividad' : 'Siguiente grupo'}</button>}
+      {rondaCompleta && <button className={styles.primaryButton} onClick={continuar}>{ronda + 1 === rondas.length ? 'Terminar actividad' : 'Siguiente grupo'}</button>}
     </section>
   );
 };

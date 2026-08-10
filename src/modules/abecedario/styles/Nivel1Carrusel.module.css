@@ -101,24 +101,40 @@
 }
 
 .counter {
-  min-width: 74px;
-  height: 52px;
-  padding: 0 14px;
+  min-width: 58px;
+  height: auto;
+  padding: 2px 0 2px 13px;
   box-sizing: border-box;
-  border: 1px solid var(--lesson-border);
-  border-radius: 17px;
-  display: flex;
+  border: 0;
+  border-left: 3px solid var(--lesson-primary);
+  border-radius: 0;
+  display: grid;
+  grid-template-columns: auto auto;
   align-items: baseline;
-  justify-content: center;
-  gap: 4px;
+  justify-content: end;
+  column-gap: 4px;
   color: var(--lesson-muted);
-  background: var(--lesson-card);
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--lesson-border) 70%, transparent);
+  background: transparent;
+  box-shadow: none;
+  text-align: right;
+}
+
+.counter::before {
+  content: 'Avance';
+  grid-column: 1 / -1;
+  margin-bottom: 1px;
+  color: var(--lesson-muted);
+  font-size: 0.56rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 .counter strong {
-  color: var(--lesson-text);
-  font-size: 1.3rem;
+  color: var(--lesson-primary);
+  font-size: 1.35rem;
+  line-height: 1;
 }
 
 .counter span {
@@ -466,14 +482,14 @@
   }
 
   .counter {
-    min-width: 62px;
-    height: 44px;
-    padding: 0 10px;
-    border-radius: 14px;
+    min-width: 58px;
+    height: auto;
+    padding: 2px 0 2px 13px;
+    border-radius: 0;
   }
 
   .counter strong {
-    font-size: 1.1rem;
+    font-size: 1.35rem;
   }
 
   .progressTrack {
@@ -575,9 +591,10 @@
 
 @media (max-width: 420px) {
   .counter {
-    min-width: 62px;
-    height: 46px;
-    padding: 0 10px;
+    min-width: 58px;
+    height: auto;
+    padding: 2px 0 2px 13px;
+    border-radius: 0;
   }
 
   .controls {

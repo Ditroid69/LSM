@@ -53,7 +53,7 @@ const DeletreoPalabras = () => {
   return (
     <section className={styles.page} style={cssVars}>
       <header className={styles.top}>
-        <div><small>Actividad 2</small><h1>Deletreo de palabras</h1></div><span>{indice + 1} de {palabras.length}</span>
+        <div><small>Actividad 2</small><h1>Deletreo de palabras</h1></div><span className={styles.progressCounter} aria-label={`${indice + 1} de ${palabras.length} palabras`}><strong>{indice + 1}</strong><span>/ {palabras.length}</span></span>
         <div className={styles.progress}><i style={{ width: `${((indice + (estado === 'correcto' ? 1 : 0)) / palabras.length) * 100}%` }} /></div>
       </header>
       <div className={`${styles.feedback} ${styles.feedbackTop} ${estado === 'error' ? styles.feedbackError : ''} ${estado === 'correcto' ? styles.feedbackSuccess : ''}`} aria-live="polite">

@@ -122,7 +122,7 @@ const MemoramaAbecedario = () => {
     <section className={styles.page} style={cssVars}>
       <header className={styles.top}>
         <div><small>Actividad 3</small><h1>Memorama de señas</h1></div>
-        <span>{parejas.length}/{TAMANO_MEMORAMA} parejas</span>
+        <span className={styles.progressCounter} aria-label={`${parejas.length} de ${TAMANO_MEMORAMA} parejas`}><strong>{parejas.length}</strong><span>/ {TAMANO_MEMORAMA}</span></span>
         <div className={styles.progress}><i style={{ width: `${(parejas.length / TAMANO_MEMORAMA) * 100}%` }} /></div>
       </header>
 
