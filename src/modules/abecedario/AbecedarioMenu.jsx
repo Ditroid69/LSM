@@ -9,7 +9,7 @@ const bloques = [
   { id: 3, letras: ['I', 'P', 'V', 'W'] },
   { id: 4, letras: ['L', 'M', 'N', 'R'] },
   { id: 5, letras: ['G', 'H', 'X', 'Y'] },
-  { id: 6, letras: ['K', 'Ñ', 'Z', 'Q'], nombre: 'Letras en movimiento' },
+  { id: 6, letras: ['J', 'K', 'Ñ', 'Z', 'Q'], nombre: 'Letras en movimiento' },
 ];
 
 const AbecedarioMenu = () => {
@@ -70,7 +70,7 @@ const AbecedarioMenu = () => {
           <span>Tu recorrido</span>
           <h2>Selecciona un módulo</h2>
         </div>
-        <span className={styles.totalLetters}>22 letras</span>
+        <span className={styles.totalLetters}>27 letras</span>
       </div>
 
       <div className={styles.grid}>

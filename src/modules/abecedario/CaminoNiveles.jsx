@@ -10,7 +10,7 @@ const bloques = {
   3: { letras: ['I','P','V','W'] },
   4: { letras: ['L','M','N','R'] },
   5: { letras: ['G','H','X','Y'] },
-  6: { letras: ['K','Ñ','Z','Q'], niveles: 2 }
+  6: { letras: ['J','K','Ñ','Z','Q'], niveles: 2 }
 };
 
 const CaminoNiveles = () => {

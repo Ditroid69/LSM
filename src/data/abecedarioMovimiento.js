@@ -1,5 +1,10 @@
 export const letrasConMovimiento = [
   {
+    letra: 'J',
+    recurso: '/assets/abecedario/Video_j.mp4',
+    descripcion: 'Forma la letra I: mantén el meñique extendido y los demás dedos cerrados, con el pulgar sobre ellos. Con la palma orientada hacia el frente, mueve la mano para dibujar en el aire la curva de la letra J, terminando hacia arriba.',
+  },
+  {
     letra: 'K',
     recurso: '/assets/abecedario/video_k.mp4',
     descripcion: 'Coloca la mano a la altura del pecho con el índice y el medio extendidos y separados. Apoya el pulgar entre ambos dedos, cerca de la base del dedo medio, y mantén el anular y el meñique doblados. Conserva esta posición mientras realizas un movimiento corto de arriba hacia abajo.',

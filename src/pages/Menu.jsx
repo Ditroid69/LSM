@@ -10,7 +10,7 @@ const modulos = [
     icono: '/assets/menu/icono-abecedario.png',
     ruta: '/abecedario',
     color: 'primary',
-    contenido: '22 letras'
+    contenido: '27 letras'
   },
   {
     nombre: 'Números',

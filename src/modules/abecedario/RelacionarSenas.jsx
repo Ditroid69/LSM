@@ -112,7 +112,7 @@ const RelacionarSenas = () => {
         </div>
       </div>
 
-      {rondaCompleta && <button className={styles.primaryButton} onClick={continuar}>{ronda + 1 === rondas.length ? 'Terminar actividad' : 'Siguiente grupo'}</button>}
+      {rondaCompleta && <button className={styles.primaryButton} onClick={continuar}>{ronda + 1 === rondas.length ? 'Finalizar' : 'Siguiente grupo'}</button>}
     </section>
   );
 };

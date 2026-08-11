@@ -60,7 +60,7 @@ const Inicio = ({ onCompletar }) => {
       <main className={styles.page} style={cssVars}>
         <div className={styles.splash}>
           <span className={styles.logoHalo} aria-hidden="true" />
-          <img src={logo} alt="Kineseña" />
+          <img src={logo} alt="KineSeña" />
         </div>
       </main>
     );
@@ -72,7 +72,7 @@ const Inicio = ({ onCompletar }) => {
         <section className={styles.card} aria-live="polite">
           <div className={styles.brand}>
             <span className={styles.logoHalo} aria-hidden="true" />
-            <img src={logo} alt="Kineseña" />
+            <img src={logo} alt="KineSeña" />
           </div>
           <span className={styles.eyebrow}>Preparando tu aprendizaje</span>
           <h1>¡Todo listo!</h1>
@@ -92,10 +92,10 @@ const Inicio = ({ onCompletar }) => {
       <section className={styles.card}>
         <div className={styles.brand}>
           <span className={styles.logoHalo} aria-hidden="true" />
-          <img src={logo} alt="Kineseña" />
+          <img src={logo} alt="KineSeña" />
         </div>
 
-        <span className={styles.eyebrow}>Bienvenido a Kineseña</span>
+        <span className={styles.eyebrow}>Bienvenido a KineSeña</span>
         <h1>Comencemos a aprender</h1>
         <p>Dinos cómo te llamas para personalizar tu experiencia.</p>
 

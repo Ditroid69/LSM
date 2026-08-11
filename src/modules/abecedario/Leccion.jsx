@@ -168,7 +168,7 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
       <div className={styles.cameraActions}>
         <button type="button" onClick={saltarLetra} disabled={aciertoLocal || pendientes.length <= 1} className={styles.skipButton}>Saltar por ahora</button>
         <button type="button" onClick={siguienteLetra} disabled={!aciertoLocal} className={styles.nextButton}>
-          <span>{aciertoLocal ? 'Siguiente letra' : 'Completa la seña para continuar'}</span>
+          <span>{aciertoLocal ? (pendientes.length === 1 ? 'Finalizar' : 'Siguiente letra') : 'Completa la seña para continuar'}</span>
         </button>
       </div>
     </section>

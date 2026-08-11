@@ -1,4 +1,4 @@
-# Especificación de requisitos de Kineseña
+# Especificación de requisitos de KineSeña
 
 **Versión:** 2.0  
 **Fecha de revisión:** 6 de agosto de 2026  
@@ -7,7 +7,7 @@
 
 ## 1. Propósito y alcance
 
-Kineseña es una aplicación educativa móvil, híbrida y de uso local para aprender vocabulario introductorio de Lengua de Señas Mexicana (LSM). La experiencia no requiere cuenta ni conexión a un servidor. Organiza el aprendizaje en cuatro categorías: abecedario, números, saludos y cortesía, y comunicación básica.
+KineSeña es una aplicación educativa móvil, híbrida y de uso local para aprender vocabulario introductorio de Lengua de Señas Mexicana (LSM). La experiencia no requiere cuenta ni conexión a un servidor. Organiza el aprendizaje en cuatro categorías: abecedario, números, saludos y cortesía, y comunicación básica.
 
 La aplicación combina demostraciones mediante imágenes o videos, ejercicios de reconocimiento, actividades de refuerzo y, cuando la seña puede validarse con el modelo actual, práctica con cámara y seguimiento de puntos de la mano.
 
@@ -49,7 +49,7 @@ La aplicación combina demostraciones mediante imágenes o videos, ejercicios de
 | ID | Requerimiento | Estado actual |
 |---|---|---|
 | RF13 | El contenido estático se organizará por configuración manual: bloque 1 (A, E, S, T, O), bloque 2 (B, C, D, F, U), bloque 3 (I, P, V, W), bloque 4 (L, M, Ñ, R) y bloque 5 (G, H, X, Y). | Implementado tal como está en el código |
-| RF14 | Las letras con demostración en movimiento se agruparán en el bloque 6: K, Ñ, Z y Q. | Implementado |
+| RF14 | Las letras con demostración en movimiento se agruparán en el bloque 6: J, K, Ñ, Z y Q. | Implementado |
 | RF15 | Los bloques 1 a 5 tendrán tres niveles secuenciales: demostración, ejercicio y práctica con cámara. | Implementado |
 | RF16 | El bloque 6 tendrá demostración y ejercicio, sin validación por cámara. | Implementado |
 | RF17 | En el ejercicio se mostrará una seña objetivo y hasta cuatro letras; preguntas y opciones se elegirán aleatoriamente y una letra solo contará como superada al responder correctamente. | Implementado |
@@ -57,7 +57,7 @@ La aplicación combina demostraciones mediante imágenes o videos, ejercicios de
 | RF19 | La sección de práctica general ofrecerá: relacionar seña con letra, ordenar señas para deletrear palabras y memorama de parejas seña-letra. | Añadido e implementado |
 | RF20 | Cada actividad general podrá repetirse y conservará localmente su estado de completada. | Implementado |
 
-**Brecha de catálogo AB-01:** el catálogo actual tiene 25 letras únicas. La `N` no aparece y la `Ñ` se repite en los bloques 4 y 6. El texto visible “22 letras” cuenta únicamente recursos estáticos, no el catálogo completo. Antes de liberar la versión final se debe decidir y validar con la institución si se incorpora `N`, si `Ñ` debe estar en uno o ambos bloques y cuál será el total comunicado al usuario.
+**Catálogo del abecedario:** el catálogo actual contiene las 27 letras del alfabeto español. Incluye 22 demostraciones estáticas y cinco demostraciones en movimiento: `J`, `K`, `Ñ`, `Z` y `Q`.
 
 ### 2.4 Números del 1 al 20
 
@@ -149,7 +149,7 @@ La aplicación combina demostraciones mediante imágenes o videos, ejercicios de
 | RNF19 | Los módulos compartirán componentes de video, niveles y estilos cuando el comportamiento sea equivalente. | Parcialmente implementado |
 | RNF20 | El proyecto deberá aprobar compilación de producción y análisis estático antes de generar una entrega. | Compilación y análisis de `src`, `scripts` y Vite aprobados; `npm run lint` global queda pendiente de excluir artefactos generados de Android |
 | RNF21 | La documentación describirá propósito, instalación, compilación, arquitectura, recursos y requisitos vigentes. | Se inicia con esta revisión; README actualizado |
-| RNF22 | El identificador Android será `com.kinesena.app` y el nombre visible será “Kineseña”. | Implementado |
+| RNF22 | El identificador Android será `com.kinesena.app` y el nombre visible será “KineSeña”. | Implementado |
 | RNF23 | Los permisos Android se limitarán a los estrictamente necesarios y se revisarán antes de publicar. | Pendiente: justificar o retirar INTERNET y READ_EXTERNAL_STORAGE |
 
 ## 4. Requerimientos técnicos vigentes
@@ -207,7 +207,7 @@ Estos valores sustituyen las versiones propuestas en el PDF cuando el repositori
 
 1. Resolver AB-01 y validar el catálogo completo del abecedario con una fuente institucional o especialista en LSM.
 2. Obtener y archivar evidencia de validación lingüística para los 80 elementos didácticos actuales: 25 letras únicas, 20 números, 17 saludos y 18 expresiones de comunicación.
-3. Verificar que futuras compilaciones y publicaciones conserven el identificador `com.kinesena.app` y el nombre visible “Kineseña”.
+3. Verificar que futuras compilaciones y publicaciones conserven el identificador `com.kinesena.app` y el nombre visible “KineSeña”.
 4. Ejecutar pruebas funcionales en Android 8, una versión intermedia y Android 16, incluyendo permisos, cámara, rotación, modo oscuro y funcionamiento sin conexión.
 5. Auditar accesibilidad, tamaños táctiles, contraste, lectura por TalkBack y reducción de movimiento.
 6. Medir rendimiento y tamaño sobre un APK release firmado; documentar compresión de recursos.

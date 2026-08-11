@@ -36,12 +36,19 @@ const DeletreoPalabras = () => {
   const comprobar = async () => {
     const respuesta = colocadas.map((id) => fichas.find((ficha) => ficha.id === id)?.letra).join('');
     if (respuesta !== palabra.texto) { setEstado('error'); return; }
-    if (indice + 1 < palabras.length) { setEstado('correcto'); return; }
-    await Preferences.set({ key: 'progreso_abecedario_actividad_deletreo', value: 'completado' });
-    navigate('/abecedario/actividades', { replace: true });
+    setEstado('correcto');
   };
 
-  const siguiente = () => { setIndice((actual) => actual + 1); setColocadas([]); setEstado(''); };
+  const siguiente = async () => {
+    if (indice + 1 === palabras.length) {
+      await Preferences.set({ key: 'progreso_abecedario_actividad_deletreo', value: 'completado' });
+      navigate('/abecedario/actividades', { replace: true });
+      return;
+    }
+    setIndice((actual) => actual + 1);
+    setColocadas([]);
+    setEstado('');
+  };
   const cssVars = {
     '--practice-card': theme.tarjeta, '--practice-text': theme.tarjetaTexto || theme.texto,
     '--practice-muted': theme.texto2, '--practice-border': theme.borde,
@@ -73,7 +80,7 @@ const DeletreoPalabras = () => {
       <div className={styles.tray}>
         {fichas.map((ficha) => <button key={ficha.id} onClick={() => agregar(ficha.id)} disabled={colocadas.includes(ficha.id)} aria-label="Seleccionar seña"><img src={imagenDeLetra(ficha.letra)} alt="Seña para ordenar" /></button>)}
       </div>
-      {estado === 'correcto' ? <button className={styles.primaryButton} onClick={siguiente}>Siguiente palabra</button> : <button className={styles.primaryButton} onClick={comprobar} disabled={colocadas.length !== palabra.texto.length}>Comprobar</button>}
+      {estado === 'correcto' ? <button className={styles.primaryButton} onClick={siguiente}>{indice + 1 === palabras.length ? 'Finalizar' : 'Siguiente palabra'}</button> : <button className={styles.primaryButton} onClick={comprobar} disabled={colocadas.length !== palabra.texto.length}>Comprobar</button>}
     </section>
   );
 };

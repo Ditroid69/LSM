@@ -133,7 +133,7 @@ const LeccionNumeros = ({ id: idProp, bloque: bloqueProp } = {}) => {
       <div className={styles.cameraActions}>
         <button type="button" onClick={saltarNumero} disabled={aciertoLocal || pendientes.length <= 1} className={styles.skipButton}>Saltar por ahora</button>
         <button type="button" onClick={siguienteLetra} disabled={!aciertoLocal} className={styles.nextButton}>
-          <span>{aciertoLocal ? 'Siguiente número' : 'Completa la seña para continuar'}</span>
+          <span>{aciertoLocal ? (pendientes.length === 1 ? 'Finalizar' : 'Siguiente número') : 'Completa la seña para continuar'}</span>
         </button>
       </div>
     </section>

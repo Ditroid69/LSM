@@ -158,6 +158,7 @@ if (Capacitor.isNativePlatform()) {
               // Solo evaluar si no se ha completado aún
               if (!validacionCompletaRef.current) {
                 const letra = letraRef.current;
+                registrarDiagnosticoLetra(letra, landmarks);
                 let esCorrecta = false;
                 if (letra === 'A') esCorrecta = detectarA(landmarks);
                 else if (letra === 'B') esCorrecta = detectarB(landmarks);
@@ -170,18 +171,17 @@ if (Capacitor.isNativePlatform()) {
                 else if (letra === 'O') esCorrecta = detectarO(landmarks);
                 else if (letra === 'U') esCorrecta = detectarU(landmarks);
                 else if (letra === 'I') esCorrecta = detectarI(landmarks);
-                else if (letra === 'K' || letra === 'P') esCorrecta = detectarKP(landmarks);
+                else if (letra === 'P') esCorrecta = detectarKP(landmarks);
                 else if (letra === 'V') esCorrecta = detectarV(landmarks);
                 else if (letra === 'W') esCorrecta = detectarW(landmarks);
                 else if (letra === 'G') esCorrecta = detectarG(landmarks);
                 else if (letra === 'H') esCorrecta = detectarH(landmarks);
                 else if (letra === 'L') esCorrecta = detectarL(landmarks);
                 else if (letra === 'M') esCorrecta = detectarM(landmarks);
-                else if (letra === 'N' || letra === 'Ñ') esCorrecta = detectarÑ(landmarks);
+                else if (letra === 'N') esCorrecta = detectarN(landmarks);
                 else if (letra === 'R') esCorrecta = detectarR(landmarks);
                 else if (letra === 'X') esCorrecta = detectarX(landmarks);
                 else if (letra === 'Y') esCorrecta = detectarY(landmarks);
-                else if (letra === 'Z') esCorrecta = detectarZ(landmarks);
                 else if (letra === '1') esCorrecta = detectar1(landmarks);
                 else if (letra === '2') esCorrecta = detectar2(landmarks);
                 else if (letra === '3') esCorrecta = detectar3(landmarks);
@@ -800,10 +800,10 @@ function detectarM(landmarks) {
   return tresExtendidos && meniqueFlex && juntos && pulgarEnPalma;
 }
 
-// Ñ: igual que H pero con pulgar entre los dedos (usamos la misma función que H)
-// Para simplificar, usaremos la función detectarH también para Ñ
-function detectarÑ(landmarks) {
-  return detectarH(landmarks); // misma forma
+// N conserva por ahora la regla existente basada en la configuración de H.
+// Ñ se excluye porque pertenece al módulo de letras con movimiento.
+function detectarN(landmarks) {
+  return detectarH(landmarks);
 }
 
 // R: índice y medio juntos, pulgar tocando el índice
@@ -847,10 +847,104 @@ function detectarW(landmarks) {
   return tresExtendidos && meniqueFlex && separados && pulgarEnPalma;
 }
 
-// Funciones X, Y, Z pendientes de diagnóstico (placeholder)
-function detectarX() { return false; }
-function detectarY() { return false; }
-function detectarZ() { return false; }
+// X: todos los dedos cerrados, con el índice ligeramente levantado y curvado.
+function detectarX(landmarks) {
+  const distancia = (a, b) => Math.hypot(
+    landmarks[a].x - landmarks[b].x,
+    landmarks[a].y - landmarks[b].y
+  );
+
+  const distIndice = distancia(8, 5);
+  const distMedio = distancia(12, 9);
+  const distAnular = distancia(16, 13);
+  const distMenique = distancia(20, 17);
+  const distPulgarBase = distancia(4, 1);
+  const distPulgarNudilloIndice = distancia(4, 5);
+
+  const indiceCurvado = distIndice > 0.075 && distIndice < 0.17;
+  const otrosCerrados = distMedio < 0.14 && distAnular < 0.14 && distMenique < 0.13;
+  const pulgarRecogido = distPulgarBase > 0.12 && distPulgarBase < 0.26;
+  const pulgarCercaDelIndice = distPulgarNudilloIndice < 0.1;
+
+  return indiceCurvado && otrosCerrados && pulgarRecogido && pulgarCercaDelIndice;
+}
+
+// Diagnóstico temporal para calibrar los detectores de X y Y.
+// Se ejecuta dentro del ciclo de resultados y muestra las medidas en consola.
+function registrarDiagnosticoLetra(letra, landmarks) {
+  if (letra !== 'X' && letra !== 'Y') return;
+
+  const distancia = (a, b) => Math.hypot(
+    landmarks[a].x - landmarks[b].x,
+    landmarks[a].y - landmarks[b].y
+  );
+
+  const medidas = {
+    distIndice: distancia(8, 5),
+    distMedio: distancia(12, 9),
+    distAnular: distancia(16, 13),
+    distMenique: distancia(20, 17),
+    distPulgarBase: distancia(4, 1),
+    distPulgarIndice: distancia(4, 8),
+    distPulgarNudilloIndice: distancia(4, 5),
+  };
+
+  if (letra === 'X') {
+    Object.assign(medidas, {
+      indiceBasePip: distancia(5, 6),
+      indicePipDip: distancia(6, 7),
+      indiceDipPunta: distancia(7, 8),
+      indicePipPunta: distancia(6, 8),
+      indiceBasePunta: distancia(5, 8),
+      puntaIndiceSobrePip: landmarks[8].y < landmarks[6].y,
+      puntaIndiceSobreBase: landmarks[8].y < landmarks[5].y,
+    });
+  }
+
+  console.log(`${letra} debug:`, medidas);
+}
+
+// Y: pulgar y meñique extendidos; índice, medio y anular flexionados.
+// Z no se valida aquí porque requiere reconocer una trayectoria.
+function detectarY(landmarks) {
+  const INDEX_TIP = 8, INDEX_MCP = 5,
+        MIDDLE_TIP = 12, MIDDLE_MCP = 9,
+        RING_TIP = 16, RING_MCP = 13,
+        PINKY_TIP = 20, PINKY_MCP = 17,
+        THUMB_TIP = 4, THUMB_CMC = 1;
+
+  const distIndice = Math.hypot(
+    landmarks[INDEX_TIP].x - landmarks[INDEX_MCP].x,
+    landmarks[INDEX_TIP].y - landmarks[INDEX_MCP].y
+  );
+  const distMedio = Math.hypot(
+    landmarks[MIDDLE_TIP].x - landmarks[MIDDLE_MCP].x,
+    landmarks[MIDDLE_TIP].y - landmarks[MIDDLE_MCP].y
+  );
+  const distAnular = Math.hypot(
+    landmarks[RING_TIP].x - landmarks[RING_MCP].x,
+    landmarks[RING_TIP].y - landmarks[RING_MCP].y
+  );
+  const distMenique = Math.hypot(
+    landmarks[PINKY_TIP].x - landmarks[PINKY_MCP].x,
+    landmarks[PINKY_TIP].y - landmarks[PINKY_MCP].y
+  );
+  const distPulgarBase = Math.hypot(
+    landmarks[THUMB_TIP].x - landmarks[THUMB_CMC].x,
+    landmarks[THUMB_TIP].y - landmarks[THUMB_CMC].y
+  );
+  const distPulgarIndice = Math.hypot(
+    landmarks[THUMB_TIP].x - landmarks[INDEX_TIP].x,
+    landmarks[THUMB_TIP].y - landmarks[INDEX_TIP].y
+  );
+
+  const tresFlexionados = distIndice < 0.14 && distMedio < 0.14 && distAnular < 0.14;
+  const meniqueExtendido = distMenique > 0.14;
+  const pulgarExtendido = distPulgarBase > 0.17;
+  const pulgarSeparado = distPulgarIndice > 0.1;
+
+  return tresFlexionados && meniqueExtendido && pulgarExtendido && pulgarSeparado;
+}
 
 // Número 1: índice extendido, otros flexionados, pulgar extendido y separado del índice
 function detectar1(landmarks) {

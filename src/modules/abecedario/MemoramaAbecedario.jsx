@@ -149,7 +149,7 @@ const MemoramaAbecedario = () => {
         })}
       </div>
 
-      {estado === 'completo' && <div className={styles.actions}><button type="button" className={styles.secondaryButton} onClick={reiniciar}>Jugar otra vez</button><button type="button" className={styles.primaryButton} onClick={terminar}>Terminar actividad</button></div>}
+      {estado === 'completo' && <div className={styles.actions}><button type="button" className={styles.secondaryButton} onClick={reiniciar}>Jugar otra vez</button><button type="button" className={styles.primaryButton} onClick={terminar}>Finalizar</button></div>}
     </section>
   );
 };

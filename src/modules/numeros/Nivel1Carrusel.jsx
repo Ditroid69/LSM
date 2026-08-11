@@ -164,7 +164,7 @@ const Nivel1CarruselNumeros = () => {
         </button>
 
         <button type="button" onClick={siguiente} className={`${styles.nextButton} ${esUltimo ? styles.finishButton : ''}`}>
-          <span>{esUltimo ? 'Finalizar nivel' : 'Siguiente'}</span>
+          <span>{esUltimo ? 'Finalizar' : 'Siguiente'}</span>
           {esUltimo && <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4.5 4.5L19 7" /></svg>}
         </button>
       </div>

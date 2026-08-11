@@ -262,7 +262,7 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
             type="button"
             onClick={handleNext}
           >
-            Continuar
+            {superadas === totalPreguntas ? 'Finalizar' : 'Continuar'}
           </button>
         </div>
       )}

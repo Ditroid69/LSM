@@ -36,8 +36,8 @@ const contenidoBloque = {
   5: [
     { letra: 'G', descripcion: 'Índice extendido, demás flexionados, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_g.png' },
     { letra: 'H', descripcion: 'Índice y medio juntos extendidos, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_h.png' },
-    { letra: 'X', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_x.png' },
-    { letra: 'Y', descripcion: '(Descripción pendiente)', imagen: '/assets/abecedario/imagen_y.png' },
+    { letra: 'X', descripcion: 'Mantén el índice levantado y flexiona su punta para formar un gancho. Cierra el medio, el anular y el meñique sobre la palma, y apoya el pulgar sobre el dedo medio.', imagen: '/assets/abecedario/imagen_x.png' },
+    { letra: 'Y', descripcion: 'Pulgar y meñique extendidos y separados; índice, medio y anular doblados sobre la palma.', imagen: '/assets/abecedario/imagen_y.png' },
   ],
   6: letrasConMovimiento.map((item) => ({ ...item, video: item.recurso })),
 };
@@ -201,7 +201,7 @@ const Nivel1Carrusel = () => {
           onClick={siguiente}
           className={`${styles.nextButton} ${esUltimo ? styles.finishButton : ''}`}
         >
-          <span>{esUltimo ? 'Finalizar nivel' : 'Siguiente'}</span>
+          <span>{esUltimo ? 'Finalizar' : 'Siguiente'}</span>
           {esUltimo && (
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m5 12 4.5 4.5L19 7" />

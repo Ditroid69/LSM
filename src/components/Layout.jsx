@@ -157,9 +157,9 @@ const Layout = () => {
         </div>
 
         <div className={styles.brand}>
-          <img src={logo} alt="Logo de Kineseña" className={styles.logo} />
+          <img src={logo} alt="Logo de KineSeña" className={styles.logo} />
           <div className={styles.info}>
-            <span className={styles.title}>Kineseña</span>
+            <span className={styles.title}>KineSeña</span>
             <span className={styles.user}>
               {nombre ? `Hola, ${nombre}` : 'Aprendiz'}
             </span>
@@ -184,7 +184,7 @@ const Layout = () => {
             <div className={styles.drawerTopBar}>
               <div className={styles.drawerBrand}>
                 <img src={logo} alt="" className={styles.drawerLogo} />
-                <span>Kineseña</span>
+                <span>KineSeña</span>
               </div>
               <button
                 className={styles.iconButton}

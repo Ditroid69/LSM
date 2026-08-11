@@ -1,6 +1,6 @@
 {
   "appId": "com.kinesena.app",
-  "appName": "Kineseña",
+  "appName": "KineSeña",
   "webDir": "dist",
   "bundledWebRuntime": false
 }

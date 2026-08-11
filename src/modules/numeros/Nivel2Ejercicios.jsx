@@ -204,7 +204,7 @@ const Nivel2NumerosContenido = ({ idBloque }) => {
             </p>
           </div>
           <button type="button" onClick={pickNextQuestion}>
-            Continuar
+            {superadas === totalPreguntas ? 'Finalizar' : 'Continuar'}
           </button>
         </div>
       )}

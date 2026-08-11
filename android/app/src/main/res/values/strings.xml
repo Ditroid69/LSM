@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Kineseña</string>
-    <string name="title_activity_main">Kineseña</string>
+    <string name="app_name">KineSeña</string>
+    <string name="title_activity_main">KineSeña</string>
     <string name="package_name">com.kinesena.app</string>
     <string name="custom_url_scheme">com.kinesena.app</string>
 </resources>

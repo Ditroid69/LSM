@@ -1,4 +1,4 @@
-# Kineseña
+# KineSeña
 
 Aplicación híbrida para aprender vocabulario introductorio de Lengua de Señas Mexicana mediante demostraciones, ejercicios, actividades de refuerzo y prácticas de reconocimiento de mano ejecutadas localmente.
 

@@ -64,7 +64,7 @@ const Nivel2Saludos = () => {
           })}
         </div>
       </div>
-      {mostrarResultado && <div className={`${styles.feedback} ${seleccionada === correcta.texto ? styles.feedbackCorrect : styles.feedbackWrong}`} role="status"><span className={styles.feedbackIcon}><svg viewBox="0 0 24 24"><path d={seleccionada === correcta.texto ? 'm5 12 4.5 4.5L19 7' : 'M6 6l12 12M18 6 6 18'} /></svg></span><div><strong>{seleccionada === correcta.texto ? 'Respuesta correcta' : 'Sigue practicando'}</strong><p>La expresión es “{correcta.texto}”.</p></div><button type="button" onClick={continuar}>Continuar</button></div>}
+      {mostrarResultado && <div className={`${styles.feedback} ${seleccionada === correcta.texto ? styles.feedbackCorrect : styles.feedbackWrong}`} role="status"><span className={styles.feedbackIcon}><svg viewBox="0 0 24 24"><path d={seleccionada === correcta.texto ? 'm5 12 4.5 4.5L19 7' : 'M6 6l12 12M18 6 6 18'} /></svg></span><div><strong>{seleccionada === correcta.texto ? 'Respuesta correcta' : 'Sigue practicando'}</strong><p>La expresión es “{correcta.texto}”.</p></div><button type="button" onClick={continuar}>{acertadas === expresiones.length ? 'Finalizar' : 'Continuar'}</button></div>}
     </section>
   );
 };
