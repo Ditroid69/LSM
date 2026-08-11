@@ -1,9 +1,9 @@
 export const letrasAbecedario = [
-  'A', 'E', 'S', 'T', 'O',
-  'B', 'C', 'D', 'F', 'U',
+  'A', 'B', 'E', 'S', 'O',
+  'C', 'D', 'F', 'U',
   'I', 'P', 'V', 'W',
   'L', 'M', 'N', 'R',
-  'G', 'H', 'X', 'Y',
+  'G', 'H', 'T', 'Y',
 ];
 
 export const imagenDeLetra = (letra) => {

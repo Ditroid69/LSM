@@ -8,11 +8,11 @@ import { letrasConMovimiento, obtenerLetraConMovimiento } from '../../data/abece
 
 // Bloques del abecedario (igual que en Leccion.jsx)
 const bloquesAbecedario = {
-  1: ['A', 'E', 'S', 'T', 'O'],
-  2: ['B', 'C', 'D', 'F', 'U'],
+  1: ['A', 'B', 'E', 'S', 'O'],
+  2: ['C', 'D', 'F', 'U'],
   3: ['I', 'P', 'V', 'W'],
   4: ['L', 'M', 'N', 'R'],
-  5: ['G', 'H', 'X', 'Y'],
+  5: ['G', 'H', 'T', 'Y'],
   6: letrasConMovimiento.map(({ letra }) => letra)
 };
 const bloqueVacio = [];
@@ -125,7 +125,7 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
   if (totalPreguntas === 0) {
     return (
       <div className={styles.emptyState} style={cssVars}>
-        <p>No hay ejercicios para este bloque todavía.</p>
+        <p>No hay ejercicios para este módulo todavía.</p>
         <button type="button" onClick={() => navigate(-1)}>Volver</button>
       </div>
     );
@@ -149,7 +149,7 @@ const Nivel2EjerciciosContenido = ({ idBloque }) => {
     <section className={styles.page} style={cssVars}>
       <header className={styles.quizHeader}>
         <div>
-          <span className={styles.eyebrow}>Abecedario · Bloque {idBloque}</span>
+          <span className={styles.eyebrow}>Abecedario · Módulo {idBloque}</span>
           <h1>Reconoce la seña</h1>
         </div>
         <div className={styles.score} aria-label={`${superadas} de ${totalPreguntas} superadas`}>

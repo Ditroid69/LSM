@@ -7,11 +7,11 @@ import styles from './styles/Leccion.module.css';
 
 // Definimos los bloques del abecedario (igual que en AbecedarioMenu)
 const bloquesAbecedario = {
-  1: ['A', 'E', 'S', 'T', 'O'],
-  2: ['B', 'C', 'D', 'F', 'U'],
+  1: ['A', 'B', 'E', 'S', 'O'],
+  2: ['C', 'D', 'F', 'U'],
   3: ['I', 'P', 'V', 'W'],
   4: ['L', 'M', 'N', 'R'],
-  5: ['G', 'H', 'X', 'Y']
+  5: ['G', 'H', 'T', 'Y']
 };
 
 const contenidoLecciones = {
@@ -112,7 +112,7 @@ const bloque = bloqueProp || params.bloque;  // id: 'abecedario', bloque: '1', e
       <header className={styles.lessonHeader}>
         <div>
           <span className={styles.eyebrow}>
-            {esAbecedario ? `Abecedario · Bloque ${bloque}` : leccion.titulo}
+            {esAbecedario ? `Abecedario · Módulo ${bloque}` : leccion.titulo}
           </span>
           <h1>Practica con la cámara</h1>
         </div>

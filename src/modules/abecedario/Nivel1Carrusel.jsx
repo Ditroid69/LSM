@@ -9,13 +9,12 @@ import { letrasConMovimiento } from '../../data/abecedarioMovimiento';
 const contenidoBloque = {
   1: [
     { letra: 'A', descripcion: 'Puño cerrado, pulgar extendido hacia arriba pegado al índice.', imagen: '/assets/abecedario/imagen_a.png' },    
+    { letra: 'B', descripcion: 'Mano abierta, dedos juntos, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_b.png' },
     { letra: 'E', descripcion: 'Dedos doblados hacia abajo, pulgar tocando el índice.', imagen: '/assets/abecedario/imagen_e.png' },
     { letra: 'S', descripcion: 'Puño cerrado, pulgar doblado sobre los dedos.', imagen: '/assets/abecedario/imagen_s.png' },
-    { letra: 'T', descripcion: 'Puño cerrado, pulgar metido entre índice y medio.', imagen: '/assets/abecedario/imagen_t.png' },
     { letra: 'O', descripcion: 'Puntas de los dedos juntas formando un círculo.', imagen: '/assets/abecedario/imagen_o.png' },
   ],
   2: [
-    { letra: 'B', descripcion: 'Mano abierta, dedos juntos, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_b.png' },
     { letra: 'C', descripcion: 'Mano curvada en forma de C, dedos juntos.', imagen: '/assets/abecedario/imagen_c.png' },
     { letra: 'D', descripcion: 'Índice extendido hacia arriba, demás dedos doblados, pulgar tocando el medio.', imagen: '/assets/abecedario/imagen_d.png' },
     { letra: 'F', descripcion: 'Índice flexionado tocando el pulgar, demás dedos extendidos.', imagen: '/assets/abecedario/imagen_f.png' },
@@ -36,7 +35,7 @@ const contenidoBloque = {
   5: [
     { letra: 'G', descripcion: 'Índice extendido, demás flexionados, pulgar doblado sobre la palma.', imagen: '/assets/abecedario/imagen_g.png' },
     { letra: 'H', descripcion: 'Índice y medio juntos extendidos, pulgar sobre la palma.', imagen: '/assets/abecedario/imagen_h.png' },
-    { letra: 'X', descripcion: 'Mantén el índice levantado y flexiona su punta para formar un gancho. Cierra el medio, el anular y el meñique sobre la palma, y apoya el pulgar sobre el dedo medio.', imagen: '/assets/abecedario/imagen_x.png' },
+    { letra: 'T', descripcion: 'Puño cerrado, pulgar metido entre índice y medio.', imagen: '/assets/abecedario/imagen_t.png' },
     { letra: 'Y', descripcion: 'Pulgar y meñique extendidos y separados; índice, medio y anular doblados sobre la palma.', imagen: '/assets/abecedario/imagen_y.png' },
   ],
   6: letrasConMovimiento.map((item) => ({ ...item, video: item.recurso })),
@@ -96,7 +95,7 @@ const Nivel1Carrusel = () => {
     <section className={`${styles.page} ${item.video ? styles.fullVideoPage : ''}`} style={cssVars}>
       <header className={styles.lessonHeader}>
         <div>
-          <span className={styles.eyebrow}>Abecedario · Bloque {idBloque}</span>
+          <span className={styles.eyebrow}>Abecedario · Módulo {idBloque}</span>
           <h1>{item.video ? 'Letras en movimiento' : 'Aprende la seña'}</h1>
         </div>
         <div className={styles.counter} aria-label={`Seña ${indice + 1} de ${bloque.length}`}>

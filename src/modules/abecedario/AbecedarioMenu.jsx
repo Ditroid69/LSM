@@ -4,12 +4,12 @@ import { useTheme } from '../../context/ThemeContext';
 import styles from './styles/AbecedarioMenu.module.css';
 
 const bloques = [
-  { id: 1, letras: ['A', 'E', 'S', 'T', 'O'] },
-  { id: 2, letras: ['B', 'C', 'D', 'F', 'U'] },
+  { id: 1, letras: ['A', 'B', 'E', 'S', 'O'] },
+  { id: 2, letras: ['C', 'D', 'F', 'U'] },
   { id: 3, letras: ['I', 'P', 'V', 'W'] },
   { id: 4, letras: ['L', 'M', 'N', 'R'] },
-  { id: 5, letras: ['G', 'H', 'X', 'Y'] },
-  { id: 6, letras: ['J', 'K', 'Ñ', 'Z', 'Q'], nombre: 'Letras en movimiento' },
+  { id: 5, letras: ['G', 'H', 'T', 'Y'] },
+  { id: 6, letras: ['J', 'K', 'Ñ', 'X', 'Z', 'Q'], nombre: 'Letras en movimiento' },
 ];
 
 const AbecedarioMenu = () => {

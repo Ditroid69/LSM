@@ -5,12 +5,12 @@ import { useTheme } from '../../context/ThemeContext';
 import styles from './styles/CaminoNiveles.module.css';
 
 const bloques = {
-  1: { letras: ['A','E','S','T','O'] },
-  2: { letras: ['B','C','D','F','U'] },
+  1: { letras: ['A','B','E','S','O'] },
+  2: { letras: ['C','D','F','U'] },
   3: { letras: ['I','P','V','W'] },
   4: { letras: ['L','M','N','R'] },
-  5: { letras: ['G','H','X','Y'] },
-  6: { letras: ['J','K','Ñ','Z','Q'], niveles: 2 }
+  5: { letras: ['G','H','T','Y'] },
+  6: { letras: ['J','K','Ñ','X','Z','Q'], niveles: 2 }
 };
 
 const CaminoNiveles = () => {
@@ -34,7 +34,7 @@ const CaminoNiveles = () => {
     cargarProgreso();
   }, [idBloque, totalNiveles]);
 
-  if (!bloque) return <p>Bloque no encontrado</p>;
+  if (!bloque) return <p>Módulo no encontrado</p>;
 
   const nivelDesbloqueado = (nivelIndex) => {
     if (nivelIndex === 0) return true; // nivel 1 siempre disponible
@@ -106,7 +106,7 @@ const CaminoNiveles = () => {
     <section className={styles.page} style={cssVars}>
       <div className={styles.summary}>
         <div className={styles.summaryText}>
-          <span className={styles.eyebrow}>Abecedario · Bloque {idBloque}</span>
+          <span className={styles.eyebrow}>Abecedario · Módulo {idBloque}</span>
           <h1 className={styles.title}>Continúa tu camino</h1>
           <p className={styles.letters}>
             Aprende las letras <strong>{bloque.letras.join(' · ')}</strong>

@@ -15,6 +15,11 @@ export const letrasConMovimiento = [
     descripcion: 'Forma la letra N: dobla el índice y el medio sobre el pulgar y mantén el anular y el meñique cerrados. Con la palma orientada hacia ti, mueve la mano suavemente de un lado a otro, como si dibujaras la tilde de la Ñ.',
   },
   {
+    letra: 'X',
+    recurso: '/assets/abecedario/video_x.mp4',
+    descripcion: 'Mantén el índice levantado y flexiona su punta para formar un gancho. Cierra el medio, el anular y el meñique sobre la palma, apoya el pulgar sobre ellos y realiza el movimiento que se muestra en el video.',
+  },
+  {
     letra: 'Z',
     recurso: '/assets/abecedario/video_z.mp4',
     descripcion: 'Extiende el dedo índice y mantén los demás dedos cerrados con el pulgar sobre ellos. Con la palma orientada de lado o ligeramente hacia el frente, dibuja en el aire una trayectoria en zigzag con la forma de la letra Z.',

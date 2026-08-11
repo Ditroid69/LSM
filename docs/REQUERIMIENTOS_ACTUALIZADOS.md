@@ -49,7 +49,7 @@ La aplicación combina demostraciones mediante imágenes o videos, ejercicios de
 | ID | Requerimiento | Estado actual |
 |---|---|---|
 | RF13 | El contenido estático se organizará por configuración manual: bloque 1 (A, E, S, T, O), bloque 2 (B, C, D, F, U), bloque 3 (I, P, V, W), bloque 4 (L, M, Ñ, R) y bloque 5 (G, H, X, Y). | Implementado tal como está en el código |
-| RF14 | Las letras con demostración en movimiento se agruparán en el bloque 6: J, K, Ñ, Z y Q. | Implementado |
+| RF14 | Las letras con demostración en movimiento se agruparán en el módulo 6: J, K, Ñ, X, Z y Q. | Implementado |
 | RF15 | Los bloques 1 a 5 tendrán tres niveles secuenciales: demostración, ejercicio y práctica con cámara. | Implementado |
 | RF16 | El bloque 6 tendrá demostración y ejercicio, sin validación por cámara. | Implementado |
 | RF17 | En el ejercicio se mostrará una seña objetivo y hasta cuatro letras; preguntas y opciones se elegirán aleatoriamente y una letra solo contará como superada al responder correctamente. | Implementado |
@@ -57,7 +57,7 @@ La aplicación combina demostraciones mediante imágenes o videos, ejercicios de
 | RF19 | La sección de práctica general ofrecerá: relacionar seña con letra, ordenar señas para deletrear palabras y memorama de parejas seña-letra. | Añadido e implementado |
 | RF20 | Cada actividad general podrá repetirse y conservará localmente su estado de completada. | Implementado |
 
-**Catálogo del abecedario:** el catálogo actual contiene las 27 letras del alfabeto español. Incluye 22 demostraciones estáticas y cinco demostraciones en movimiento: `J`, `K`, `Ñ`, `Z` y `Q`.
+**Catálogo del abecedario:** el catálogo actual contiene las 27 letras del alfabeto español. Incluye 21 demostraciones estáticas y seis demostraciones en movimiento: `J`, `K`, `Ñ`, `X`, `Z` y `Q`.
 
 ### 2.4 Números del 1 al 20
 
@@ -93,7 +93,7 @@ La aplicación combina demostraciones mediante imágenes o videos, ejercicios de
 | RF33 | La vista superpondrá conexiones y puntos de referencia sobre la mano detectada. | Añadido e implementado |
 | RF34 | Una seña deberá mantenerse correctamente durante aproximadamente 0.75 segundos para completar la validación; variaciones breves del seguimiento serán toleradas. | Añadido e implementado |
 | RF35 | El sistema mostrará progreso circular, detección de mano, acierto y fallo, y notificará el acierto una sola vez por elemento. | Implementado |
-| RF36 | La validación automática se limitará a A, B, C, D, E, F, G, H, I, K/P, L, M, Ñ, O, R, S, T, U, V, W, X, Y, Z y números 1 a 8. | Implementado con limitación: K y P comparten detector y no hay validación de Q ni de movimientos complejos |
+| RF36 | La validación automática se limitará a A, B, C, D, E, F, G, H, I, K/P, L, M, Ñ, O, R, S, T, U, V, W, Y, Z y números 1 a 8. | Implementado con limitación: K y P comparten detector y no hay validación de J, Q, X ni de movimientos complejos |
 
 ### 2.8 Progreso local
 
