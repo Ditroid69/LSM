@@ -12,7 +12,7 @@ La especificación actualizada contrasta el PDF inicial con el estado real del p
 ## Tecnologías
 
 - React 19 y Vite 8
-- Capacitor 8 para Android
+- Capacitor 8 para Android y preparación de iOS desde GitHub Actions en macOS
 - Capacitor Preferences para nombre, apariencia y progreso local
 - MediaPipe Hands empaquetado localmente para seguimiento de mano
 
@@ -37,6 +37,8 @@ Para sincronizar los recursos web compilados con Android:
 ```bash
 npx cap sync android
 ```
+
+Para preparar y compilar el destino iOS desde Windows, consulta [Preparar iOS desde Windows](docs/IOS_DESDE_WINDOWS.md). El proyecto se compila en un runner macOS de GitHub Actions.
 
 ## Privacidad y operación
 

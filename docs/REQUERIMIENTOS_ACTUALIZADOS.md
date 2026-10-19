@@ -158,12 +158,12 @@ Estos valores sustituyen las versiones propuestas en el PDF cuando el repositori
 
 ### 4.1 Desarrollo
 
-- Node.js 20 LTS o superior compatible con Vite 8.
+- Node.js 22 LTS o superior, requerido por Capacitor 8 y compatible con Vite 8.
 - React 19.2.x y React DOM 19.2.x.
 - JavaScript con JSX. TypeScript 5.x deja de ser requisito de la versión actual porque el código no lo utiliza; su adopción futura requerirá una migración planificada.
 - React Router DOM 7.17.x.
 - Vite 8.0.x y complemento oficial de React 6.0.x.
-- Capacitor 8.4.x, plataforma Android y complementos Camera y Preferences.
+- Capacitor 8.4.x, plataformas Android e iOS y complementos Camera y Preferences. La compilación nativa de iOS requiere macOS con Xcode 26 o posterior; este proyecto la prepara mediante GitHub Actions.
 - MediaPipe Hands Web `0.4.1675469240`, Camera Utils y Drawing Utils empaquetados localmente.
 - Android SDK de compilación y objetivo API 36; mínimo técnico actual API 24.
 - Android Studio y JDK compatibles con el proyecto Gradle generado por Capacitor 8.
