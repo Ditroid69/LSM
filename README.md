@@ -38,6 +38,8 @@ Para sincronizar los recursos web compilados con Android:
 npx cap sync android
 ```
 
+Para generar un APK Android de prueba desde Windows, abre **Actions → Android debug build → Run workflow** en GitHub. Al terminar, descarga el artefacto `android-debug-apk` desde el resumen de la ejecución e instala el APK en un dispositivo Android. Es una compilación de depuración para pruebas; todavía no es una versión firmada para Google Play.
+
 Para preparar y compilar el destino iOS desde Windows, consulta [Preparar iOS desde Windows](docs/IOS_DESDE_WINDOWS.md). El proyecto se compila en un runner macOS de GitHub Actions.
 
 ## Privacidad y operación
